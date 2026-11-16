@@ -105,6 +105,30 @@ main{max-width:1360px; margin:0 auto; padding:22px 20px 60px;}
 .srcitem .st{font-weight:600; font-size:12.5px;}
 .srcitem .su{color:var(--muted); font-size:11px; margin-top:2px;}
 .srcitem.skeleton{color:#a5adc4; border-style:dashed;}
+.srcgroup{font-size:11.5px; font-weight:800; color:var(--muted); letter-spacing:.4px; margin:0 0 8px;}
+#provWrap:not([hidden])+#webWrap{margin-top:14px;}
+.srcbadge{font-size:9.5px; font-weight:800; color:var(--acc); background:#eef0fe; border-radius:999px; padding:1px 7px; margin-left:6px; vertical-align:1px;}
+
+/* ---------- home material slot (v2) ---------- */
+.matslot{max-width:640px; margin:18px auto 0; background:#fff; border:1.5px dashed #c9cfe4; border-radius:16px; padding:14px 16px; text-align:left; transition:.15s;}
+.matslot.dragover{border-color:var(--acc); background:#f6f6ff;}
+.msh{display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:10px;}
+.mst{font-weight:700; font-size:13.5px;}
+.mshint{color:var(--muted); font-size:11.5px;}
+.msacts{display:flex; gap:8px; flex-wrap:wrap;}
+.msbtn{border:1px solid var(--line); background:#fafbfe; border-radius:9px; padding:7px 13px; font-size:12.5px; color:#45506b;}
+.msbtn:hover{border-color:var(--acc); color:var(--acc);}
+.mspane{display:flex; gap:8px; margin-top:10px;}
+.mspane[hidden]{display:none;}
+.mspane textarea{flex:1; border:1px solid var(--line); border-radius:10px; padding:9px 11px; font-size:12.5px; font-family:inherit; resize:vertical; outline:none; min-height:64px;}
+.mspane input{flex:1; border:1px solid var(--line); border-radius:10px; padding:9px 11px; font-size:12.5px; outline:none;}
+.mspane textarea:focus, .mspane input:focus{border-color:var(--acc);}
+.matlist{display:flex; flex-wrap:wrap; gap:7px; margin-top:10px;}
+.matchip{display:inline-flex; align-items:center; gap:7px; background:#f7f8fc; border:1px solid var(--line); border-radius:999px; padding:5px 7px 5px 11px; font-size:12px; max-width:100%;}
+.matchip .mt1{font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:220px;}
+.matchip .mt2{color:var(--muted); font-size:10.5px; white-space:nowrap;}
+.matchip .mx{width:18px;height:18px;border-radius:50%;border:none;background:#e8eaf2;color:#66708a;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.matchip .mx:hover{background:#fde8e8;color:#c0392b;}
 
 /* ---------- outline sticky board ---------- */
 .board{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px;}
@@ -297,10 +321,10 @@ main{max-width:1360px; margin:0 auto; padding:22px 20px 60px;}
   <!-- 阶段1 · 新建项目 -->
   <section class="stage" id="stage-home">
     <div class="hero">
-      <span class="eyebrow">⚡ 全新工作流 · 调研 → 便利贴大纲 → 策划稿 → 设计稿</span>
+      <span class="eyebrow">⚡ 全新工作流 · 素材接入 → 需求访谈 → 便利贴大纲 → 策划稿 → 设计稿</span>
       <h1>把主题交给<em>专家团队</em>，<br>你只需要泡杯咖啡</h1>
-      <p class="lead">Bound PPT 会先做需求调研、搜集真实资料，再用“数字便利贴”与你对齐大纲；<br>确认后分两阶段生成——先版式策划稿，再风格设计稿。</p>
-      <div class="heroshot"><span><b>①</b> 需求访谈</span><span><b>②</b> 便利贴大纲</span><span><b>③</b> Bento 策划稿</span><span><b>④</b> 风格设计稿</span></div>
+      <p class="lead">Bound PPT 会先消化你手上的素材（文档、数据、链接——没有素材就联网调研），<br>再用“数字便利贴”与你对齐大纲；确认后分两阶段生成——先版式策划稿，再风格设计稿。</p>
+      <div class="heroshot"><span><b>⓪</b> 素材接入</span><span><b>①</b> 需求访谈</span><span><b>②</b> 便利贴大纲</span><span><b>③</b> Bento 策划稿</span><span><b>④</b> 风格设计稿</span></div>
       <div class="inputwrap">
         <input id="topicInput" placeholder="输入你的主题，例如：Dify 企业介绍" value="">
         <button class="btn" id="startBtn">开始生成 →</button>
@@ -310,6 +334,27 @@ main{max-width:1360px; margin:0 auto; padding:22px 20px 60px;}
         <button class="chip" data-t="AIoT 智能家居新品发布">智能家居新品发布</button>
         <button class="chip" data-t="2026 年度经营复盘汇报">年度经营复盘汇报</button>
         <button class="chip" data-t="大模型在金融行业的落地实践">大模型金融落地实践</button>
+      </div>
+      <div class="matslot" id="matSlot">
+        <div class="msh">
+          <span class="mst">📦 有现成素材？一起丢给我</span>
+          <span class="mshint">粘贴文本 / 拖入文件 / 添加链接（可选）——不提供则默认联网调研</span>
+        </div>
+        <div class="msacts">
+          <button class="msbtn" id="msPasteBtn">📝 粘贴文本</button>
+          <button class="msbtn" id="msFileBtn">📎 上传文件</button>
+          <button class="msbtn" id="msUrlBtn">🔗 添加链接</button>
+          <input type="file" id="msFileInput" multiple hidden>
+        </div>
+        <div class="mspane" id="msPastePane" hidden>
+          <textarea id="msPasteText" rows="3" placeholder="粘贴工作文档、会议纪要、要点列表…"></textarea>
+          <button class="btn sm" id="msPasteAdd">添加为素材</button>
+        </div>
+        <div class="mspane" id="msUrlPane" hidden>
+          <input id="msUrlInput" placeholder="https://…（产品官网 / 行业报告 / 文章链接）">
+          <button class="btn sm" id="msUrlAdd">添加为素材</button>
+        </div>
+        <div class="matlist" id="matList"></div>
       </div>
       <div class="modecards">
         <button class="modecard sel" id="modeAuto">
@@ -327,12 +372,19 @@ main{max-width:1360px; margin:0 auto; padding:22px 20px 60px;}
 
   <!-- 阶段2 · 需求调研 -->
   <section class="stage" id="stage-research">
-    <div class="stage-head"><h1>需求调研</h1><span class="hint">Agent 先检索资料，再像专业顾问一样和你确认需求</span></div>
+    <div class="stage-head"><h1>需求调研</h1><span class="hint">Agent 先消化你提供的素材（可选），缺什么再联网补，再像专业顾问一样和你确认需求</span></div>
     <div class="rsplit">
       <div class="panel chat" id="chatPanel"></div>
       <div class="panel srcpanel">
-        <div class="pt">🔍 调研资料 <span class="cnt" id="srcCount">0 / 12</span></div>
-        <div id="srcList"></div>
+        <div class="pt">🗂 内容源面板 <span class="cnt" id="srcCount">0</span></div>
+        <div id="provWrap" hidden>
+          <div class="srcgroup">📦 你提供的素材</div>
+          <div id="provList"></div>
+        </div>
+        <div id="webWrap">
+          <div class="srcgroup">🔍 联网补充资料</div>
+          <div id="webList"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -434,8 +486,8 @@ main{max-width:1360px; margin:0 auto; padding:22px 20px 60px;}
 <script>
 "use strict";
 /* =====================================================================
- * Bound PPT · 交互原型
- * 工作流借鉴：需求调研 → 资料搜集 → 便利贴大纲 → 策划稿 → 设计稿
+ * Bound PPT · 交互原型（v2）
+ * 工作流：素材接入（可选）→ 需求调研（素材消化 + 缺口补齐）→ 便利贴大纲 → 策划稿 → 设计稿
  * 所有 LLM 返回均为内置 mock 数据（SSE 风格的分步模拟器）
  * ===================================================================== */
 
@@ -651,6 +703,7 @@ const LAYOUT_NAMES = { cover:"封面 · 单一焦点", toc:"目录 · 编号卡�
 /* ---------------- 全局状态 ---------------- */
 const S = {
   topic: "", mode: "auto", stage: "home",
+  materials: [],          // v2 素材槽：[{id, kind:'paste'|'file'|'url', title, meta}]
   answers: {}, answerCount: 0,
   outline: null,          // deep copy of MOCK.outline
   plans: {},              // pageId -> {layout, cards, variant, status}
@@ -795,9 +848,11 @@ function specFor(page, variant){
 /* ---------------- 打字机 ---------------- */
 async function typeInto(el, text, token, speed=18){
   el.textContent = ""; el.classList.add("cursor");
-  for(let i=0;i<text.length;i+=Math.ceil(Math.random()*2)){
+  for(let i=0;i<text.length;){
     if(!alive(token)) return false;
-    el.textContent += text[i];
+    const step = Math.ceil(Math.random()*2); // 每拍打 1-2 个字符（不丢字）
+    el.textContent += text.slice(i, i+step);
+    i += step;
     await sleep(speed);
   }
   el.classList.remove("cursor");
@@ -812,6 +867,68 @@ function initHome(){
   $$("#topicChips .chip").forEach(c=>c.onclick=()=>{ $("#topicInput").value=c.dataset.t; });
   $("#modeAuto").onclick = ()=>{ S.mode="auto"; $("#modeAuto").classList.add("sel"); $("#modeGuided").classList.remove("sel"); };
   $("#modeGuided").onclick = ()=>{ S.mode="guided"; $("#modeGuided").classList.add("sel"); $("#modeAuto").classList.remove("sel"); };
+  initMatSlot();
+}
+/* ---------------- 阶段1 · 素材槽（v2：粘贴文本 / 拖拽文件 / URL） ---------------- */
+function initMatSlot(){
+  $("#msPasteBtn").onclick = ()=>{ toggleMatPane("msPastePane"); $("#msPasteText").focus(); };
+  $("#msUrlBtn").onclick = ()=>{ toggleMatPane("msUrlPane"); $("#msUrlInput").focus(); };
+  $("#msFileBtn").onclick = ()=>$("#msFileInput").click();
+  $("#msFileInput").addEventListener("change", e=>{ addFileMaterials(Array.from(e.target.files||[])); e.target.value=""; });
+  $("#msPasteAdd").onclick = ()=>{
+    const t = $("#msPasteText").value.trim();
+    if(!t){ toast("先粘贴一些内容"); return; }
+    addMaterial({ kind:"paste", title: short(t, 14), meta:`粘贴文本 · ${t.length} 字` });
+    $("#msPasteText").value=""; $("#msPastePane").hidden = true;
+  };
+  $("#msUrlAdd").onclick = ()=>{
+    let u = $("#msUrlInput").value.trim();
+    if(!u){ toast("先输入链接"); return; }
+    if(!/^https?:\/\//i.test(u)) u = "https://" + u;
+    let host = u;
+    try{ const url = new URL(u); host = url.host + (url.pathname && url.pathname!=="/" ? url.pathname : ""); }catch(_){}
+    addMaterial({ kind:"url", title: short(host, 26), meta:"网页链接 · 抓取解析" });
+    $("#msUrlInput").value=""; $("#msUrlPane").hidden = true;
+  };
+  const slot = $("#matSlot");
+  slot.addEventListener("dragover", e=>{ e.preventDefault(); slot.classList.add("dragover"); });
+  slot.addEventListener("dragleave", ()=>slot.classList.remove("dragover"));
+  slot.addEventListener("drop", e=>{
+    e.preventDefault(); slot.classList.remove("dragover");
+    addFileMaterials(Array.from(e.dataTransfer.files||[]));
+  });
+}
+function toggleMatPane(id){
+  const pane = $("#"+id);
+  const other = id==="msPastePane" ? "msUrlPane" : "msPastePane";
+  pane.hidden = !pane.hidden;
+  $("#"+other).hidden = true;
+}
+function addFileMaterials(files){
+  if(!files.length) return;
+  if(S.materials.length + files.length > 6){ toast("原型最多演示 6 份素材"); return; }
+  files.forEach(f=>{
+    const ext = (f.name.split(".").pop()||"文件").toLowerCase();
+    addMaterial({ kind:"file", title:f.name, meta:`${ext} · ${(f.size/1024).toFixed(0)} KB` });
+  });
+}
+function addMaterial(m){
+  if(S.materials.length>=6){ toast("原型最多演示 6 份素材"); return; }
+  m.id = "m"+Math.random().toString(36).slice(2,7);
+  S.materials.push(m);
+  renderMatList();
+}
+function renderMatList(){
+  const ic = { paste:"📝", file:"📎", url:"🔗" };
+  $("#matList").innerHTML = S.materials.map(m=>
+    `<span class="matchip" data-id="${m.id}">${ic[m.kind]} <span class="mt1" title="${esc(m.title)}">${esc(m.title)}</span><span class="mt2">${esc(m.meta)}</span><button class="mx" title="移除" aria-label="移除素材">✕</button></span>`
+  ).join("");
+  $$("#matList .matchip").forEach(ch=>{
+    ch.querySelector(".mx").onclick = ()=>{
+      S.materials = S.materials.filter(x=>x.id!==ch.dataset.id);
+      renderMatList();
+    };
+  });
 }
 function startProject(){
   const t = $("#topicInput").value.trim() || MOCK.topic;
@@ -843,37 +960,111 @@ function chatMsg(kind, html, opts={}){
   panel.scrollTop = panel.scrollHeight;
   return div;
 }
+/* ---------------- 阶段2 · 需求调研（v2：素材消化 + 缺口补齐） ---------------- */
+const GAP_OPTS = ["竞品对比", "行业与市场数据", "客户案例", "不需要——就用我的素材"];
+const GAP_SKIP = GAP_OPTS[3];
+function baseQuestions(){
+  const qs = MOCK.questions.map(q=>({ q:q.q, opts:q.opts, multi:false }));
+  if(S.materials.length) qs.push({ q:"素材之外，还需要我联网补充哪些内容？", opts:GAP_OPTS, multi:true });
+  return qs;
+}
 async function runResearchStage(token){
   const chat = $("#chatPanel"); chat.innerHTML="";
-  $("#srcList").innerHTML=""; $("#srcCount").textContent="0 / "+MOCK.sources.length;
+  $("#provList").innerHTML=""; $("#webList").innerHTML="";
+  $("#provWrap").hidden = !S.materials.length;
+  updateSrcCount();
+  const hasMats = S.materials.length>0;
   const m1 = chatMsg("agent"); const b1 = m1.querySelector(".bubble");
-  typeInto(b1, `收到！主题是「${S.topic}」。我先像调研员一样去网上搜集资料，然后有几个关键问题想和你确认——就像专业顾问做“需求调研”那样。`, token, 16);
-  // 可操作部分优先：问题卡片立即推送（后台继续检索动画）
-  for(let i=0;i<MOCK.questions.length;i++){
+  const open = hasMats
+    ? `收到！主题是「${S.topic}」，你还带来了 ${S.materials.length} 份素材。真实工作中，内容往往就在手上——我先消化你的素材，缺什么再联网补，然后有几个关键问题想和你确认。`
+    : `收到！主题是「${S.topic}」。这次没有现成素材，我先像调研员一样去网上搜集资料，然后有几个关键问题想和你确认——就像专业顾问做“需求调研”那样。`;
+  typeInto(b1, open, token, 16);
+  // 可操作部分优先：问题卡片立即推送（后台继续消化/检索动画）
+  const QS = baseQuestions();
+  S._qTotal = QS.length;
+  let gapResolve = null;
+  const gapPromise = new Promise(r=>{ gapResolve = r; });
+  S._gapResolve = gapResolve;
+  for(let i=0;i<QS.length;i++){
     if(!alive(token)) return;
-    const Q = MOCK.questions[i];
+    const Q = QS[i];
     const qc = document.createElement("div"); qc.className="qcard"; qc.style.marginLeft="40px";
-    qc.innerHTML = `<div class="qt">Q${i+1}. ${esc(Q.q)}<span class="req">必答</span></div><div class="qopts">${Q.opts.map((o,j)=>`<button class="qopt" data-i="${j}">${esc(o)}</button>`).join("")}</div>`;
+    qc.innerHTML = `<div class="qt">Q${i+1}. ${esc(Q.q)}<span class="req">${Q.multi?"可多选 · 确认后生效":"必答"}</span></div><div class="qopts">${Q.opts.map((o,j)=>`<button class="qopt" data-i="${j}">${esc(o)}</button>`).join("")}</div>${Q.multi?`<div style="margin-top:10px;"><button class="btn mini ghost" disabled>确认选择</button></div>`:""}`;
     $("#chatPanel").appendChild(qc);
     $("#chatPanel").scrollTop = 1e9;
-    qc.querySelectorAll(".qopt").forEach(btn=>btn.onclick=()=>{
-      qc.querySelectorAll(".qopt").forEach(x=>x.classList.remove("sel"));
-      btn.classList.add("sel");
-      S.answers[i]=btn.textContent; S.answerCount++;
-      if(S.answerCount===4) offerProfile();
+    const opts = qc.querySelectorAll(".qopt");
+    const cfm = qc.querySelector(".btn");
+    const picked = new Set();
+    const exclusive = Q.multi ? Q.opts.indexOf(GAP_SKIP) : -1;
+    opts.forEach(btn=>btn.onclick=()=>{
+      const j = +btn.dataset.i;
+      if(Q.multi){
+        if(picked.has(j)) picked.delete(j);
+        else{
+          if(j===exclusive) picked.clear();
+          else picked.delete(exclusive);
+          picked.add(j);
+        }
+        opts.forEach((x,k)=>x.classList.toggle("sel", picked.has(k)));
+        if(cfm) cfm.disabled = picked.size===0;
+      } else {
+        opts.forEach(x=>x.classList.remove("sel"));
+        btn.classList.add("sel");
+        S.answers[i]=btn.textContent; S.answerCount++;
+        if(S.answerCount===S._qTotal) offerProfile();
+      }
     });
+    if(cfm) cfm.onclick=()=>{
+      const labels = [...picked].sort((a,b)=>a-b).map(j=>Q.opts[j]);
+      S.answers[i]=labels.join("、"); S.answerCount++;
+      opts.forEach(x=>x.disabled=true); cfm.disabled=true;
+      if(gapResolve){ gapResolve(labels); gapResolve=null; S._gapResolve=null; }
+      if(S.answerCount===S._qTotal) offerProfile();
+    };
     await sleep(220);
   }
-  streamResearchBackstage(token);
+  streamResearchBackstage(token, gapPromise);
 }
-async function streamResearchBackstage(token){
-  const tools = [
-    ["web_search", `“${S.topic}” 官网与产品定位`],
-    ["web_search", `“${S.topic}” 最新融资与公司动态`],
-    ["web_search", "行业报告与竞品对比"],
-    ["web_search", "开发者社区反馈"],
-  ];
-  for(const [name, q] of tools){
+async function streamResearchBackstage(token, gapPromise){
+  const hasMats = S.materials.length>0;
+  // ① 素材消化：每份素材一张工具卡，完成后进入「你提供的素材」组
+  for(const mt of S.materials){
+    if(!alive(token)) return;
+    const label = mt.kind==="paste" ? `read_paste_text · ${mt.title}`
+      : mt.kind==="file" ? `ingest_file · ${mt.title}`
+      : `fetch_url · ${mt.title}`;
+    const tc = chatMsg("tool");
+    tc.querySelector("span:last-child").textContent = label;
+    await sleep(650);
+    if(!alive(token)) return;
+    tc.classList.add("done"); tc.querySelector(".ic").textContent="✓";
+    addSource("prov", mt.title, mt.meta);
+    await sleep(120);
+  }
+  // ② 联网：素材为空=默认全量检索（v1 行为）；有素材=等缺口答案后按需检索
+  let webSources, webTools;
+  if(hasMats){
+    const labels = await gapPromise;
+    if(!alive(token)) return;
+    const need = labels.filter(x=>x!==GAP_SKIP);
+    if(!need.length){
+      const m = chatMsg("agent");
+      typeInto(m.querySelector(".bubble"), "素材消化完毕 ✅ 你提供的素材已足够支撑大纲，本次无需联网补充——一手素材优先，大纲将完全围绕你的内容展开。", token, 14);
+      return;
+    }
+    const map = { "竞品对比":[7], "行业与市场数据":[2,11], "客户案例":[4,5] };
+    webSources = [...new Set(need.flatMap(k=>map[k]||[]))].sort((a,b)=>a-b).map(i=>MOCK.sources[i]);
+    webTools = need.map(k=>["web_search", `补充检索 · ${k}`]);
+  } else {
+    webSources = MOCK.sources;
+    webTools = [
+      ["web_search", `“${S.topic}” 官网与产品定位`],
+      ["web_search", `“${S.topic}” 最新融资与公司动态`],
+      ["web_search", "行业报告与竞品对比"],
+      ["web_search", "开发者社区反馈"],
+    ];
+  }
+  for(const [name, q] of webTools){
     if(!alive(token)) return;
     const tc = chatMsg("tool");
     tc.querySelector("span:last-child").textContent = `${name} · ${q}`;
@@ -881,18 +1072,29 @@ async function streamResearchBackstage(token){
     if(!alive(token)) return;
     tc.classList.add("done"); tc.querySelector(".ic").textContent="✓";
   }
-  for(let i=0;i<MOCK.sources.length;i++){
+  for(const [st, su] of webSources){
     if(!alive(token)) return;
-    const [st, su] = MOCK.sources[i];
-    const el = document.createElement("div"); el.className="srcitem";
-    el.innerHTML = `<div class="st">📄 ${esc(st)}</div><div class="su">${esc(su)}</div>`;
-    $("#srcList").appendChild(el);
-    $("#srcCount").textContent = `${i+1} / ${MOCK.sources.length}`;
+    addSource("web", st, su);
     await sleep(180);
   }
   await sleep(300); if(!alive(token)) return;
   const m2 = chatMsg("agent");
-  typeInto(m2.querySelector(".bubble"), `调研完成 ✅ 我读完了 12 份资料（右侧可见）。PPT 的灵魂是内容——为了让大纲“有的放矢”，上面的 4 个关键问题请你拍板：`, token, 14);
+  const tail = hasMats
+    ? `调研完成 ✅ ${$("#provList").children.length} 份你的素材 + ${$("#webList").children.length} 份联网补充（右侧可见）。PPT 的灵魂是内容——为了让大纲“有的放矢”，上面的关键问题请你拍板：`
+    : `调研完成 ✅ 我读完了 ${MOCK.sources.length} 份资料（右侧可见）。PPT 的灵魂是内容——为了让大纲“有的放矢”，上面的 4 个关键问题请你拍板：`;
+  typeInto(m2.querySelector(".bubble"), tail, token, 14);
+}
+function addSource(origin, title, sub){
+  const el = document.createElement("div"); el.className="srcitem";
+  el.innerHTML = origin==="prov"
+    ? `<div class="st">📦 ${esc(title)}<span class="srcbadge">素材</span></div><div class="su">${esc(sub||"你提供的素材")}</div>`
+    : `<div class="st">📄 ${esc(title)}</div><div class="su">${esc(sub)}</div>`;
+  $(origin==="prov" ? "#provList" : "#webList").appendChild(el);
+  updateSrcCount();
+}
+function updateSrcCount(){
+  const pn = $("#provList").children.length, wn = $("#webList").children.length;
+  $("#srcCount").textContent = S.materials.length ? `${pn + wn} 份` : `${wn} / ${MOCK.sources.length}`;
 }
 function offerProfile(){
   const btn = document.createElement("button");
@@ -904,17 +1106,22 @@ function offerProfile(){
 async function showProfile(){
   const token = runSeq; // 不递增：避免误伤并行的后台检索流
   const a = S.answers;
+  const hasMats = S.materials.length>0;
+  const gap = hasMats ? (a[4]||"") : "";
+  const need = gap ? gap.split("、").filter(x=>x!==GAP_SKIP) : [];
   const chat = $("#chatPanel");
   const m = chatMsg("agent");
-  const text = `好的，我记下了：\n受众「${a[0]}」· 目的「${a[1]}」· 规模「${a[2]}」· 风格「${a[3]}」。\n结合刚搜集的 12 份资料，大纲会围绕这些需求展开——比如调研显示客户最关心「可视化编排」与「私有化部署」，我会把它们放到显眼位置。`;
+  const text = hasMats
+    ? `好的，我记下了：\n受众「${a[0]}」· 目的「${a[1]}」· 规模「${a[2]}」· 风格「${a[3]}」。\n素材：${S.materials.map(x=>x.title).join("、")}${need.length?`（联网补充：${need.join("、")}）`:"（无需联网补充）"}\n大纲将以你的素材为主料、联网资料为佐证——一手素材与检索信息冲突时，以你的素材为准。`
+    : `好的，我记下了：\n受众「${a[0]}」· 目的「${a[1]}」· 规模「${a[2]}」· 风格「${a[3]}」。\n结合刚搜集的 12 份资料，大纲会围绕这些需求展开——比如调研显示客户最关心「可视化编排」与「私有化部署」，我会把它们放到显眼位置。`;
   if(!await typeInto(m.querySelector(".bubble"), text, token, 14)) return;
   if(!alive(token)) return;
   const pc = document.createElement("div");
   pc.className="profile-card";
   pc.innerHTML = `<div class="pt">📋 需求画像</div>
     <b>受众</b> ${esc(a[0])} ｜ <b>目的</b> ${esc(a[1])}<br>
-    <b>页数</b> ${esc(a[2])} ｜ <b>风格</b> ${esc(a[3])}<br>
-    <b>调研要点</b>：① 平台能力需给出可验证数据 ② 客户案例按行业分组 ③ 结尾给出试用转化入口`;
+    <b>页数</b> ${esc(a[2])} ｜ <b>风格</b> ${esc(a[3])}${hasMats?`<br><b>素材</b> ${S.materials.length} 份${need.length?` · 联网补充「${esc(need.join("、"))}」`:" · 无需联网补充"}`:""}<br>
+    <b>内容策略</b>：${hasMats?"① 优先引用你提供的素材 ② 数据给出可验证出处 ③ 结尾给出试用转化入口":"① 平台能力需给出可验证数据 ② 客户案例按行业分组 ③ 结尾给出试用转化入口"}`;
   chat.appendChild(pc); chat.scrollTop=1e9;
   S.done.research = true; renderSteps();
   const bar = document.createElement("div");
@@ -1296,6 +1503,10 @@ $("#restartBtn").onclick = ()=>{
   S.curDesignPage=null; S.curPlanPage=null;
   S.done={research:false,outline:false,plan:false,style:false,design:false};
   S._outlineStreamed=false;
+  S.materials=[]; S._gapResolve=null; S._qTotal=0;
+  renderMatList();
+  $("#msPasteText").value=""; $("#msUrlInput").value="";
+  $("#msPastePane").hidden=true; $("#msUrlPane").hidden=true;
   $("#topicInput").value="";
   $("#modeAuto").classList.add("sel"); $("#modeGuided").classList.remove("sel");
   jumpTo("home");
