@@ -1,116 +1,116 @@
-# Bound PPT Agent — 交互流程设计（v3）
+# Bound PPT Agent — Interaction flow design (v3)
 
-> 版本：v3（2026-11-18）。审查结论与剩余项见 `docs/ppt-agent-ux-review.md`。
-> 内容来源体系见 `docs/ppt-content-sources.md`（v2.1，已与本文阶段 1/2 对齐）。
-> 配套可点击 HTML 原型：`prototype/ppt-agent-prototype.html`（纯静态单文件，内置 mock LLM 流式返回）。
+> Version: v3 (2026-11-18). Review conclusions and remaining items in `docs/ppt-agent-ux-review.md`.
+> Content source system in `docs/ppt-content-sources.md` (v2.1, aligned with stages 1/2 here).
+> Companion clickable HTML prototype: `prototype/ppt-agent-prototype.html` (pure static single file, built-in mock LLM streaming).
 
 ---
 
-## 0. 产品定位
+## 0. Product positioning
 
-**Bound PPT**：一个"专家团队式"PPT Agent。用户给一个主题（以及手上的现成素材），Agent 像真实 PPT 公司的「调研员 → 策划师 → 设计师」流水线一样跑完全程，用户在关键节点做**少量、高杠杆的确认与调整**。
+**Bound PPT**: an "expert team–style" PPT Agent. The user provides a topic (and any existing materials), and the Agent runs the full pipeline like a real PPT company's "researcher → planner → designer" assembly line, while the user makes **few, high-leverage confirmations and adjustments** at key checkpoints.
 
-### 0.1 原帖思路 → 产品落点（借鉴映射）
+### 0.1 Original post ideas → product implementation (mapping)
 
-| # | 原帖思路 | 产品落点 |
+| # | Original post idea | Product implementation |
 | --- | --- | --- |
-| 1 | 忘了"一键生成"，从"提问"开始；AI 像专业顾问一样做需求调研 | **阶段 2 顺序访谈**：先消化素材 / 检索资料，再逐题追问 4 个关键问题（有素材时增加 1 张缺口确认卡），产出可回改的"需求画像" |
-| 2 | 先大量检索资料，大纲必须基于调研信息 | **阶段 2 内容源面板**：分「你提供的素材」与「联网补充资料」两组；素材 + 联网摘要一起注入大纲生成 |
-| 3 | 便利贴法：一页一便利贴，贴满一墙 | **阶段 3 便利贴看板**：大纲以"数字便利贴"呈现，支持拖拽、按钮、键盘三种排序方式，支持章节内插页 |
-| 4 | 策划稿（版面规划）与设计稿（风格样式）分离 | **阶段 4 策划稿**（灰阶 Bento 线框）与 **阶段 6 设计稿**（上风格）两阶段；策划稿支持逐页重跑与微调 |
-| 5 | 卡片式布局（Bento Grid）是 AI 最易理解的设计语言 | 策划稿的**版式词汇表**与设计稿的**渲染器**均基于 Bento Grid 六种组合；原型视觉系统本身也采用 Bento 式模块化布局 |
-| 6 | SVG 可直接进 Office、完全可编辑；自用可选 HTML | **导出菜单**：PPTX（SVG 合成）/ HTML / PDF 三选项；导出前展示页数、风格与渲染完成度摘要 |
-| 7 | 全自动跑完 + 重要场合人工精调 | **两种模式**：全自动（一路确认到设计稿，大纲阶段有 3 秒可暂停倒计时）/ 专家陪跑（每阶段停下确认）；任意页可单独"换一版"且可撤销 |
-| 8 | （v2 扩展）内容来源不止联网搜索 | **阶段 1 素材槽** + **阶段 2 素材消化与缺口补齐**：一手素材优先，联网降级为补缺手段 |
-| 9 | （v3 扩展）Agent 产品必须可恢复、可撤销、可预期 | **缺口由 Agent 建议、自动推进可暂停、下游失效标记、单页版本历史、失败/空态契约**（见 §6） |
+| 1 | Forget "one-click generation", start with questions; AI does research like a professional consultant | **Stage 2 sequential interview**: first digest materials / retrieve information, then ask 4 key questions one at a time (plus 1 gap confirmation card when materials exist), producing an editable "requirements profile" |
+| 2 | Retrieve a large amount of material first; the outline must be based on research | **Stage 2 content source panel**: two groups, "Your materials" and "Web supplements"; material + web summaries both feed outline generation |
+| 3 | Sticky-note method: one page per sticky note, cover a wall | **Stage 3 sticky-note board**: outline presented as "digital sticky notes", with drag, button, and keyboard sorting, and per-section page insertion |
+| 4 | Separate plan draft (layout planning) from design draft (style) | **Stage 4 plan draft** (grayscale Bento wireframe) and **Stage 6 design draft** (style applied) as two stages; plan supports per-page rerun and tweaks |
+| 5 | Card layout (Bento Grid) is the design language AI understands most easily | Plan draft's **layout vocabulary** and design draft's **renderer** both use the six Bento compositions; the prototype's visual system itself uses a Bento-style modular layout |
+| 6 | SVG goes directly into Office and is fully editable; HTML for personal use | **Export menu**: PPTX (SVG-composited) / HTML / PDF; before export, show a summary of page count, style, and render completeness |
+| 7 | Fully automatic plus manual fine-tuning for important occasions | **Two modes**: fully automatic (confirm all the way to the design draft; the outline stage has a 3-second pausable countdown) / expert copilot (stop for confirmation at each stage); any page can be individually regenerated and undone |
+| 8 | (v2 extension) Content sources are not limited to web search | **Stage 1 material slot** + **Stage 2 material digestion and gap filling**: first-party materials first, web search downgraded to gap filling |
+| 9 | (v3 extension) Agent products must be recoverable, undoable, and predictable | **Gaps suggested by the Agent, auto-advance pausable, downstream stale markers, per-page version history, failure/empty-state contracts** (see §6) |
 
-### 0.2 用户与场景
+### 0.2 Users and scenarios
 
-- 主要用户：需要高质量对外演示资料的职场人（产品/市场/售前/创始人）。
-- 核心场景：输入主题（可选丢入手上的文档、数据、链接）→ 泡杯咖啡 → 拿到一套可交付的设计稿；重要 PPT 则在便利贴/策划稿两个节点花 5 分钟精调。
-- v3 新增场景：用户对个别页反复"换一版"时，能随时退回上一版；离开页面后回来，能看到哪些下游产物需要重跑。
+- Primary users: professionals who need high-quality external presentation materials (product / marketing / pre-sales / founders).
+- Core scenario: enter a topic (optionally drop in documents, data, links) → pour a coffee → receive a deliverable design draft; for important PPTs, spend 5 minutes fine-tuning at the sticky-note / plan-draft checkpoints.
+- New v3 scenarios: when the user repeatedly regenerates individual pages, they can step back to the previous version at any time; after leaving the page and returning, they can see which downstream artifacts need reruns.
 
 ---
 
-## 1. 交互总览
+## 1. Interaction overview
 
 ```
-┌───────────────┐   ┌──────────────────┐   ┌─────────────┐   ┌─────────────┐   ┌──────────────┐   ┌─────────────────────┐
-│ 阶段1           │   │ 阶段2              │   │ 阶段3        │   │ 阶段4        │   │ 阶段5         │   │ 阶段6                │
-│ 新建项目         │ → │ 需求调研+访谈       │ → │ 大纲·便利贴   │ → │ 策划稿·线框   │ → │ 风格选择       │ → │ 设计稿·预览与导出     │
-│ 主题输入         │   │ 素材消化+缺口补齐    │   │ 拖拽/按钮/键盘 │   │ 逐页Bento线框 │   │ 风格画廊+记忆  │   │ 单页重跑/撤销/微调/导出│
-│ +素材槽(可选)    │   │ 顺序问答+画像可改    │   │ +页数偏差提示  │   │ +完成度门禁    │   │              │   │ +生成中可锁页         │
-└───────────────┘   └──────────────────┘   └─────────────┘   └─────────────┘   └──────────────┘   └─────────────────────┘
-                     ↑______________________回退（顶部阶段导航可跳回任意可达阶段）_______________________↑
+┌────────────────┐   ┌───────────────────┐   ┌──────────────┐   ┌──────────────┐   ┌──────────────┐   ┌──────────────────────┐
+│ Stage 1        │   │ Stage 2           │   │ Stage 3      │   │ Stage 4      │   │ Stage 5      │   │ Stage 6              │
+│ New project    │ → │ Research+interview│ → │ Outline·notes│ → │ Plan·wireframe│ → │ Style select │ → │ Design·preview/export│
+│ Topic input    │   │ Digest+gap filling│   │ Drag/btn/kbd │   │ Per-page Bento│   │ Gallery+memory│   │ Rerun/undo/tweak/exp │
+│ +material slot │   │ Sequential Q&A    │   │ +count warning│  │ +completion gate│ │              │   │ +lock pages while gen│
+└────────────────┘   └───────────────────┘   └──────────────┘   └──────────────┘   └──────────────┘   └──────────────────────┘
+                     ↑______________________ Back (top stage nav can jump to any reachable stage) _______________________↑
 ```
 
-- **顶部全局**：Logo、项目名、阶段导航条（已完成阶段可回跳，待重跑阶段带琥珀色圆点）、模式标签（全自动 / 专家陪跑）。
-- **自动推进**：全自动模式下，阶段 2 答完访谈 → 阶段 3 流式贴便签 → **3 秒倒计时（可暂停；编辑会自动暂停）** → 阶段 4 自动跑完 → 风格页暂停。专家陪跑模式下每阶段结束都停在"确认按钮"上。
-- **回退**：任何阶段可点击顶部导航回跳可达阶段；改动大纲/策划/风格后，受影响的下游阶段标记为"待重跑"，进入时自动重跑。
-- **长任务**：原型用递增令牌中止旧流程；真实产品需要任务队列、显式取消与后台继续（见 §6 `[TBD-BE]`）。
+- **Global top bar**: logo, project name, stage nav (completed stages clickable, stale stages with an amber dot), mode badge (fully automatic / expert copilot).
+- **Auto-advance**: in fully automatic mode, after stage 2 interview → stage 3 sticky notes stream in → **3-second countdown (pausable; editing auto-pauses)** → stage 4 auto-completes → pauses at the style page. In expert copilot mode, every stage ends at a "confirm button".
+- **Back navigation**: any stage can click the top nav to return to a reachable stage; after changing the outline/plan/style, affected downstream stages are marked "needs rerun" and rerun automatically on entry.
+- **Long tasks**: the prototype uses incrementing tokens to abort old flows; a real product needs a task queue, explicit cancellation, and background continuation (see §6 `[TBD-BE]`).
 
 ---
 
-## 2. 阶段明细
+## 2. Stage details
 
-### 阶段 1 · 新建项目（Home）
+### Stage 1 · New project (Home)
 
-| 项 | 设计 |
+| Item | Design |
 | --- | --- |
-| 界面 | 居中 Hero：大标题 + 主题输入框 + 场景快捷 chips + **素材槽**（粘贴文本 / 上传或拖入文件 / 添加链接；已添加素材以芯片呈现，可移除，显示 `N / 6`）+ 模式选择（默认全自动） |
-| 用户操作 | 输入主题（示例"Dify 企业介绍"）→（可选）添加素材 → 点击「开始生成」 |
-| Agent 行为 | 无（进入阶段 2） |
-| 边界 | 空主题阻止提交并聚焦输入框；**素材槽为空 = 走 v1 纯联网调研路径**；原型素材上限 6 份，满额禁用入口；文件仅记录名称/类型/大小、不真实解析；URL 做格式校验但不真实抓取 |
+| Interface | Centered Hero: big title + topic input + scenario shortcut chips + **material slot** (paste text / upload or drag files / add link; added materials shown as chips, removable, count `N / 6`) + mode selection (default fully automatic) |
+| User actions | Enter topic (example "Dify company introduction") → (optional) add materials → click "Start generating" |
+| Agent behavior | None (enter stage 2) |
+| Boundaries | Empty topic blocks submission and focuses the input; **empty material slot = v1 web-only research path**; prototype material limit 6, entry disabled at full; files only record name/type/size and are not actually parsed; URL format validated but not actually fetched |
 
-### 阶段 2 · 需求调研 + 访谈（v3：素材消化 + Agent 缺口建议 + 顺序问答）
+### Stage 2 · Research + interview (v3: material digestion + Agent gap suggestions + sequential Q&A)
 
-| 项 | 设计 |
+| Item | Design |
 | --- | --- |
-| 界面 | 左侧 **对话流**（Agent 消息 + 工具调用卡 + 逐题问题卡 + 素材摘要卡 + 缺口卡 + 画像卡）；桌面端为独立滚动容器，移动端随页面自然滚动。右侧 **内容源面板**分两组：「你提供的素材」（有素材时出现，带"素材"徽标）与「联网补充资料」，支持空态与骨架加载 |
-| Agent 行为（流式） | ① 开场话术按有无素材分叉（有素材：「我先消化你的素材，缺什么再联网补」；无素材：v1 的「我先去网上搜集资料」）；② **素材消化**：每份素材一张工具卡（`read_paste_text` / `ingest_file(文件名)` / `fetch_url(url)`），逐条执行完成后素材进入右侧「你提供的素材」组；③ **顺序提问**：4 张基础单选题逐题出现，答完折叠为"已记录：X · 修改"摘要；④ **素材摘要**：有素材时输出「素材消化完成」卡，逐份说明提取了什么；⑤ **缺口建议**：有素材时第 5 张卡由 Agent 给出 3 条建议（每条含理由与"建议"标记，推荐项默认勾选），用户可增减或选择「不需要——就用我的素材」；⑥ **按缺口联网检索**：用户勾选缺口 → 针对性 `web_search("补充检索 · 竞品对比")` 等，右侧联网组逐条点亮；用户只选「不需要」→ 跳过联网；素材为空 → v1 默认 4 路检索 + 12 份资料；⑦ 输出「需求画像」确认卡（含**素材行**与**联网行**） |
-| 用户操作 | 逐题回答问题 →（有素材）确认缺口 → 点击「生成需求画像」→ 查看画像 → 可点「修改需求答案」回改任意基础题并「更新画像」→ 点击「需求没问题，生成大纲」 |
-| 边界 | 基础题必须全部作答才能生成画像；画像因答案变更进入 `profileDirty` 时禁止进入大纲；**一手素材与联网信息冲突时以用户素材为准**（大纲生成提示词约束，见 `docs/ppt-content-sources.md` §5）；缺口确认属于素材策略，画像阶段不提供修改，修改缺口需重新发起调研（v3 原型行为，真实产品建议提供"重新检索"，`[TBD-FE]`） |
+| Interface | Left **conversation stream** (Agent messages + tool-call cards + per-question cards + material digest card + gap card + profile card); on desktop it is an independent scroll container, on mobile it scrolls with the page. Right **content source panel** in two groups: "Your materials" (appears when materials exist, with a "material" badge) and "Web supplements", with empty and skeleton loading states |
+| Agent behavior (streaming) | ① Opening script branches on materials (with materials: "I'll digest your materials first, then fill gaps online"; without: v1's "I'll search the web first"); ② **Material digestion**: one tool card per material (`read_paste_text` / `ingest_file(filename)` / `fetch_url(url)`), each completes and the material enters the right "Your materials" group; ③ **Sequential questions**: 4 basic single-choice questions appear one at a time, collapsing into a "Recorded: X · Edit" summary after answering; ④ **Material digest**: with materials, output a "Material digestion complete" card explaining what was extracted per item; ⑤ **Gap suggestions**: with materials, the 5th card gives 3 Agent suggestions (each with a reason and a "suggested" badge; recommended ones pre-checked), and the user can add/remove or choose "Not needed — just use my materials"; ⑥ **Targeted web search per gap**: user checks gaps → targeted `web_search("supplemental search · competitor comparison")` etc., right web group lights up item by item; if the user chooses only "not needed" → skip web; no materials → v1 default 4 searches + 12 sources; ⑦ Output "requirements profile" confirmation card (including **Materials** and **Web** rows) |
+| User actions | Answer each question → (with materials) confirm gaps → click "Generate requirements profile" → review profile → can click "Edit requirements answers" to change any basic question and "Update profile" → click "Requirements look good, generate outline" |
+| Boundaries | All basic questions must be answered to generate the profile; when the profile is `profileDirty` due to answer changes, entering the outline is blocked; **when first-party materials conflict with web information, user materials win** (outline generation prompt constraint, see `docs/ppt-content-sources.md` §5); gap confirmation is a material strategy and cannot be modified at the profile stage; changing gaps requires restarting research (v3 prototype behavior; a real product should offer "re-search", `[TBD-FE]`) |
 
-### 阶段 3 · 大纲（数字便利贴）
+### Stage 3 · Outline (digital sticky notes)
 
-| 项 | 设计 |
+| Item | Design |
 | --- | --- |
-| 界面 | **便利贴看板**：封面/目录/结尾为独立便签（位置固定，可改标题），正文按「章节」分组，每页一张便签（显示页码、标题、内容要点关键词）；章节右上角可插页；右上角统计「N 页 · M 章节」，与访谈约定相差 >2 页时显示警告 |
-| Agent 行为（流式） | 按 `[PPT_OUTLINE]` JSON 分块流式输出，看板上便签**逐张飞入**（对应原帖动图效果） |
-| 用户操作 | ① 点击便签标题行内编辑（回车保存）；② 便签「上移 / 下移 / 插入 / 删除」在本章内移动、插入、删除；③ **拖拽**便签跨章节或调整顺序；④ 键盘聚焦便签：`Alt + ↑/↓` 本章移动、`Shift + Alt + ←/→` 移到相邻章节；⑤ 确认「大纲没问题，生成策划稿」 |
-| 边界 | 封面/目录/结尾不可删除但可编辑标题；页数与访谈约定差异 >2 页时提示；全自动模式在生成结束后出现 3 秒倒计时与"暂停"按钮，任何编辑/排序自动暂停；大纲改动会按 §3.4 矩阵使下游失效 |
+| Interface | **Sticky-note board**: cover/TOC/end are independent notes (fixed position, titles editable); body grouped by "section", one note per page (page number, title, key content keywords); insert-page button at the top-right of each section; top-right stats "N pages · M sections", warning when >2 pages off from the agreed count |
+| Agent behavior (streaming) | Streams `[PPT_OUTLINE]` JSON in chunks; notes **fly in one by one** on the board (matching the original post's GIF effect) |
+| User actions | ① Click a note title for inline editing (Enter to save); ② note "Move up / Move down / Insert / Delete" within its section; ③ **drag** notes across sections or reorder; ④ keyboard focus a note: `Alt + ↑/↓` move within section, `Shift + Alt + ←/→` move to adjacent section; ⑤ confirm "Outline looks good, generate plan draft" |
+| Boundaries | Cover/TOC/end cannot be deleted but titles can be edited; warn when page count differs by >2 from the agreed count; in fully automatic mode, a 3-second countdown and "Pause" button appear after generation, and any edit/sort auto-pauses; outline changes invalidate downstream per the §3.4 matrix |
 
-### 阶段 4 · 策划稿（版面规划）
+### Stage 4 · Plan draft (layout planning)
 
-| 项 | 设计 |
+| Item | Design |
 | --- | --- |
-| 界面 | 左侧页列表（按章节分组，逐页状态：待策划 / 策划中 / 已完成）；主区 **16:9 灰阶 Bento 线框**（每张卡片标注「此处放什么」）；顶部完成度进度条；未策划页显示骨架占位 |
-| Agent 行为（流式） | 逐页生成策划：选择 Bento 版式（六种组合词汇表）→ 输出卡片清单（内容来源页要点 + 建议尺寸权重 + 建议元素类型）→ 线框动画铺开 |
-| 用户操作 | ① 在左侧逐页切换检查；② 逐页点「重新策划」（该页换一版版式）；③ 输入自然语言微调（示例："第二页把数据卡片放大，案例移到右侧"）→ Agent 重出该页线框；④ 「策划稿确认，去选风格」 |
-| 边界 | 全部页面完成后确认按钮才可用；微调只影响当前页；重策划/微调会使已生成的设计稿标记待重跑；未生成的页显示骨架而非"最终线框" |
+| Interface | Left page list (grouped by section, per-page status: pending / planning / done); main area **16:9 grayscale Bento wireframe** (each card labeled "what goes here"); completion progress bar at top; unplanned pages show a skeleton placeholder |
+| Agent behavior (streaming) | Plan page by page: choose Bento layout (six-combination vocabulary) → output card list (content source page points + suggested size weights + suggested element types) → wireframe animates open |
+| User actions | ① switch pages in the left list to inspect; ② per-page "Re-plan" (new layout variant); ③ natural-language tweak (example: "make the data card on page 2 larger, move the case to the right") → Agent re-renders that page's wireframe; ④ "Confirm plan draft, choose style" |
+| Boundaries | Confirm button is enabled only after all pages complete; tweaks affect the current page only; re-plan/tweak marks the generated design draft as stale; ungenerated pages show a skeleton rather than a "final wireframe" |
 
-### 阶段 5 · 风格选择
+### Stage 5 · Style selection
 
-| 项 | 设计 |
+| Item | Design |
 | --- | --- |
-| 界面 | 风格画廊卡片（4 款）：每款含真实"公司简介"页迷你预览 + 色板圆点 + 适用场景说明；支持方向键切换与 `aria-checked`；底部「记住我的偏好」复选框 |
-| 用户操作 | 单选风格（鼠标/键盘）→（可选）勾选记住偏好 →「开始生成设计稿」 |
-| 边界 | 未选风格时确认按钮禁用；偏好写入 `localStorage`（原型），下次进入风格页自动选中并显示"上次使用"；换风格会使已生成的设计稿标记待重跑 |
+| Interface | Style gallery cards (4): each with a real "company intro" page mini preview + palette dots + use-case description; arrow-key switching and `aria-checked`; bottom "Remember my preference" checkbox |
+| User actions | Single-select a style (mouse/keyboard) → (optional) check remember preference → "Start generating design draft" |
+| Boundaries | Confirm button disabled until a style is selected; preference written to `localStorage` (prototype), auto-selected and shown as "last used" next time; changing style marks the generated design draft as stale |
 
-### 阶段 6 · 设计稿（生成、预览、编辑、导出）
+### Stage 6 · Design draft (generate, preview, edit, export)
 
-| 项 | 设计 |
+| Item | Design |
 | --- | --- |
-| 界面 | **工作台三栏**：左·缩略图列（按章节分组，逐页生成状态）；中·大画布预览当前页（16:9，Bento 卡片成稿）；右·当前页操作面板（重新生成 / 上一版 / 微调输入 / 版式说明 / 变体与历史计数 / 导出） |
-| Agent 行为（流式） | 逐页生成设计：消息流显示「正在为第 N 页应用风格「X」…」；右侧版式说明同步更新；生成过程中用户点击缩略图后**锁定当前页**，后台继续生成其余页 |
-| 用户操作 | ① 翻页（缩略图/箭头/`←` `→`）；② 对某页不满意 → 「换一版」（变体轮换）或输入微调指令；③ 「上一版」撤销到上一变体；④ 「导出」→ 导出弹窗（PPTX（SVG 合成，推荐）/ HTML / PDF）→ 查看页数/风格/渲染完成度摘要 → mock 进度 → 成功态 |
-| 边界 | 重新生成/微调只影响单页；封面/目录/结尾只有一种版式时提示改用微调，不虚假递增变体；生成过程中页级操作提示"请稍后"；导出为 mock 演示（原型不真实生成文件）；导出失败路径见 §6 |
+| Interface | **Three-column workbench**: left thumbnail column (grouped by section, per-page generation status); center large canvas preview of the current page (16:9, Bento card final); right current-page action panel (regenerate / previous version / tweak input / layout description / variant and history counts / export) |
+| Agent behavior (streaming) | Generate the design page by page: the message stream shows "Applying style "X" to page N…"; the right layout description updates in sync; if the user clicks a thumbnail during generation, the **current page is locked** and the remaining pages continue generating in the background |
+| User actions | ① page through (thumbnails/arrows/`←` `→`); ② unhappy with a page → "Regenerate" (variant rotation) or enter a tweak instruction; ③ "Previous version" to undo to the previous variant; ④ "Export" → export modal (PPTX (SVG-composited, recommended) / HTML / PDF) → review page count/style/render completeness summary → mock progress → success state |
+| Boundaries | Regenerate/tweak affect a single page only; cover/TOC/end have only one layout, so prompt the user to use tweaks instead and do not fake a variant increment; page-level actions during generation show "please wait"; export is a mock demo (the prototype does not generate real files); export failure path in §6 |
 
 ---
 
-## 3. 状态机与数据流
+## 3. State machine and data flow
 
-### 3.1 前端项目状态（原型内为 JS 对象）
+### 3.1 Frontend project state (a JS object in the prototype)
 
 ```ts
 type Stage = 'home' | 'research' | 'outline' | 'plan' | 'style' | 'design';
@@ -125,198 +125,198 @@ interface QuestionAnswer { label: string; }
 
 interface PlanState {
   variant: number;
-  status: JobStatus;          // error 为真实实现预留，原型不触发
+  status: JobStatus;          // error is reserved for the real implementation; the prototype never triggers it
 }
 
 interface SlideState {
   variant: number;
-  history: number[];          // 换版/微调前的 variant 栈
-  status: JobStatus;          // error 为真实实现预留
+  history: number[];          // stack of variants before regenerate/tweak
+  status: JobStatus;          // error is reserved for the real implementation
 }
 
 interface ProjectState {
   topic: string;
   mode: 'auto' | 'guided';
   stage: Stage;
-  materials: Material[];      // v3：阶段 1 素材槽，最多 6 份
-  qTotal: number;             // 4 或 5（有素材时含缺口卡）
+  materials: Material[];      // v3: stage 1 material slot, max 6
+  qTotal: number;             // 4 or 5 (includes the gap card when materials exist)
   answers: Record<number, QuestionAnswer>;
-  profileDirty: boolean;      // 画像已展示但答案被修改
-  gaps: GapSuggestion[];      // Agent 建议
-  gapDecision: GapDecision[]; // 用户确认结果
+  profileDirty: boolean;      // profile has been shown but answers were changed
+  gaps: GapSuggestion[];      // Agent suggestions
+  gapDecision: GapDecision[]; // user confirmation result
   webSkipped: boolean;
   outline: { cover: PageRef; toc: PageRef; parts: { title: string; pages: PageRef[] }[]; end: PageRef };
   plans: Record<pageId, PlanState>;
   styleId?: string;
-  styleApplied?: string;      // 当前设计稿实际使用的风格
+  styleApplied?: string;      // style actually used by the current design draft
   rememberStyle: boolean;
   slides: Record<pageId, SlideState>;
   stale: { plan: boolean; design: boolean };
   autoPaused: boolean;
-  pinned: boolean;            // 生成中用户手动锁页
+  pinned: boolean;            // user manually locked the page during generation
   curPlanPage?: string;
   curDesignPage?: string;
   done: { research: boolean; outline: boolean; plan: boolean; style: boolean; design: boolean };
 }
 ```
 
-### 3.2 Mock LLM 返回契约（原型内置流式模拟器，与提示词对应）
+### 3.2 Mock LLM return contract (prototype's built-in streaming simulator, matching the prompts)
 
-| 阶段 | 模拟器 | 事件序列（SSE 风格） |
+| Stage | Simulator | Event sequence (SSE-style) |
 | --- | --- | --- |
-| 需求调研 | `startResearchFlow()` | `{type:'message',delta}` →（有素材时）`{type:'tool',name:'read_paste_text'\|'ingest_file'\|'fetch_url',target}` ×N + `{type:'source',origin:'provided'}` ×N → `{type:'question',index,total,multi:false}`（逐题）→ `{type:'question_answer'}`（客户端）→ `{type:'digest',items}` → `{type:'gap_suggest',items:[{label,reason,recommended}]}` → `{type:'gap_decision'}`（客户端）→ 按缺口 `{type:'tool',name:'web_search',query}` ×M + `{type:'source',origin:'web'}` ×M（选「不需要」则本段整体跳过；素材为空则固定 4 路检索 + 12 份资料）→ `{type:'message',delta}` → `{type:'profile_ready'}` |
-| 大纲 | `runOutlineStage()` | `{type:'outline_delta',chunk}`（模拟 `[PPT_OUTLINE]` JSON 分块，增量渲染便签）→ `{type:'outline_done'}` →（自动模式）`{type:'auto_advance',seconds:3,pausable:true}` |
-| 策划/设计 | `runPlanStage(page)` / `runDesignStage(page,variant)` | `{type:'page_start',pageId}` → `{type:'card_delta',...}` → `{type:'page_done'}` |
-| 单页操作 | `redesignCurrent()` / `tweakCurrent()` / `undoDesign()` | `{type:'history_push',variant}` → `{type:'page_start',pageId}` → `{type:'page_done'}` / `{type:'history_pop',variant}` |
+| Research | `startResearchFlow()` | `{type:'message',delta}` → (with materials) `{type:'tool',name:'read_paste_text'\|'ingest_file'\|'fetch_url',target}` ×N + `{type:'source',origin:'provided'}` ×N → `{type:'question',index,total,multi:false}` (one at a time) → `{type:'question_answer'}` (client) → `{type:'digest',items}` → `{type:'gap_suggest',items:[{label,reason,recommended}]}` → `{type:'gap_decision'}` (client) → per gap `{type:'tool',name:'web_search',query}` ×M + `{type:'source',origin:'web'}` ×M (skip the entire segment if "not needed"; if no materials, fixed 4 searches + 12 sources) → `{type:'message',delta}` → `{type:'profile_ready'}` |
+| Outline | `runOutlineStage()` | `{type:'outline_delta',chunk}` (simulates `[PPT_OUTLINE]` JSON chunks, incrementally renders notes) → `{type:'outline_done'}` → (auto mode) `{type:'auto_advance',seconds:3,pausable:true}` |
+| Plan/design | `runPlanStage(page)` / `runDesignStage(page,variant)` | `{type:'page_start',pageId}` → `{type:'card_delta',...}` → `{type:'page_done'}` |
+| Single-page ops | `redesignCurrent()` / `tweakCurrent()` / `undoDesign()` | `{type:'history_push',variant}` → `{type:'page_start',pageId}` → `{type:'page_done'}` / `{type:'history_pop',variant}` |
 
-> 原型中所有"打字机"效果均由定时器切片实现，模拟真实 LLM token 流；不发起任何网络请求。
+> All "typewriter" effects in the prototype are implemented as timer slices, simulating a real LLM token stream; no network requests are made.
 
-### 3.3 借鉴自提示词的结构化约定
+### 3.3 Structured conventions borrowed from the prompts
 
-- 大纲 JSON 结构沿用原帖提示词 1 的 `ppt_outline`（cover / table_of_contents / parts / end_page）；其「背景调研信息 (Context)」在 v3 中扩展为 **用户素材 + 联网补充**，并写明一手素材优先于联网信息。
-- 策划与设计的版式词汇沿用提示词 2/3 的 Bento Grid 六种组合；设计画布固定 16:9（原型用 CSS 网格 + `cqi` 模拟 1280×720 viewBox 语义）。
+- The outline JSON structure follows prompt 1's `ppt_outline` (cover / table_of_contents / parts / end_page); its "background research (Context)" is extended in v3 to **user materials + web supplements**, and states that first-party materials take precedence over web information.
+- Plan and design layout vocabulary follows prompts 2/3's six Bento Grid combinations; the design canvas is fixed at 16:9 (the prototype uses CSS grid + `cqi` to simulate 1280×720 viewBox semantics).
 
-### 3.4 失效传播矩阵
+### 3.4 Stale propagation matrix
 
-| 变更 | 策划稿 | 设计稿 | 说明 |
+| Change | Plan draft | Design draft | Notes |
 | --- | --- | --- | --- |
-| 修改页面标题 | 保留（重渲染页头） | 待重跑 | 布局不变，设计稿页头需要重渲染 |
-| 章节内排序 | 保留 | 待重跑 | 策划内容不变，顺序影响成稿 |
-| 跨章节移动 | 待重跑 | 待重跑 | 分组结构变化 |
-| 新增 / 删除页面 | 待重跑 | 待重跑 | 删除页同时清理对应 plan/slide |
-| 重策划 / 微调单页 | 该页完成 | 待重跑 | 版面变化必须重新上风格 |
-| 更换风格 | 不变 | 待重跑 | 只影响设计稿 |
-| 更新需求画像（大纲已生成） | 需重新确认 | 待重跑 | 原型将大纲标记为未确认；重新进入大纲确认后再重跑策划/设计 |
+| Edit page title | Keep (re-render page header) | Needs rerun | Layout unchanged; design page header needs re-rendering |
+| Reorder within section | Keep | Needs rerun | Plan content unchanged; order affects the final deck |
+| Move across sections | Needs rerun | Needs rerun | Grouping structure changes |
+| Add / delete page | Needs rerun | Needs rerun | Deleting a page also clears its plan/slide |
+| Re-plan / tweak single page | That page complete | Needs rerun | Layout change requires re-applying the style |
+| Change style | Unchanged | Needs rerun | Affects the design draft only |
+| Update requirements profile (outline already generated) | Needs reconfirmation | Needs rerun | Prototype marks the outline unconfirmed; after re-confirming the outline, rerun plan/design |
 
-顶部阶段导航以琥珀色圆点 + `aria-label="待重跑"` 呈现；进入对应阶段时自动重跑缺失/过期产物。
+The top stage nav shows an amber dot + `aria-label="needs rerun"`; entering the stage automatically reruns missing/stale artifacts.
 
 ---
 
-## 4. 原型功能映射表（验收清单）
+## 4. Prototype feature map (acceptance checklist)
 
-| 交互 | 原型中可点击位置 | 预期效果 |
+| Interaction | Clickable location in the prototype | Expected result |
 | --- | --- | --- |
-| 空主题校验 | 首页「开始生成」 | 不跳转，toast 提示并聚焦输入框 |
-| 输入主题开始 | 首页输入框 + 开始按钮 | 进入阶段 2，开始 mock 调研 |
-| 场景 chips | 首页 4 个 chips | 填充示例主题 |
-| **添加粘贴素材** | 首页素材槽「粘贴文本」 | 展开文本域 → 添加后生成素材芯片，可移除；计数 `N/6` |
-| **拖拽/选择文件** | 首页素材槽拖入文件或点「上传文件」 | 芯片显示文件名 + 类型/大小；超 6 份提示并只添加剩余额度 |
-| **添加链接** | 首页素材槽「添加链接」 | 自动补 `https://`，格式不合法则原位提示；芯片显示 host + 路径 |
-| **素材满额** | 添加第 7 份 | 入口禁用 + toast 提示 |
-| 模式切换 | 首页两个模式卡 | 影响后续阶段是否自动推进 |
-| **顺序回答访谈** | 阶段 2 当前问题卡 | 选择后折叠为"已记录"摘要，自动出现下一题 |
-| **修改答案** | 阶段 2 已答问题卡「修改」 | 重新展开选项，改选后更新答案；画像已生成时标记 `profileDirty` |
-| **查看素材消化** | 阶段 2 素材摘要卡 | 逐份显示提取结果 |
-| **Agent 缺口建议** | 阶段 2 第 5 张卡 | 3 条建议带理由与"建议"标记，推荐项默认勾选 |
-| **不需要联网** | 缺口卡「不需要——就用我的素材」 | 联动清空其他项；确认后跳过联网 |
-| 查看素材与资料 | 阶段 2 右侧内容源面板 | 两组分别点亮；空态/骨架/计数 |
-| **画像回改** | 画像卡「修改需求答案」 | 打开修改模式；未更新画像时禁止进入大纲 |
-| **自动推进暂停** | 大纲确认栏倒计时 | 3 秒倒计时；暂停按钮；编辑/排序自动暂停 |
-| 便利贴编辑 | 阶段 3 便签 | 行内改标题（回车保存）/ 上移 / 下移 / 插页 / 删除 |
-| 便利贴拖拽 | 阶段 3 便签 | 可跨章节拖拽；拖到便签上插入其前 |
-| **便利贴键盘** | 聚焦便签 | `Alt+↑/↓` 本章移动；`Shift+Alt+←/→` 跨章节 |
-| **页数偏差** | 阶段 3 底部统计 | 与约定相差 >2 页显示警告 |
-| 大纲确认 | 「生成策划稿」按钮 | 进入阶段 4，逐页线框流式铺开 |
-| 逐页查看策划 | 阶段 4 左侧页列表 | 切换线框；状态图标区分待策划/策划中/完成 |
-| 逐页重策划 | 阶段 4「重新策划本页」 | 该页线框切换变体；设计稿标记待重跑 |
-| 微调策划 | 阶段 4 输入 + 「微调」 | 只重排当前页；空指令原位提示 |
-| **策划完成门禁** | 阶段 4 确认按钮 | 全部页面完成后才可用 |
-| 选风格 | 阶段 5 风格卡 | 选中高亮 + `aria-checked`；方向键可切换 |
-| **记住偏好** | 阶段 5 复选框 | 写入 `localStorage`，下次自动选中 |
-| 翻页预览 | 阶段 6 缩略图/箭头/`←` `→` | 画布切换页面；生成中点击后锁定当前页 |
-| 单页换版 | 阶段 6「换一版」 | 该页流式重渲染（变体轮换）；单版式页面提示改用微调 |
-| **撤销换版** | 阶段 6「上一版」 | 恢复 history 栈中的上一变体 |
-| 微调指令 | 阶段 6 微调输入框 | mock「已按指令调整」重渲染；空指令显示字段错误 |
-| 导出 | 「导出」按钮 | 弹窗三选项 + 范围摘要 + mock 进度 + 成功态；Esc/焦点陷阱 |
-| **重新开始** | 顶部「重新开始」 | 确认弹窗（默认焦点在取消） |
-| 阶段回跳 | 顶部阶段导航条 | 跳回可达阶段；待重跑阶段带圆点 |
-| **移动端阶段导航** | ≤920px 顶部 `<select>` | 与桌面阶段导航等价 |
-| **移动端页面列表** | 阶段 4 横向页条 | 节省纵向空间；画布 680px 横向滑动 |
+| Empty-topic validation | Home "Start generating" | No navigation, toast + focus input |
+| Enter topic to start | Home input + start button | Enter stage 2, start mock research |
+| Scenario chips | Home 4 chips | Fill an example topic |
+| **Add pasted material** | Home material slot "Paste text" | Expand textarea → creates a material chip, removable; count `N/6` |
+| **Drag/select files** | Home material slot drop files or click "Upload file" | Chip shows filename + type/size; over 6 prompts and adds only the remaining quota |
+| **Add link** | Home material slot "Add link" | Auto-prefix `https://`; invalid format shows an inline error; chip shows host + path |
+| **Material limit** | Add a 7th item | Entry disabled + toast |
+| Mode switch | Home two mode cards | Affects whether later stages auto-advance |
+| **Answer interview sequentially** | Stage 2 current question card | After selection it collapses into a "Recorded" summary; next question appears |
+| **Edit answer** | Stage 2 answered question card "Edit" | Reopens options; updates the answer; marks `profileDirty` if the profile was already generated |
+| **View material digestion** | Stage 2 material digest card | Shows the extraction result per material |
+| **Agent gap suggestions** | Stage 2 5th card | 3 suggestions with reasons and a "suggested" badge; recommended ones pre-checked |
+| **Not needed** | Gap card "Not needed — just use my materials" | Clears the other items; skips web after confirmation |
+| View materials and sources | Stage 2 right content source panel | Two groups light up separately; empty/skeleton/count |
+| **Edit profile** | Profile card "Edit requirements answers" | Opens edit mode; blocks outline until the profile is updated |
+| **Pause auto-advance** | Outline confirm bar countdown | 3-second countdown; pause button; editing/sorting auto-pauses |
+| Sticky-note editing | Stage 3 notes | Inline title edit (Enter saves) / move up / move down / insert / delete |
+| Sticky-note drag | Stage 3 notes | Cross-section drag; dropping on a note inserts before it |
+| **Sticky-note keyboard** | Focus a note | `Alt+↑/↓` within section; `Shift+Alt+←/→` across sections |
+| **Page count deviation** | Stage 3 bottom stats | Warning if >2 off the agreed count |
+| Outline confirm | "Generate plan draft" | Enter stage 4; wireframes stream in page by page |
+| Per-page plan view | Stage 4 left page list | Switch wireframe; status icons distinguish pending/planning/done |
+| Re-plan page | Stage 4 "Re-plan this page" | Wireframe switches variant; design marked stale |
+| Tweak plan | Stage 4 input + "Tweak" | Re-layouts the current page only; empty instruction shows inline error |
+| **Plan completion gate** | Stage 4 confirm button | Enabled only after all pages complete |
+| Select style | Stage 5 style cards | Selected highlight + `aria-checked`; arrow keys switch |
+| **Remember preference** | Stage 5 checkbox | Writes `localStorage`; auto-selected next time |
+| Page through preview | Stage 6 thumbnails/arrows/`←` `→` | Canvas switches pages; clicking during generation locks the current page |
+| Single-page regenerate | Stage 6 "Regenerate" | Page re-renders streaming (variant rotation); single-layout pages prompt to use tweaks |
+| **Undo regenerate** | Stage 6 "Previous version" | Restores the previous variant from the history stack |
+| Tweak instruction | Stage 6 tweak input | Mock "adjusted per instruction" re-render; empty instruction shows field error |
+| Export | "Export" button | Modal with three options + scope summary + mock progress + success; Esc/focus trap |
+| **Restart** | Top "Restart" | Confirm modal (default focus on cancel) |
+| Stage jump back | Top stage nav | Jump to a reachable stage; stale stages show a dot |
+| **Mobile stage nav** | ≤920px top `<select>` | Equivalent to desktop stage nav |
+| **Mobile page list** | Stage 4 horizontal page strip | Saves vertical space; canvas 680px horizontal scroll |
 
 ---
 
-## 5. 原型实现说明
+## 5. Prototype implementation notes
 
-- 单文件 `prototype/ppt-agent-prototype.html`：纯 HTML/CSS/JS，无构建、无外部依赖、无网络请求；约 3000 行。
-- 设计系统：靛蓝主色 + 便利贴琥珀辅助色；统一间距/圆角/阴影/焦点环；结构图标全部为内联 SVG 线性图标（无 emoji）；支持 `prefers-reduced-motion`。
-- Mock 数据内置在 `MOCK` 常量区（主题、调研来源、访谈问题、缺口建议、大纲 JSON、策划与设计稿变体、页面说明），对应示例主题"Dify 企业介绍"。
-- 流式模拟器：`typeInto(el, text, token, speed)` 定时切片打字机；生成类阶段用阶段粒度的调度器串行推进；`runSeq` 令牌在阶段切换时中止旧流程，`opSeq` 令牌中止过期的单页操作。
-- **素材槽为 mock**：文件仅读取文件名/类型/大小（不解析内容），URL 做格式校验但不真实抓取；缺口确认通过 Promise 与后台检索流衔接——「选了缺口 → 按缺口检索」「选不需要 → 跳过联网」均为演示逻辑。
-- 内容源面板按 `origin` 分组渲染；无素材时仅显示联网组（与 v1 行为一致）；联网检索前显示骨架，素材消化逐条点亮。
-- 设计稿渲染：CSS Grid 实现的 Bento 版式渲染器（`single / 2col / 3col / hero / async / mix`），4 套风格主题用 CSS 变量切换；封面/目录/结尾使用专属构图；策划稿使用降级线框渲染器。
-- 状态：`S` 保存全部项目状态；`stale` 记录下游失效；`slides[pageId].history` 保存单页版本栈；`localStorage` 保存风格偏好。
-- 视口：桌面优先（≥1180px 三栏）；≤1180px 单栏；≤920px 阶段导航切换为原生 `<select>`；≤720px 页面列表横条、画布 680px 横向滚动；≤480px 精简品牌与示例 chips。
-- 无障碍：`:focus-visible` 焦点环、skip link、`role=log/status/dialog`、`aria-checked/current/busy/valuenow`、弹窗焦点陷阱与 Esc、阶段切换焦点到标题、键盘排序与翻页。
+- Single file `prototype/ppt-agent-prototype.html`: pure HTML/CSS/JS, no build, no external dependencies, no network requests; about 3,000 lines.
+- Design system: indigo primary + sticky-note amber secondary; unified spacing/radius/shadow/focus ring; all structural icons are inline SVG line icons (no emoji); supports `prefers-reduced-motion`.
+- Mock data is built into the `MOCK` constant (topic, research sources, interview questions, gap suggestions, outline JSON, plan and design variants, page notes), corresponding to the example topic "Dify company introduction".
+- Streaming simulator: `typeInto(el, text, token, speed)` timer-sliced typewriter; generation stages use a stage-granular scheduler that advances serially; the `runSeq` token aborts old flows on stage changes, and the `opSeq` token aborts expired single-page operations.
+- **Material slot is mock**: files only read filename/type/size (content not parsed), URLs are format-validated but not actually fetched; gap confirmation connects to the background research stream via a Promise — "gaps selected → search by gap" and "not needed → skip web" are both demo logic.
+- The content source panel renders grouped by `origin`; without materials it shows only the web group (consistent with v1 behavior); a skeleton is shown before web research, and material digestion lights up item by item.
+- Design draft rendering: a CSS Grid Bento layout renderer (`single / 2col / 3col / hero / async / mix`), with four style themes switched via CSS variables; cover/TOC/end use dedicated compositions; the plan draft uses a degraded wireframe renderer.
+- State: `S` holds all project state; `stale` records downstream invalidation; `slides[pageId].history` holds the per-page version stack; `localStorage` holds the style preference.
+- Viewports: desktop-first (three columns at ≥1180px); single column at ≤1180px; stage nav switches to a native `<select>` at ≤920px; page list becomes a horizontal strip and the canvas is 680px with horizontal scrolling at ≤720px; brand and example chips are trimmed at ≤480px.
+- Accessibility: `:focus-visible` focus ring, skip link, `role=log/status/dialog`, `aria-checked/current/busy/valuenow`, modal focus trap and Esc, focus moves to the heading on stage change, keyboard sorting and paging.
 
 ---
 
-## 6. 异常、恢复与未覆盖项
+## 6. Errors, recovery, and uncovered items
 
-> 下表是 v3 的**契约**，不是已实现清单。原型只覆盖"正常路径 + 少量门禁"；标 `[TBD]` 的项必须在真实实现前补齐。
+> The table below is the v3 **contract**, not a list of implemented features. The prototype only covers the "happy path + a few gates"; items marked `[TBD]` must be completed before the real implementation.
 
-| 场景 | 触发 | 期望交互 | v3 原型 | 负责人 |
+| Scenario | Trigger | Expected interaction | v3 prototype | Owner |
 | --- | --- | --- | --- | --- |
-| 素材解析失败 | 文件损坏 / 类型不支持 | 工具卡红态 + 标注该素材"未消化" + 允许移除/替换；不阻塞其他素材 | 未模拟 | `[TBD-FE]` / `[TBD-BE]` |
-| URL 抓取失败 | 登录墙 / 反爬 / 404 | 工具卡失败态 + 建议改为粘贴正文；保留其他来源 | 未模拟 | `[TBD-BE]` |
-| 检索 0 结果 | 缺口过窄 / 查询无结果 | 保留问题卡，提示"未找到，继续/调整缺口"；不静默跳过 | 未模拟 | `[TBD-FE]` |
-| 单页生成失败 | 超时 / 模型错误 | 该页状态 `error` + 「重试本页」；其他页继续 | 未模拟 | `[TBD-FE]` |
-| 导出失败 | 字体缺失 / 资源越界 / 写入失败 | 失败原因 + 「重试」+「换一种格式」；不关闭弹窗 | 未模拟 | `[TBD-FE]` |
-| 离开页面 | 切换阶段 / 刷新 | 原型中止当前流程；真实产品应后台继续并在返回时恢复 | 中止 | `[TBD-BE]` |
-| 并发操作 | 生成中点单页操作 | 提示"生成中，请稍后"；禁止同时写同一页 | 已阻止 | — |
-| 画像脏数据 | 画像后改答案未更新 | 禁止进入大纲，提示先更新画像 | 已实现 | — |
-| 下游失效 | 大纲/策划/风格变更 | 阶段导航显示"待重跑"，进入时重跑 | 已实现 | — |
-| 删除页面 | 便签「删除」 | 立即删除（原型）；真实产品应提供 toast 撤销或确认 | 无撤销 | `[TBD-FE]` |
-| 自动推进 | 全自动 + 编辑中 | 检测到编辑自动暂停，不抢焦点 | 已实现 | — |
-| 素材超限 | 第 7 份 | 入口禁用 + 上限提示 | 已实现（6 份演示约束） | `[TBD-UX]` |
-| 用户修改缺口决策 | 画像后想改联网范围 | 真实产品应支持"重新检索并更新画像" | 不支持，需重开调研 | `[TBD-FE]` |
+| Material parsing failure | Corrupted file / unsupported type | Tool card red state + mark that material "not digested" + allow removal/replacement; do not block other materials | Not simulated | `[TBD-FE]` / `[TBD-BE]` |
+| URL fetch failure | Login wall / anti-scraping / 404 | Tool card failure state + suggest pasting the body text instead; keep other sources | Not simulated | `[TBD-BE]` |
+| Zero search results | Gap too narrow / query returns nothing | Keep the question card, prompt "not found; continue/adjust gaps"; do not silently skip | Not simulated | `[TBD-FE]` |
+| Single-page generation failure | Timeout / model error | Page status `error` + "Retry this page"; other pages continue | Not simulated | `[TBD-FE]` |
+| Export failure | Missing font / out-of-bounds asset / write failure | Failure reason + "Retry" + "Try another format"; do not close the modal | Not simulated | `[TBD-FE]` |
+| Leaving the page | Stage switch / refresh | Prototype aborts the current flow; a real product should continue in the background and restore on return | Aborts | `[TBD-BE]` |
+| Concurrent operations | Single-page action during generation | Prompt "generating, please wait"; forbid writing the same page concurrently | Prevented | — |
+| Profile dirty data | Answers changed after profile generation without update | Block entering outline; prompt to update profile first | Implemented | — |
+| Downstream stale | Outline/plan/style change | Stage nav shows "needs rerun"; rerun on entry | Implemented | — |
+| Delete page | Note "Delete" | Immediate delete (prototype); a real product should offer toast undo or confirmation | No undo | `[TBD-FE]` |
+| Auto-advance | Fully automatic + editing | Detect editing and auto-pause; do not steal focus | Implemented | — |
+| Material over limit | 7th item | Entry disabled + limit hint | Implemented (6-item demo constraint) | `[TBD-UX]` |
+| User changes gap decision | Wants to change web scope after profile | A real product should support "re-search and update profile" | Not supported; must restart research | `[TBD-FE]` |
 
 ---
 
-## 7. 无障碍与响应式基线
+## 7. Accessibility and responsive baseline
 
-### 7.1 键盘矩阵
+### 7.1 Keyboard matrix
 
-| 区域 | 按键 | 行为 |
+| Area | Key | Behavior |
 | --- | --- | --- |
-| 全局 | `Tab` / `Shift+Tab` | 按视觉顺序移动；弹窗内循环 |
-| 全局 | `Esc` | 关闭当前弹窗，焦点回到触发元素 |
-| 首页模式 | `←` / `→` / `↑` / `↓` | 在"全自动 / 专家陪跑"间切换 |
-| 访谈 | `Tab` + `Space` / `Enter` | 选择选项；缺口卡逐项勾选后确认 |
-| 便利贴 | `Alt + ↑/↓` | 本章内上移/下移 |
-| 便利贴 | `Shift + Alt + ←/→` | 移到相邻章节末尾 |
-| 便利贴 | `Enter` | 结束标题编辑并保存 |
-| 风格 | `←` / `→` / `↑` / `↓` | 切换风格卡并选中 |
-| 设计稿 | `←` / `→` | 上一页/下一页 |
-| 导出弹窗 | `Tab` / `Shift+Tab` / `Esc` | 焦点陷阱 / 关闭并归还焦点 |
+| Global | `Tab` / `Shift+Tab` | Move in visual order; cycle within modals |
+| Global | `Esc` | Close the current modal; focus returns to the trigger |
+| Home mode | `←` / `→` / `↑` / `↓` | Switch between "fully automatic / expert copilot" |
+| Interview | `Tab` + `Space` / `Enter` | Select an option; check gap items individually then confirm |
+| Sticky notes | `Alt + ↑/↓` | Move up/down within the section |
+| Sticky notes | `Shift + Alt + ←/→` | Move to the end of an adjacent section |
+| Sticky notes | `Enter` | Finish title editing and save |
+| Style | `←` / `→` / `↑` / `↓` | Switch and select style cards |
+| Design draft | `←` / `→` | Previous/next page |
+| Export modal | `Tab` / `Shift+Tab` / `Esc` | Focus trap / close and return focus |
 
-### 7.2 语义与状态
+### 7.2 Semantics and states
 
-- 对话容器 `role="log"`、`aria-live="off"`；里程碑（题目完成、素材消化、检索完成、画像生成、导出完成）通过独立 `role="status"` 区域播报，避免逐 token 刷屏。
-- 问题选项 `role="radio"` / `role="checkbox"` + `aria-checked`；缺口用原生 checkbox；风格卡 `role="radio"`。
-- 画布 `role="img"` + `aria-label`；缩略图装饰性 `aria-hidden="true"`。
-- 生成中容器 `aria-busy`；进度条 `role="progressbar"` + `aria-valuenow`。
-- 当前阶段 `aria-current="step"`；待重跑在 `aria-label` 中明示。
-- 焦点：`:focus-visible` 2px 品牌色 + 2px offset；阶段切换焦点到 `h1`；弹窗关闭恢复触发元素。
+- Conversation container `role="log"`, `aria-live="off"`; milestones (question answered, material digested, research complete, profile generated, export complete) are announced through a separate `role="status"` region to avoid per-token chatter.
+- Question options `role="radio"` / `role="checkbox"` + `aria-checked`; gaps use native checkboxes; style cards `role="radio"`.
+- Canvas `role="img"` + `aria-label`; thumbnails are decorative with `aria-hidden="true"`.
+- Generation container `aria-busy`; progress bar `role="progressbar"` + `aria-valuenow`.
+- Current stage `aria-current="step"`; needs-rerun stated explicitly in `aria-label`.
+- Focus: `:focus-visible` 2px brand color + 2px offset; focus moves to `h1` on stage change; closing a modal restores focus to the trigger.
 
-### 7.3 断点
+### 7.3 Breakpoints
 
-| 断点 | 布局 |
+| Breakpoint | Layout |
 | --- | --- |
-| ≥1180 | 调研/策划/设计完整两栏或三栏 |
-| ≤1180 | 右侧面板下移；设计稿"画布 → 操作 → 缩略图" |
-| ≤920 | 顶部阶段导航切换为原生 `<select>` |
-| ≤720 | 首页单列、问卷全宽、页面列表横条、画布 680px 横向滚动 |
-| ≤480 | 精简品牌与示例 chips，保留核心操作 |
+| ≥1180 | Full two- or three-column research/plan/design |
+| ≤1180 | Right panel moves below; design draft order "canvas → actions → thumbnails" |
+| ≤920 | Top stage nav switches to native `<select>` |
+| ≤720 | Home single column, survey full-width, page list horizontal strip, canvas 680px with horizontal scroll |
+| ≤480 | Trim brand and example chips; keep core actions |
 
-### 7.4 动效与对比度
+### 7.4 Motion and contrast
 
-- `prefers-reduced-motion: reduce`：CSS 动画/过渡时长趋零；打字机直接输出全文。
-- 正文与次要文字在 `#ffffff` / `#f5f6fa` 上均 ≥ 4.5:1；主按钮白字在 `#4f46e5` 上 6.29:1；便利贴文字 `#3c3410` 在 `#fdf6d8` 上 > 10:1。
+- `prefers-reduced-motion: reduce`: CSS animation/transition durations approach zero; the typewriter outputs the full text immediately.
+- Body and secondary text are ≥ 4.5:1 on `#ffffff` / `#f5f6fa`; white text on the `#4f46e5` primary button is 6.29:1; sticky-note text `#3c3410` on `#fdf6d8` is > 10:1.
 
 ---
 
-## 8. 版本记录
+## 8. Version history
 
-- **v3（2026-11-18）**：顺序问答与答案回改；素材消化摘要 + Agent 缺口建议；画像脏数据门禁；自动推进倒计时/暂停/编辑自暂停；失效传播与待重跑标记；单页版本历史与"上一版"；单版式页面保护；生成中锁页；导出范围摘要与弹窗无障碍；风格偏好记忆；移动端阶段 `<select>`、页面横条、可滚动画布；全量 SVG 图标、焦点环、减少动态与对比度修正。审查与剩余项见 `docs/ppt-agent-ux-review.md`。
-- **v2（2026-11-16）**：新增内容来源体系（`docs/ppt-content-sources.md`）；阶段 1 增加素材槽（粘贴文本 / 拖拽文件 / 添加链接）；阶段 2 从「联网调研」改为「素材消化 + 缺口补齐」，联网检索降级为补缺手段；数据结构新增 `materials` 与 `source.origin`；v1 纯联网路径保留为素材为空时的默认行为。
-- **v1**：初版六阶段流程（依据 linux.do 帖子产品化借鉴）。
+- **v3 (2026-11-18)**: sequential Q&A with answer editing; material digest summary + Agent gap suggestions; profile dirty-data gate; auto-advance countdown/pause/edit-auto-pause; stale propagation and needs-rerun markers; per-page version history and "previous version"; single-layout page protection; page locking during generation; export scope summary and modal accessibility; style preference memory; mobile stage `<select>`, page strip, scrollable canvas; full SVG icon set, focus ring, reduced motion, and contrast fixes. Review and remaining items in `docs/ppt-agent-ux-review.md`.
+- **v2 (2026-11-16)**: added the content source system (`docs/ppt-content-sources.md`); stage 1 gained the material slot (paste text / drag files / add link); stage 2 changed from "web research" to "material digestion + gap filling", with web search downgraded to gap filling; data structures gained `materials` and `source.origin`; the v1 web-only path remains the default when materials are empty.
+- **v1**: initial six-stage flow (productization inspired by the linux.do post).

@@ -1,165 +1,165 @@
-# Bound PPT · 内容来源设计（v2.1）
+# Bound PPT · Content source design (v2.1)
 
-> 版本：v2.1 · 2026-11-18（与交互流程 v3 对齐：缺口由 Agent 建议、用户确认）
-> 回答的问题：Bound PPT 的演示内容从哪里来？每类来源如何接入、如何被 Agent 消化？
-> 关联文档：交互流程 v3（`docs/ppt-agent-interaction-flow.md`，阶段 1/2 已按本文档更新）；体验审查（`docs/ppt-agent-ux-review.md`）。
-
----
-
-## 0. 背景与问题定义
-
-v1 设计的入口是「用户给一个主题 → Agent 联网检索资料」：阶段 1 只收主题，阶段 2 的 Agent 行为被写死为 `web_search(...)`。这等于把「联网搜索」当成了默认主料。
-
-真实工作中，大多数 PPT 场景里用户**手上已经有料**：项目汇报用 BI 数据和周报，售前方案用客户 RFP 和内部案例库，技术分享用代码仓库和设计文档——真正以联网检索为主料的只有竞品分析一类（见 §3 场景矩阵）。因此 v2 把内容来源显式建模为五类通道，并将交互入口从「主题 → 联网调研」升级为「主题 + 素材 → 素材消化 + 缺口补齐」。
-
-**核心原则：一手素材优先，联网检索降级为补缺手段。**
+> Version: v2.1 · 2026-11-18 (aligned with interaction flow v3: gaps are suggested by the Agent and confirmed by the user)
+> Question it answers: where does Bound PPT's presentation content come from? How is each source type ingested and digested by the Agent?
+> Related docs: interaction flow v3 (`docs/ppt-agent-interaction-flow.md`, stages 1/2 updated per this document); UX review (`docs/ppt-agent-ux-review.md`).
 
 ---
 
-## 1. 内容来源全景（五类通道）
+## 0. Background and problem definition
 
-### 1.1 自己的工作产出（一手资料，可信度最高）
+The v1 entry point was "user provides a topic → Agent searches the web": stage 1 only accepted a topic, and stage 2's Agent behavior was hard-coded as `web_search(...)`. That treated "web search" as the default main ingredient.
 
-| 子类 | 具体来源 |
+In real work, users in most PPT scenarios **already have material**: project reports use BI data and weekly reports, pre-sales proposals use client RFPs and internal case libraries, tech talks use code repositories and design docs — only competitive analysis truly relies on web search as the main ingredient (see the scenario matrix in §3). So v2 explicitly models content sources as five channels and upgrades the entry point from "topic → web research" to "topic + materials → material digestion + gap filling".
+
+**Core principle: first-party materials come first; web search is downgraded to a gap-filling tool.**
+
+---
+
+## 1. Content source landscape (five channels)
+
+### 1.1 Your own work output (first-party material, highest credibility)
+
+| Subcategory | Specific sources |
 | --- | --- |
-| 文档与汇报 | PRD / 方案 / 设计文档（Word、飞书文档、语雀、Notion、Confluence、Markdown）、周报 / 月报 / 季度年度总结、复盘文档、会议纪要 |
-| 沟通记录 | 邮件往来、IM 讨论（企微 / 飞书 / Slack / 微信群）、工单系统（Jira / Linear / TAPD）的迭代记录 |
-| 数据 | Excel / CSV 业务表、BI 报表与数据看板、数据库查询结果、问卷调研结果、A/B 实验与埋点数据 |
-| 视觉与产品资产 | Figma 设计稿、产品 UI 截图、Demo 录屏、白板导出（Miro / FigJam）、思维导图（XMind）、手绘草图 / 白板拍照 |
-| 历史可复用资产 | 旧 PPT（同主题 / 同客户的历史版本）、公司模板与品牌规范、图表图片素材库、案例库 / 投标书库 |
-| 口头素材 | 语音备忘录、会议录音与转写稿、自己做的客户 / 专家访谈记录 |
+| Documents and reports | PRD / proposals / design docs (Word, Feishu Docs, Yuque, Notion, Confluence, Markdown), weekly / monthly / quarterly / annual summaries, retrospectives, meeting notes |
+| Communication records | Email threads, IM discussions (WeCom / Feishu / Slack / WeChat groups), iteration records in ticket systems (Jira / Linear / TAPD) |
+| Data | Excel / CSV business tables, BI reports and dashboards, database query results, survey results, A/B experiment and telemetry data |
+| Visual and product assets | Figma designs, product UI screenshots, demo recordings, whiteboard exports (Miro / FigJam), mind maps (XMind), hand-drawn sketches / whiteboard photos |
+| Reusable historical assets | Old PPTs (same topic / same client), company templates and brand guidelines, chart/image asset libraries, case libraries / bid document libraries |
+| Verbal material | Voice memos, meeting recordings and transcripts, your own customer / expert interview notes |
 
-### 1.2 组织内部沉淀（团队资产）
+### 1.2 Organizational knowledge (team assets)
 
-内部 Wiki 与知识库（Confluence / 语雀 / 飞书知识库 / SharePoint）、制度规范、历史培训课件、内部竞品与行业情报简报、CRM 客户资料、财务 / 运营系统导出数据。
+Internal wikis and knowledge bases (Confluence / Yuque / Feishu Knowledge Base / SharePoint), policies and standards, historical training decks, internal competitive and industry intelligence briefs, CRM customer data, finance / operations system exports.
 
-与 1.1 的区别在**接入方式**：个人产出靠「拖拽文件」，组织资产靠「账号授权连接」。
+The difference from 1.1 is **ingestion**: personal output comes through "drag-and-drop files", organizational assets through "account authorization connections".
 
-### 1.3 外部公开信息（v1 唯一覆盖的一类）
+### 1.3 External public information (the only category v1 covered)
 
-搜索引擎与百科、新闻媒体、行业报告 / 白皮书、上市公司财报与招股书、学术论文、竞品公开材料（官网、发布会、定价页、招聘 JD）、社区与社交媒体（linux.do、知乎、公众号、X、Reddit、B站）。
+Search engines and encyclopedias, news media, industry reports / white papers, public company financials and prospectuses, academic papers, competitor public materials (official website, launch events, pricing pages, job descriptions), communities and social media (linux.do, Zhihu, WeChat public accounts, X, Reddit, Bilibili).
 
-### 1.4 人际与线下素材（外部，但搜索引擎搜不到）
+### 1.4 Interpersonal and offline materials (external, but not searchable)
 
-别人发来的文件（客户 RFP / 招标书、报价单、邮件附件、群文件）、访谈与电话会录音转写、线下实物的数字化（展会物料、宣传册、书籍拍照、扫描件）、音视频内容（播客、发布会录像、课程视频转写为图文）。
+Files sent by others (client RFP / tender, quotes, email attachments, group files), interview and conference-call recordings/transcripts, digitization of physical items (trade-show materials, brochures, book photos, scans), audio/video content (podcasts, launch recordings, course videos transcribed into text/images).
 
-### 1.5 脑内与对话（零素材起点 + 即时表达）
+### 1.5 In-head and conversation (zero-material starting point + immediate expression)
 
-一句话主题、几个关键词、口述想法（语音转文字）、简短提纲、手绘页面示意，以及**访谈问答本身**——阶段 2 的回答既是约束条件，也是内容源，会随需求画像一起注入大纲生成。
+A one-sentence topic, a few keywords, spoken ideas (speech-to-text), a short outline, a hand-drawn page sketch, and **the interview Q&A itself** — stage 2 answers are both constraints and content sources, injected into outline generation along with the requirements profile.
 
 ---
 
-## 2. 决定接入设计的三个维度
+## 2. Three dimensions that determine ingestion design
 
-### 2.1 结构化程度 → Agent 处理策略
+### 2.1 Structure level → Agent processing strategy
 
-| 素材形态 | 例子 | 处理策略 |
+| Material form | Example | Processing strategy |
 | --- | --- | --- |
-| 成稿型 | 已有完整文档、旧 PPT | 抽取、压缩、改写，几乎不需要调研 |
-| 碎片型 | 纪要、聊天记录、口述 | 归纳整合 + 缺口补齐 |
-| 数据型 | 表格、报表、BI 截图 | 数据叙事 + 图表化 |
-| 空想型 | 只有一个主题 | 访谈 + 联网检索（v1 行为） |
+| Finished | Complete documents, old PPTs | Extract, compress, rewrite; research barely needed |
+| Fragmented | Notes, chat logs, dictation | Summarize and integrate + fill gaps |
+| Data | Spreadsheets, reports, BI screenshots | Data storytelling + charting |
+| Blank | Only a topic | Interview + web search (v1 behavior) |
 
-### 2.2 载体与可及性
+### 2.2 Medium and accessibility
 
-零门槛（粘贴文本、拖拽文件）→ 低门槛（URL 抓取）→ 高门槛（飞书 / Notion 等系统授权接入）。可及性决定 MVP 取舍（见 §4）。
+Zero barrier (paste text, drag files) → low barrier (URL fetch) → high barrier (authorized connections to Feishu / Notion, etc.). Accessibility determines MVP trade-offs (see §4).
 
-### 2.3 素材充盈度（v2 核心机制）
+### 2.3 Material sufficiency (v2 core mechanism)
 
-Agent 先消化已有素材，判断「够不够支撑大纲」；不够时列出**缺口清单**（缺数据、缺案例、缺竞品对比），再决定是请用户补充，还是联网检索补齐。即 `web_search` 从「默认第一动作」降级为「补缺手段」。
+The Agent first digests existing material and judges "is it enough to support the outline"; if not, it lists a **gap list** (missing data, cases, competitor comparison), then decides whether to ask the user to add more or fill via web search. That is, `web_search` is downgraded from "default first action" to "gap-filling tool".
 
 ---
 
-## 3. 场景 × 主力来源矩阵
+## 3. Scenario × primary source matrix
 
-| 高频场景 | 主力来源 | 联网检索的角色 |
+| High-frequency scenario | Primary sources | Role of web search |
 | --- | --- | --- |
-| 项目 / 季度汇报 | BI 数据、周报、工单记录 | 几乎不需要 |
-| 产品发布 | 内部文档 + 业务数据 | 补行业对标 |
-| 融资路演 | 业务数据 | 补市场规模、竞品、行业报告 |
-| 售前 / 投标 | 客户 RFP + 内部案例库 | 补资质与行业趋势 |
-| 技术分享 | 代码库、设计文档、README | 补社区与生态动态 |
-| 培训课件 | 内部规范 + 旧课件 | 基本不需要 |
-| 竞品分析 | 竞品公开材料 | **主力** |
-| 论文 / 毕业答辩 | 自己的论文 + 实验数据 | 不需要 |
+| Project / quarterly report | BI data, weekly reports, ticket records | Almost none |
+| Product launch | Internal docs + business data | Fill industry benchmarks |
+| Fundraising roadshow | Business data | Fill market size, competitors, industry reports |
+| Pre-sales / bidding | Client RFP + internal case library | Fill qualifications and industry trends |
+| Tech sharing | Code repository, design docs, README | Fill community and ecosystem news |
+| Training deck | Internal standards + old decks | Basically none |
+| Competitive analysis | Competitor public materials | **Primary** |
+| Thesis / graduation defense | Your thesis + experiment data | None |
 
-八类高频场景里，真正以联网检索为主料的只有竞品分析一类——这直接印证了单一搜索入口的局限。
+Across the eight high-frequency scenarios, only competitive analysis truly relies on web search as the primary source — direct evidence of the limits of a single search entry point.
 
 ---
 
-## 4. 接入优先级与 v2 范围
+## 4. Ingestion priority and v2 scope
 
-### 4.1 优先级排序
+### 4.1 Priority order
 
-**粘贴文本 / 拖拽文件 → URL 抓取** →（后续）语音转写 →（后续）授权接入内部系统（飞书 / Notion 等，价值最大但工程量也最大）。
+**Paste text / drag files → URL fetch** → (later) speech transcription → (later) authorized access to internal systems (Feishu / Notion, etc.; highest value but most engineering).
 
-### 4.2 v2 范围界定（已落入交互流程与原型）
+### 4.2 v2 scope (already reflected in the interaction flow and prototype)
 
-| 能力 | 行为 | 对应工具卡 |
+| Capability | Behavior | Tool card |
 | --- | --- | --- |
-| 粘贴文本 | 阶段 1 素材槽粘贴 → 生成素材芯片 | `read_paste_text` |
-| 拖拽 / 选择文件 | 阶段 1 素材槽拖入或点击选择 | `ingest_file(文件名)` |
-| URL 抓取 | 阶段 1 素材槽添加链接 | `fetch_url(url)` |
-| 素材分组 | 阶段 2 内容源面板分「你提供的素材 / 联网补充资料」两组 | `source.origin` 区分 |
-| 素材摘要 | 阶段 2 素材消化完成后，逐份显示"提取了什么" | `digest` 事件 |
-| 缺口建议 | 阶段 2 素材摘要后，Agent 提出 3 条缺口建议（含理由与"建议"标记，推荐项默认勾选） | `gap_suggest` |
-| 缺口确认 | 用户增减缺口，或选「不需要——就用我的素材」；选"不需要"联动清空其他项 | `gap_decision`；跳过联网时大纲完全基于素材 |
+| Paste text | Stage 1 material slot paste → material chip | `read_paste_text` |
+| Drag / select files | Stage 1 material slot drop or click to select | `ingest_file(filename)` |
+| URL fetch | Stage 1 material slot add link | `fetch_url(url)` |
+| Material grouping | Stage 2 content-source panel splits "Your materials / Web supplements" | `source.origin` |
+| Material digest | After stage 2 material digestion, show "what was extracted" per item | `digest` event |
+| Gap suggestions | After the digest, the Agent proposes 3 gaps (with reasons and a "suggested" badge; recommended ones pre-checked) | `gap_suggest` |
+| Gap confirmation | User adds/removes gaps, or chooses "Not needed — just use my materials"; choosing "not needed" clears the others | `gap_decision`; skipping web means the outline is entirely material-based |
 
-原型为 mock 演示：文件只记录名称 / 类型 / 大小、不真实解析，URL 不真实抓取。真实实现范围 **[TBD-BE]**：
+The prototype is a mock: files only record name / type / size and are not actually parsed; URLs are not actually fetched. Real implementation scope **[TBD-BE]**:
 
-- 支持的文件类型清单（候选：docx / pdf / xlsx / pptx / md / txt / 图片）与解析大小、页数上限——由后端在开发前按解析器可用性冻结。
-- URL 抓取遇登录墙 / 反爬时的降级策略——由后端在开发前确认。
+- The list of supported file types (candidates: docx / pdf / xlsx / pptx / md / txt / images) and parsing size/page limits — frozen by the backend before development based on parser availability.
+- Degradation strategy when URL fetching hits a login wall / anti-scraping — confirmed by the backend before development.
 
-### 4.3 后续路线（不在 v2 范围）
+### 4.3 Later roadmap (out of v2 scope)
 
-语音转写（会议录音 / 口述）；组织资产授权接入（飞书 / Notion / Confluence OAuth）；旧 PPT 解析复用；IM / 邮件记录导入。
+Speech transcription (meeting recordings / dictation); authorized access to organizational assets (Feishu / Notion / Confluence OAuth); old PPT parsing and reuse; IM / email record import.
 
 ---
 
-## 5. 数据契约（与交互流程 v2 §3.1 对齐）
+## 5. Data contracts (aligned with interaction flow v2 §3.1)
 
 ```ts
 interface Material { id: string; kind: 'paste' | 'file' | 'url'; title: string; meta: string; }
 interface Source   { title: string; summary: string; origin: 'provided' | 'web'; }
-interface GapSuggestion { label: string; reason: string; recommended: boolean; } // Agent 建议
-interface GapDecision   { label: string; selected: boolean; }                    // 用户确认
+interface GapSuggestion { label: string; reason: string; recommended: boolean; } // Agent suggestion
+interface GapDecision   { label: string; selected: boolean; }                    // User confirmation
 ```
 
-规则：
+Rules:
 
-- 素材芯片上限 6 份（原型演示约束；真实产品的默认上限 **[TBD-UX]**，由设计在视觉稿阶段确认）。
-- 来源冲突优先级：**一手素材 > 组织资产 > 联网补充**；大纲生成提示词必须写明该优先级。
-- 访谈回答本身也归入内容源（`origin: 'provided'` 的语义延伸），随需求画像注入大纲生成。
-- **缺口必须由 Agent 提出**：先消化素材并输出摘要，再给带理由的建议；用户只做确认与取舍，不负责凭空判断"缺什么"。
-- 缺口确认属于素材策略，画像阶段不提供修改；真实产品应支持"重新检索并更新画像"（`[TBD-FE]`）。
-
----
-
-## 6. 对交互流程的影响（摘要）
-
-1. 阶段 1 升级为「主题 + 素材入口」，素材槽为空时保持 v1 纯联网路径（向后兼容）。
-2. 阶段 2 从「联网调研」改为「素材消化 + Agent 缺口建议 + 用户确认」，内容源面板分两组，并增加素材摘要与骨架/空态。
-3. 需求画像卡新增「素材」行与「联网」行；画像可回改，答案变更后必须更新画像才能进入大纲。
-4. 缺口卡改为"Agent 建议 + 理由 + 推荐标记 + 预选"，用户只做确认与取舍；选「不需要」时联动清空其他项。
-5. 详细交互见 `docs/ppt-agent-interaction-flow.md` §2 阶段 1 / 阶段 2；审查结论见 `docs/ppt-agent-ux-review.md`。
+- Material chip limit is 6 (prototype demo constraint; the real product's default limit **[TBD-UX]**, confirmed by design at the visual design stage).
+- Source conflict priority: **first-party materials > organizational assets > web supplements**; the outline generation prompt must state this priority.
+- Interview answers themselves are also counted as content sources (semantic extension of `origin: 'provided'`), injected into outline generation along with the requirements profile.
+- **Gaps must be proposed by the Agent**: digest materials and output a summary first, then give suggestions with reasons; the user only confirms and chooses, and is not responsible for figuring out "what is missing".
+- Gap confirmation is a material strategy and cannot be modified at the profile stage; a real product should support "re-search and update the profile" (`[TBD-FE]`).
 
 ---
 
-## 7. 待确认清单
+## 6. Impact on the interaction flow (summary)
 
-| 编号 | 事项 | 负责人 / 确认阶段 |
+1. Stage 1 is upgraded to "topic + material entry"; when the material slot is empty, the v1 web-only path remains (backward compatible).
+2. Stage 2 changes from "web research" to "material digestion + Agent gap suggestions + user confirmation"; the content-source panel is split into two groups, with material digests and skeleton/empty states added.
+3. The requirements profile card adds "Materials" and "Web" rows; the profile can be edited, and after answers change the profile must be updated before entering the outline.
+4. The gap card becomes "Agent suggestion + reason + recommended badge + pre-selected"; the user only confirms and chooses; choosing "not needed" clears the other items.
+5. Detailed interactions in `docs/ppt-agent-interaction-flow.md` §2 stage 1 / stage 2; review conclusions in `docs/ppt-agent-ux-review.md`.
+
+---
+
+## 7. Open questions
+
+| ID | Item | Owner / confirmation stage |
 | --- | --- | --- |
-| TBD-BE-1 | v2 支持的文件类型与解析上限清单 | 后端 · 开发前冻结 |
-| TBD-BE-2 | URL 抓取登录墙 / 反爬降级策略（如：降级为提示用户粘贴正文） | 后端 · 开发前 |
-| TBD-BE-3 | 「素材充盈度」判断与缺口建议的提示词 / 规则 | 后端 · 开发前 |
-| TBD-UX-1 | 素材芯片数量上限与超大文件的用户提示 | 设计 · 视觉稿阶段 |
-| TBD-UX-2 | 素材预览形态（是否展示解析摘要、是否可展开原文） | 设计 · 视觉稿阶段 |
-| TBD-UX-3 | 缺口建议的默认勾选策略与展示顺序 | 设计 · 视觉稿阶段 |
-| TBD-FE-1 | 画像生成后"重新检索并更新缺口"的交互 | 前端 · 开发前 |
+| TBD-BE-1 | List of file types supported by v2 and parsing limits | Backend · frozen before development |
+| TBD-BE-2 | URL fetch degradation strategy for login walls / anti-scraping (e.g. prompt the user to paste the body text) | Backend · before development |
+| TBD-BE-3 | Prompt / rules for "material sufficiency" judgment and gap suggestions | Backend · before development |
+| TBD-UX-1 | Material chip count limit and user messaging for oversized files | Design · visual design stage |
+| TBD-UX-2 | Material preview form (show parsing summary? expandable source text?) | Design · visual design stage |
+| TBD-UX-3 | Default selection strategy and display order of gap suggestions | Design · visual design stage |
+| TBD-FE-1 | Interaction for "re-search and update gaps" after the profile is generated | Frontend · before development |
 
 ---
 
-## 8. 版本记录
+## 8. Version history
 
-- **v2.1（2026-11-18）**：与交互流程 v3 对齐。缺口从"用户自报"改为"Agent 建议 + 理由 + 推荐 + 用户确认"；新增素材摘要、缺口决策数据契约、画像脏数据门禁与重新检索的 TBD。
-- **v2（2026-11-16）**：初版内容来源体系（五类通道、接入优先级、数据契约），配合交互流程 v2。
+- **v2.1 (2026-11-18)**: aligned with interaction flow v3. Gaps changed from "user self-reported" to "Agent suggestion + reason + recommendation + user confirmation"; added material digest, gap decision data contracts, profile dirty-data gate, and re-search TBD.
+- **v2 (2026-11-16)**: initial content source system (five channels, ingestion priority, data contracts), paired with interaction flow v2.

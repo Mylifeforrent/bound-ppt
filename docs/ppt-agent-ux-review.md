@@ -1,225 +1,225 @@
-# Bound PPT · 交互体验审查（v2 → v3）
+# Bound PPT · UX review (v2 → v3)
 
-> 审查对象：`docs/ppt-agent-interaction-flow.md`（v2）、`docs/ppt-content-sources.md`（v2）、`prototype/ppt-agent-prototype.html`（v2 实现）
-> 审查日期：2026-11-18
-> 方法：逐阶段走查 + 原型实际操作 + ui-ux-pro-max 定向检索（AI-Native / Bento Grid、向导式表单、撤销与确认、拖拽键盘替代、弹窗焦点、对比度、空态与加载态、响应式）
-> 结论：v2 的信息架构成立，不需要推翻"素材 → 访谈 → 便利贴 → 策划 → 风格 → 设计"的主干；问题集中在**边界态**——失败恢复、可撤销、可预期、可访问。v3 已在原型落地交互侧的 P0/P1 项；失败恢复、真实解析、任务队列等实现项仍需补齐，列于 §5。
-
----
-
-## 1. 结论摘要
-
-按对用户体验的伤害排序，v2 最需要处理的六个问题：
-
-1. **访谈是一次性铺开的，且答错无法回改。** 5 张问题卡同时出现，认知负担高；v2 原型的单选每点一次 `answerCount++`，改答案会让计数错乱，画像可能提前或永远不出现；画像生成后也没有修改入口。
-2. **缺口由用户自己猜，和内容来源设计冲突。** `ppt-content-sources.md` §2.3 写的是"Agent 消化素材 → 判断够不够 → 列出缺口"，原型却让用户在 4 个硬编码选项里自报缺口。这把最该由 Agent 承担的判断推回给了用户。
-3. **自动推进既不可见也不可暂停。** 全自动模式在大纲流式动画结束后 1.2 秒直接跳转，没有倒计时、没有暂停；用户正在改标题时也会被抢跑。
-4. **下游失效只写在文档里，没有落进状态机。** v2 文档说"改动下游数据后标记待重跑"，但数据结构没有 `stale`，原型也不重跑；改完大纲再进策划稿，看到的仍是旧线框。
-5. **"换一版"没有退路。** 单页重生成会直接覆盖，用户对某一页满意后再点一次就永久丢失；封面/目录/结尾只有一种版式，却仍显示"已换为 V2"，属于虚假反馈。
-6. **无障碍与移动端是系统性缺口。** emoji 当结构图标、无可见焦点环、拖拽没有键盘替代、弹窗无焦点陷阱、灰色小字对比度不足、移动端阶段导航直接消失、设计稿画布小到不可读。
+> Review targets: `docs/ppt-agent-interaction-flow.md` (v2), `docs/ppt-content-sources.md` (v2), `prototype/ppt-agent-prototype.html` (v2 implementation)
+> Review date: 2026-11-18
+> Method: stage-by-stage walkthrough + hands-on prototype use + targeted ui-ux-pro-max research (AI-Native / Bento Grid, wizard forms, undo and confirmation, drag keyboard alternatives, modal focus, contrast, empty and loading states, responsive)
+> Conclusion: v2's information architecture holds; there is no need to overturn the main axis "materials → interview → sticky notes → plan → style → design". The problems cluster in **boundary states** — failure recovery, undoability, predictability, accessibility. v3 has landed the interaction-side P0/P1 items in the prototype; implementation items such as failure recovery, real parsing, and task queues still need to be completed, listed in §5.
 
 ---
 
-## 2. 逐阶段检查
+## 1. Conclusion summary
 
-判定口径：**Pass** = 设计已覆盖且原型可验证；**Fail** = 缺失、冲突或不可操作；**N/A** = 当前版本不涉及。证据只引用可复核的行为或文档段落。
+Ordered by harm to user experience, the six v2 issues that most needed attention:
 
-### 2.1 阶段 1 · 新建项目
-
-| # | 检查项 | v2 判定 | 证据 | v3 处理 |
-| --- | --- | --- | --- | --- |
-| 1.1 | 主题为空时有明确反馈 | Fail | 原型直接回退到 `MOCK.topic`，用户以为提交了自己的主题 | 空主题阻止提交并聚焦输入框 |
-| 1.2 | 素材数量有可见上限 | Fail | 超过 6 份只弹 toast，计数不可见，按钮不禁用 | 显示 `0 / 6`，满额禁用入口 |
-| 1.3 | 链接有格式校验 | Fail | 任意字符串补 `https://` 后即接受 | `URL` 解析失败则原位提示 |
-| 1.4 | 拖拽有可发现性 | Pass | 虚线槽 + 拖入高亮 | 保留，并补充空态说明 |
-| 1.5 | 重新开始有二次确认 | Fail | 顶部按钮立即清空全部内容 | 确认弹窗，默认焦点在"取消" |
-| 1.6 | 结构图标不依赖 emoji | Fail | 📦 / 📝 / 📎 / 🔗 / 🚀 / 🧭 均为 emoji | 全部替换为线性 SVG 图标 |
-
-### 2.2 阶段 2 · 需求调研
-
-| # | 检查项 | v2 判定 | 证据 | v3 处理 |
-| --- | --- | --- | --- | --- |
-| 2.1 | 问题逐题呈现，降低认知负担 | Fail | 4-5 张问题卡一次铺开 | 顺序问答，答完折叠为摘要，可点"修改"重开 |
-| 2.2 | 改答案不会破坏流程 | Fail | 单选每次点击都 `answerCount++`，改答案导致计数膨胀 | 以 `answers` 映射为准，改答案只覆盖该项 |
-| 2.3 | 画像可修改 | Fail | 画像卡只读，改答案后仍可点"生成大纲" | "修改需求答案" + "更新画像"；未更新时禁止进入大纲 |
-| 2.4 | 缺口由 Agent 判断 | Fail | 缺口卡 4 个硬编码选项，用户自报 | 素材消化摘要 + Agent 建议缺口（理由 + 预选 + 推荐标记） |
-| 2.5 | 素材消化与提问的时序可理解 | Fail | 问题卡先出现，工具卡在其后异步补，顺序倒置 | 消化与提问并行，消化完成后才出缺口卡；摘要卡说明每份素材提取了什么 |
-| 2.6 | 对话区独立滚动且自动跟随 | Fail | `.chat` 仅有 `min-height`，长对话把整页撑高，`scrollTop` 无效 | 桌面固定高度滚动容器 + 即时跟随；移动端自然流 |
-| 2.7 | 来源面板有空态/加载态 | Fail | 联网组只有空列表，检索中没有骨架 | 分组空态文案 + 3 行骨架 + 逐条点亮 |
-| 2.8 | 冲突优先级可见 | Pass | 右侧面板脚注写明"一手素材优先" | 保留，并在画像策略行重复 |
-| 2.9 | 跳过联网有明确结果 | Pass | 选"不需要"后话术说明基于素材 | 保留，并在画像"联网"行写"不联网" |
-
-### 2.3 阶段 3 · 大纲便利贴
-
-| # | 检查项 | v2 判定 | 证据 | v3 处理 |
-| --- | --- | --- | --- | --- |
-| 3.1 | 拖拽有键盘/按钮替代 | Fail | 仅"←/→"按钮，且方向语义与纵向章节不符；跨章节只能拖拽 | ↑/↓ 按钮 + `Alt + ↑/↓` + `Shift + Alt + ←/→` 跨章节 |
-| 3.2 | 删除有撤销或确认 | Fail | 点"×"立即删除，无任何恢复 | **未完成**，列入 §5 R2 |
-| 3.3 | 页数偏差有提示 | Fail | 文档写了"差异 >2 页提示"，原型未实现 | 与约定页数比较，超出阈值显示警告 |
-| 3.4 | 自动推进可见、可暂停 | Fail | 1.2 秒后静默跳转 | 3 秒倒计时 + 暂停按钮；编辑/结构变更自动暂停 |
-| 3.5 | 编辑后下游失效 | Fail | `done.plan` 仍为 true，策划稿不重跑 | `stale` 标记 + 顶部导航点 + 进入时重跑 |
-| 3.6 | 标题/结构/顺序的失效范围可分 | Fail | 一律不失效 | 标题与顺序只失效设计稿；增删/跨章节失效策划与设计 |
-| 3.7 | 章节内可直接插页 | Pass | 便签"+"可在该页后插入 | 保留，并增加章节右上角"+" |
-
-### 2.4 阶段 4 · 策划稿
-
-| # | 检查项 | v2 判定 | 证据 | v3 处理 |
-| --- | --- | --- | --- | --- |
-| 4.1 | 未完成时不能确认 | Fail | 确认按钮始终可用 | 全部页面完成后才启用 |
-| 4.2 | 页状态不只靠颜色 | Fail | 只有 8px 色点，无文字/图标语义 | 色点 + 时钟/旋转/对勾图标 + `aria-label` |
-| 4.3 | 未策划页有明确占位 | Fail | 直接显示最终线框，像已完成 | 骨架占位 + `aria-busy` |
-| 4.4 | 重策划会使设计失效 | Fail | 策划变体变化，设计稿仍标记完成 | 触发设计稿 `stale` |
-| 4.5 | 微调只影响当前页 | Pass | 文档与原型一致 | 保留，并补错误提示与键盘 Enter |
-
-### 2.5 阶段 5 · 风格
-
-| # | 检查项 | v2 判定 | 证据 | v3 处理 |
-| --- | --- | --- | --- | --- |
-| 5.1 | "记住偏好"与文档一致 | Fail | 文档写了，原型没有 | 复选框 + `localStorage`，进入风格页自动选中 |
-| 5.2 | 风格卡可键盘选择 | Fail | 只有点击；无 `role/aria-checked` | `radiogroup` + 方向键 + `aria-checked` |
-| 5.3 | 换风格会使已生成设计失效 | Fail | 设计稿仍视为完成 | 确认时比较 `styleApplied`，失效设计稿 |
-
-### 2.6 阶段 6 · 设计稿
-
-| # | 检查项 | v2 判定 | 证据 | v3 处理 |
-| --- | --- | --- | --- | --- |
-| 6.1 | 单页重生成可撤销 | Fail | 变体直接覆盖，旧版本丢失 | 每页 `history` 栈 + "上一版" |
-| 6.2 | 单版式页面不虚假换版 | Fail | 封面/目录/结尾点"换一版"仍显示 V2，视觉不变 | 单版式页面提示改用微调，不再递增变体 |
-| 6.3 | 生成中可自由查看已生成页 | Fail | 点击缩略图后，生成循环会把当前页抢回 | `pinned` 标记：用户选页后不再跟随 |
-| 6.4 | 生成中有页级状态 | Fail | 只有一句"正在渲染" | 顶部进度 + 缩略图旋转/对勾 |
-| 6.5 | 导出有范围摘要 | Fail | 弹窗只有三个格式按钮 | 页数、风格、已渲染页数摘要 |
-| 6.6 | 导出符合弹窗无障碍 | Fail | 无 `role=dialog`、无焦点陷阱、Esc 不关闭 | 焦点陷阱 + Esc + 焦点归还 + 进度 `aria-valuenow` |
-| 6.7 | 导出失败可恢复 | Fail | 只有成功路径 | **未完成**，列入 §5 R1/R7 |
-
-### 2.7 全局体验
-
-| # | 检查项 | v2 判定 | 证据 | v3 处理 |
-| --- | --- | --- | --- | --- |
-| G1 | 可见焦点环 | Fail | 全局无 `:focus-visible` 规则 | 2px 品牌色焦点环 + 2px offset |
-| G2 | 键盘可完成主流程 | Fail | 拖拽、风格、弹窗均有缺口 | 补齐并写入 §7 键盘矩阵 |
-| G3 | 跳转主内容 | Fail | 无 skip link | 增加 skip link |
-| G4 | 动效尊重减少动态 | Fail | 打字机/飞入/脉冲无降级 | `prefers-reduced-motion` + 打字机直接输出 |
-| G5 | 正文对比度 ≥ 4.5:1 | Fail | `#9aa2b8` 小字在浅底上约 2.4:1 | 统一为 `#566079` / `#626c82`，实测 ≥ 4.7:1 |
-| G6 | 移动端阶段导航可用 | Fail | `@media (max-width:1100px)` 直接 `display:none` | ≤920px 切换为原生 `<select>` |
-| G7 | 移动端画布可读 | Fail | 16:9 画布缩到 335px，cqi 文字约 5px | ≤720px 画布 680px + 容器横向滚动 + 提示 |
-| G8 | 长任务可预期 | Partial | 有进度条，但无 ETA/取消 | 进度与页状态已补；取消/后台继续列入 §5 R3 |
-| G9 | 失败路径完整 | Fail | 全流程只有成功态 | 列入 §5 R1，v3 只定义契约 |
+1. **The interview was laid out all at once, and wrong answers could not be corrected.** 5 question cards appeared simultaneously, creating high cognitive load; in the v2 prototype every single-select click ran `answerCount++`, so changing an answer corrupted the count, and the profile might appear early or never; after profile generation there was also no edit entry.
+2. **Gaps were guessed by the user, conflicting with the content source design.** `ppt-content-sources.md` §2.3 says "Agent digests materials → judges sufficiency → lists gaps", but the prototype made the user self-report gaps from 4 hardcoded options. This pushed back onto the user the judgment that most belonged to the Agent.
+3. **Auto-advance was neither visible nor pausable.** Fully automatic mode jumped 1.2 seconds after the outline streaming animation ended, with no countdown and no pause; users editing a title were also cut off.
+4. **Downstream invalidation was only written in the docs, not built into the state machine.** The v2 docs said "mark for rerun after downstream data changes", but the data structure had no `stale`, and the prototype did not rerun; after editing the outline and entering the plan draft, users still saw the old wireframe.
+5. **"Regenerate" had no way back.** Single-page regeneration overwrote directly; after the user was satisfied with a page, one more click permanently lost it; cover/TOC/end had only one layout yet still displayed "switched to V2", which is fake feedback.
+6. **Accessibility and mobile were systemic gaps.** Emoji used as structural icons, no visible focus ring, no keyboard alternative for drag, no focus trap in modals, insufficient contrast on small gray text, mobile stage nav disappearing, and the design canvas too small to read.
 
 ---
 
-## 3. 重点问题拆解
+## 2. Stage-by-stage check
 
-### 3.1 为什么"缺口卡"必须由 Agent 出题
+Criterion: **Pass** = design covered and prototype verifiable; **Fail** = missing, conflicting, or inoperable; **N/A** = not applicable to the current version. Evidence only cites reviewable behavior or document paragraphs.
 
-v2 把缺口写成"竞品对比 / 行业与市场数据 / 客户案例 / 不需要"四选多。它有三个问题：
+### 2.1 Stage 1 · New project
 
-- **与产品定位矛盾**：产品承诺"像专业顾问一样做需求调研"，但缺口判断被交给用户，用户得先知道"缺什么"。
-- **与内容来源文档矛盾**：`ppt-content-sources.md` §2.3 明确 Agent 先判断素材充盈度，再列缺口清单。
-- **没有理由就没有判断依据**：用户看到"竞品对比"不知道为什么要选。
+| # | Check item | v2 verdict | Evidence | v3 handling |
+| --- | --- | --- | --- | --- |
+| 1.1 | Clear feedback when topic is empty | Fail | Prototype silently falls back to `MOCK.topic`; user thinks their topic was submitted | Empty topic blocks submission and focuses the input |
+| 1.2 | Material count has a visible limit | Fail | Over 6 only shows a toast; count invisible; button not disabled | Show `0 / 6`; disable entry at full |
+| 1.3 | Link format validation | Fail | Any string accepted after prefixing `https://` | Inline error if `URL` parsing fails |
+| 1.4 | Drag has discoverability | Pass | Dashed slot + drag highlight | Keep, and add empty-state description |
+| 1.5 | Restart has confirmation | Fail | Top button immediately clears everything | Confirm modal, default focus on "Cancel" |
+| 1.6 | Structural icons do not rely on emoji | Fail | 📦 / 📝 / 📎 / 🔗 / 🚀 / 🧭 are all emoji | Replace all with line SVG icons |
 
-v3 的改法：先给**素材消化摘要**（每份素材提取了什么），再给**缺口建议**（每条带理由、推荐标记、默认勾选），用户只做确认与取舍。选"不需要"会联动取消其他项，避免语义冲突。
+### 2.2 Stage 2 · Research
 
-### 3.2 为什么自动推进需要"可见的 3 秒"
+| # | Check item | v2 verdict | Evidence | v3 handling |
+| --- | --- | --- | --- | --- |
+| 2.1 | Questions appear one at a time, reducing cognitive load | Fail | 4-5 question cards laid out at once | Sequential Q&A; collapse to summary after answering; "Edit" reopens |
+| 2.2 | Changing answers does not break the flow | Fail | Single-select increments `answerCount` on every click; changing an answer inflates the count | Use the `answers` map as source of truth; changing an answer overwrites only that item |
+| 2.3 | Profile is editable | Fail | Profile card is read-only; after changing answers, "Generate outline" is still clickable | "Edit requirements answers" + "Update profile"; block outline until updated |
+| 2.4 | Gaps judged by the Agent | Fail | Gap card has 4 hardcoded options, user self-reports | Material digest summary + Agent gap suggestions (reason + pre-selected + recommended badge) |
+| 2.5 | Timing of material digestion and questions is understandable | Fail | Question cards appear first; tool cards asynchronously appended after; order inverted | Digestion and questions run in parallel; gap card only after digestion; digest card explains each material |
+| 2.6 | Chat area scrolls independently and auto-follows | Fail | `.chat` only has `min-height`; long conversations stretch the page; `scrollTop` ineffective | Desktop fixed-height scroll container + immediate follow; natural flow on mobile |
+| 2.7 | Source panel has empty/loading states | Fail | Web group only has an empty list; no skeleton during search | Grouped empty copy + 3 skeleton rows + item-by-item lighting |
+| 2.8 | Conflict priority is visible | Pass | Right panel footnote says "first-party materials first" | Keep, and repeat in the profile strategy row |
+| 2.9 | Skipping web has a clear result | Pass | After choosing "not needed", copy explains the material-based basis | Keep, and write "no web" in the profile "Web" row |
 
-全自动模式的价值是省心，但"省心"不等于"抢跑"。v2 在大纲动画结束后静默跳转，用户如果正在改标题，编辑会被中断。v3 的做法：
+### 2.3 Stage 3 · Outline sticky notes
 
-- 倒计时条明确写出"3 秒后自动进入策划稿"。
-- "暂停"按钮随时可用。
-- 任何标题编辑、增删、排序都会自动暂停，并提示原因。
-- 倒计时归零时若检测到焦点在输入框/可编辑区，自动暂停而不是跳转。
+| # | Check item | v2 verdict | Evidence | v3 handling |
+| --- | --- | --- | --- | --- |
+| 3.1 | Drag has keyboard/button alternatives | Fail | Only "←/→" buttons, whose direction semantics mismatch vertical sections; cross-section moves are drag-only | ↑/↓ buttons + `Alt + ↑/↓` + `Shift + Alt + ←/→` across sections |
+| 3.2 | Delete has undo or confirmation | Fail | Clicking "×" deletes immediately with no recovery | **Unfinished**, see §5 R2 |
+| 3.3 | Page count deviation has a warning | Fail | Docs say "warn if difference >2 pages"; prototype does not implement it | Compare with the agreed page count; show warning over the threshold |
+| 3.4 | Auto-advance is visible and pausable | Fail | Silent jump after 1.2 seconds | 3-second countdown + pause button; editing/structure changes auto-pause |
+| 3.5 | Edits invalidate downstream | Fail | `done.plan` remains true; plan draft does not rerun | `stale` marker + top nav dot + rerun on entry |
+| 3.6 | Invalidation scope distinguishes title/structure/order | Fail | Never invalidates | Title and order invalidate design only; add/delete/cross-section invalidate plan + design |
+| 3.7 | Insert page directly within a section | Pass | Note "+" inserts after that page | Keep, and add "+" at the section's top-right |
 
-### 3.3 失效传播矩阵
+### 2.4 Stage 4 · Plan draft
 
-| 变更 | 影响的产物 | v3 行为 |
+| # | Check item | v2 verdict | Evidence | v3 handling |
+| --- | --- | --- | --- | --- |
+| 4.1 | Cannot confirm before completion | Fail | Confirm button always enabled | Enabled only after all pages complete |
+| 4.2 | Page status not conveyed by color alone | Fail | Only an 8px color dot, no text/icon semantics | Color dot + clock/spinner/check icon + `aria-label` |
+| 4.3 | Unplanned pages have a clear placeholder | Fail | Shows the final wireframe directly, looking complete | Skeleton placeholder + `aria-busy` |
+| 4.4 | Re-plan invalidates design | Fail | Plan variant changes, but design still marked complete | Trigger design `stale` |
+| 4.5 | Tweaks affect only the current page | Pass | Docs and prototype consistent | Keep, and add error prompt and keyboard Enter |
+
+### 2.5 Stage 5 · Style
+
+| # | Check item | v2 verdict | Evidence | v3 handling |
+| --- | --- | --- | --- | --- |
+| 5.1 | "Remember preference" matches the docs | Fail | Docs describe it; prototype does not have it | Checkbox + `localStorage`; auto-select on entering the style page |
+| 5.2 | Style cards are keyboard-selectable | Fail | Click only; no `role/aria-checked` | `radiogroup` + arrow keys + `aria-checked` |
+| 5.3 | Changing style invalidates generated design | Fail | Design still considered complete | Compare `styleApplied` on confirm; invalidate design |
+
+### 2.6 Stage 6 · Design draft
+
+| # | Check item | v2 verdict | Evidence | v3 handling |
+| --- | --- | --- | --- | --- |
+| 6.1 | Single-page regeneration is undoable | Fail | Variant overwritten directly; old version lost | Per-page `history` stack + "Previous version" |
+| 6.2 | Single-layout pages do not fake regeneration | Fail | Cover/TOC/end still show V2 after "Regenerate"; visuals unchanged | Single-layout pages prompt to use tweaks; no variant increment |
+| 6.3 | Can freely view generated pages during generation | Fail | After clicking a thumbnail, the generation loop steals the current page back | `pinned` flag: stop following after the user selects a page |
+| 6.4 | Page-level status during generation | Fail | Only one line "rendering" | Top progress + thumbnail spinner/check |
+| 6.5 | Export has a scope summary | Fail | Modal only has three format buttons | Page count, style, and rendered page count summary |
+| 6.6 | Export meets modal accessibility | Fail | No `role=dialog`, no focus trap, Esc does not close | Focus trap + Esc + focus return + progress `aria-valuenow` |
+| 6.7 | Export failure is recoverable | Fail | Success path only | **Unfinished**, see §5 R1/R7 |
+
+### 2.7 Global experience
+
+| # | Check item | v2 verdict | Evidence | v3 handling |
+| --- | --- | --- | --- | --- |
+| G1 | Visible focus ring | Fail | No global `:focus-visible` rule | 2px brand focus ring + 2px offset |
+| G2 | Keyboard can complete the main flow | Fail | Gaps in drag, style, and modals | Completed and documented in the §7 keyboard matrix |
+| G3 | Skip to main content | Fail | No skip link | Add skip link |
+| G4 | Motion respects reduced motion | Fail | Typewriter/fly-in/pulse have no fallback | `prefers-reduced-motion` + typewriter outputs full text |
+| G5 | Body contrast ≥ 4.5:1 | Fail | `#9aa2b8` small text on light background is about 2.4:1 | Unify to `#566079` / `#626c82`, measured ≥ 4.7:1 |
+| G6 | Mobile stage nav is usable | Fail | `@media (max-width:1100px)` sets `display:none` | Switch to native `<select>` at ≤920px |
+| G7 | Mobile canvas is readable | Fail | 16:9 canvas shrinks to 335px; cqi text about 5px | ≤720px canvas 680px + container horizontal scroll + hint |
+| G8 | Long tasks are predictable | Partial | Progress bar exists, but no ETA/cancel | Progress and page status added; cancel/background continue in §5 R3 |
+| G9 | Failure paths are complete | Fail | The whole flow only has the happy path | In §5 R1; v3 only defines contracts |
+
+---
+
+## 3. Key problem deep dives
+
+### 3.1 Why the "gap card" must be asked by the Agent
+
+v2 wrote gaps as a multi-select of four: "competitor comparison / industry and market data / customer cases / not needed". It had three problems:
+
+- **Contradicts product positioning**: the product promises "research like a professional consultant", but gap judgment is handed to the user, who must first know "what is missing".
+- **Contradicts the content source doc**: `ppt-content-sources.md` §2.3 explicitly says the Agent judges material sufficiency first, then lists gaps.
+- **No reason means no basis for judgment**: the user sees "competitor comparison" and does not know why to select it.
+
+v3 approach: first give a **material digest summary** (what each material yielded), then **gap suggestions** (each with a reason, recommended badge, and pre-checked), and the user only confirms and chooses. Choosing "not needed" clears the other items to avoid semantic conflict.
+
+### 3.2 Why auto-advance needs a "visible 3 seconds"
+
+The value of fully automatic mode is ease of mind, but "ease of mind" does not mean "jumping the gun". v2 silently jumped after the outline animation; if the user was editing a title, the edit was interrupted. v3:
+
+- The countdown bar explicitly says "Entering plan draft in 3 seconds".
+- The "Pause" button is always available.
+- Any title edit, add/delete, or sort auto-pauses and explains why.
+- When the countdown reaches zero, if focus is in an input/editable area, auto-pause instead of jumping.
+
+### 3.3 Stale propagation matrix
+
+| Change | Affected artifacts | v3 behavior |
 | --- | --- | --- |
-| 改页面标题 | 策划稿页头、设计稿页头 | 设计稿标记待重跑；策划稿静态重渲染即可，不重跑布局 |
-| 章节内排序 | 设计稿顺序/缩略图 | 设计稿标记待重跑 |
-| 跨章节移动 | 策划稿分组、设计稿顺序 | 策划稿 + 设计稿标记待重跑 |
-| 新增/删除页面 | 策划稿、设计稿 | 策划稿 + 设计稿标记待重跑；删除页同时清理对应 plan/slide |
-| 重策划/微调单页 | 该页设计稿 | 设计稿标记待重跑 |
-| 换风格 | 全部设计稿 | 设计稿标记待重跑 |
+| Edit page title | Plan page header, design page header | Design marked stale; plan only needs a static re-render, no layout rerun |
+| Reorder within section | Design order/thumbnails | Design marked stale |
+| Move across sections | Plan grouping, design order | Plan + design marked stale |
+| Add/delete page | Plan, design | Plan + design marked stale; deleting a page also clears its plan/slide |
+| Re-plan/tweak single page | That page's design | Design marked stale |
+| Change style | All design drafts | Design marked stale |
 
-原型实现为 `S.stale.plan` / `S.stale.design`，顶部阶段导航以琥珀色圆点 + `aria-label="待重跑"` 呈现。
+The prototype implements this as `S.stale.plan` / `S.stale.design`; the top stage nav shows an amber dot + `aria-label="needs rerun"`.
 
-### 3.4 为什么设计稿必须有"上一版"
+### 3.4 Why the design draft must have a "previous version"
 
-单页"换一版"是高频操作，也是高风险操作。用户往往在"这一版已经可以了"之后手痒再点一次。没有历史栈时，这一次点击不可逆。v3 为每页维护 `history: number[]`，每次换版/微调前压入当前 variant，"上一版"弹栈恢复。封面/目录/结尾只有一种版式时不递增变体，直接提示用微调，避免虚假的"V2"。
-
----
-
-## 4. v3 已落地的改动（按用户可感知顺序）
-
-1. **视觉系统**：靛蓝主色 + 便利贴琥珀辅助色；统一 4/8/12/16/24 间距、圆角、阴影、焦点环；全部结构图标改为线性 SVG；首页改为更克制的"高亮标记"而非渐变字。
-2. **素材槽**：计数 `0/6`、满额禁用、URL 格式校验、粘贴 `Cmd/Ctrl+Enter`、文件类型提示、空态说明、移除反馈。
-3. **访谈**：顺序问答、答完折叠摘要、任意题可改、画像可修改并在脏数据时阻止进入大纲；素材消化摘要卡；Agent 缺口建议卡。
-4. **大纲**：↑/↓ 按钮 + 键盘排序 + 跨章节键盘移动；章节级插页；页数偏差警告；自动推进倒计时/暂停/编辑自暂停；失效传播。
-5. **策划稿**：逐页状态图标、骨架占位、完成前禁止确认、`aria-busy`、重策划触发设计失效、微调错误提示。
-6. **风格**：记住偏好（`localStorage`）、方向键选择、`radiogroup` 语义、换风格触发设计失效。
-7. **设计稿**：用户选页后不再被生成循环抢回；每页版本历史与"上一版"；单版式页面保护；导出摘要/进度/成功态；弹窗焦点陷阱与 Esc。
-8. **全局**：skip link、`:focus-visible`、`aria-live` 状态播报、`role=log`、`aria-current`、`prefers-reduced-motion`、移动端阶段 `<select>`、移动端页面横条、移动端画布横向滚动、对比度修正。
+Single-page "Regenerate" is a high-frequency and high-risk operation. Users often click once more after "this version is already fine". Without a history stack, that click is irreversible. v3 maintains `history: number[]` per page, pushes the current variant before each regenerate/tweak, and "Previous version" pops and restores it. Cover/TOC/end with a single layout do not increment variants and directly prompt the user to use tweaks, avoiding a fake "V2".
 
 ---
 
-## 5. 仍未覆盖 / 后续建议
+## 4. v3 changes already landed (in user-perceivable order)
 
-| 编号 | 事项 | 优先级 | 现状 | 负责人 / 阶段 |
+1. **Visual system**: indigo primary + sticky-note amber secondary; unified 4/8/12/16/24 spacing, radii, shadows, focus ring; all structural icons replaced with line SVG; home page uses a more restrained "highlight marker" instead of gradient text.
+2. **Material slot**: count `0/6`, disabled at full, URL format validation, paste `Cmd/Ctrl+Enter`, file type hints, empty-state description, removal feedback.
+3. **Interview**: sequential Q&A, collapse to summary after answering, any question editable, profile editable and blocked from outline when dirty; material digest summary card; Agent gap suggestion card.
+4. **Outline**: ↑/↓ buttons + keyboard sorting + cross-section keyboard moves; section-level insertion; page count deviation warning; auto-advance countdown/pause/edit-auto-pause; stale propagation.
+5. **Plan draft**: per-page status icons, skeleton placeholder, confirmation blocked before completion, `aria-busy`, re-plan triggers design invalidation, tweak error prompt.
+6. **Style**: remember preference (`localStorage`), arrow-key selection, `radiogroup` semantics, style change triggers design invalidation.
+7. **Design draft**: user-selected page no longer stolen back by the generation loop; per-page version history and "Previous version"; single-layout page protection; export summary/progress/success; modal focus trap and Esc.
+8. **Global**: skip link, `:focus-visible`, `aria-live` status announcements, `role=log`, `aria-current`, `prefers-reduced-motion`, mobile stage `<select>`, mobile page strip, mobile canvas horizontal scroll, contrast fixes.
+
+---
+
+## 5. Still uncovered / follow-ups
+
+| ID | Item | Priority | Current state | Owner / stage |
 | --- | --- | --- | --- | --- |
-| R1 | 失败与恢复：素材解析失败、URL 抓取失败、检索 0 结果、单页生成失败、导出失败 | P0 | v3 只定义契约（交互文档 §6），原型未模拟失败 | 前端 + 后端 · 开发前 |
-| R2 | 大纲删除撤销：单页删除、章节删除 | P1 | 当前即时删除，无撤销 | 前端 · 开发前 |
-| R3 | 长任务取消/后台继续/断线恢复 | P1 | 跳转即中止（`runSeq` 令牌），无后台任务 | 后端 · 架构阶段 |
-| R4 | 真实素材解析与 URL 抓取（大小、页数、登录墙、反爬） | P0 | 原型仅记录名称/大小，不解析 | 后端 · 见内容来源 §4.2 |
-| R5 | 素材摘要可展开查看原文/定位 | P2 | 原型只显示摘要行 | 设计 · 视觉稿阶段 |
-| R6 | 全局版本历史（跨页、跨风格） | P2 | 仅单页 variant 历史 | 产品 · 下一版 |
-| R7 | 导出前真实校验（字体缺失、图片越界、空页） | P1 | 原型只显示"已渲染 X/Y" | 前端 · 导出实现时 |
-| R8 | 单选组标准 roving tabindex | P2 | 当前 Tab + Space 可用，方向键未实现 | 前端 · 可访问性补齐 |
-| R9 | 移动端画布"适配/100%"切换 | P2 | 当前 680px 横向滑动 + 提示 | 设计 · 视觉稿阶段 |
+| R1 | Failure and recovery: material parsing failure, URL fetch failure, zero search results, single-page generation failure, export failure | P0 | v3 only defines contracts (interaction doc §6); prototype does not simulate failures | Frontend + backend · before development |
+| R2 | Outline delete undo: single-page delete, section delete | P1 | Currently deletes immediately, no undo | Frontend · before development |
+| R3 | Long-task cancel/background continue/reconnect recovery | P1 | Navigating aborts (via `runSeq` token); no background task | Backend · architecture stage |
+| R4 | Real material parsing and URL fetching (size, page count, login walls, anti-scraping) | P0 | Prototype only records name/size, no parsing | Backend · see content sources §4.2 |
+| R5 | Material digest expandable to view source text/locate | P2 | Prototype only shows the summary line | Design · visual design stage |
+| R6 | Global version history (cross-page, cross-style) | P2 | Only per-page variant history | Product · next version |
+| R7 | Real pre-export validation (missing fonts, out-of-bounds images, empty pages) | P1 | Prototype only shows "rendered X/Y" | Frontend · export implementation |
+| R8 | Standard roving tabindex for radio groups | P2 | Tab + Space currently works; arrow keys not implemented | Frontend · accessibility completion |
+| R9 | Mobile canvas "fit/100%" toggle | P2 | Currently 680px horizontal swipe + hint | Design · visual design stage |
 
-> 以上未完成项不要写成"已支持"。v3 文档与原型只对 §4 列出的改动负责。
-
----
-
-## 6. 验证记录（2026-11-18）
-
-- **无素材路径**：主题 → 4 题顺序问答 → 联网 12 份 → 画像 → 大纲 → 策划 16 页 → 风格 → 设计 16 页 → 换一版 → 上一版 → 微调 → 导出三格式；无控制台报错。
-- **有素材路径**：粘贴 + URL + 文件 3 份 → 素材工具卡逐条完成 → 建议缺口（2 项预选）→ "不需要"联动清空 → 画像"不联网" → 大纲。无控制台报错。
-- **键盘**：便利贴 `Alt + ↑/↓` 换位、`Shift + Alt + →` 跨章节；设计稿 `←/→` 翻页；弹窗 `Esc` 关闭并归还焦点。
-- **失效传播**：设计完成后新增页面，策划与设计阶段均出现"待重跑"圆点与 `aria-label`。
-- **响应式**：1440 / 1180 / 920 / 720 / 390 五档走查；390px 下阶段导航切换为 `<select>`，页面列表为横向条，画布 680px 可横向滑动。
-- **对比度**：主文字 `#161c2d` / `#566079` / `#626c82` 在 `#ffffff` 与 `#f5f6fa` 上均 ≥ 4.5:1；按钮白字在 `#4f46e5` 上 6.29:1。
-- **减少动态**：`prefers-reduced-motion: reduce` 下动画时长趋零，打字机直接输出。
+> Do not describe the unfinished items above as "supported". The v3 docs and prototype are only responsible for the changes listed in §4.
 
 ---
 
-## 7. 无障碍与响应式基线（供实现阶段复用）
+## 6. Validation log (2026-11-18)
 
-### 7.1 键盘矩阵
+- **No-material path**: topic → 4 sequential questions → 12 web sources → profile → outline → 16 plan pages → style → 16 design pages → regenerate → previous version → tweak → export in three formats; no console errors.
+- **With-material path**: paste + URL + file (3 items) → material tool cards complete one by one → suggested gaps (2 pre-selected) → "not needed" clears the others → profile "no web" → outline. No console errors.
+- **Keyboard**: sticky notes `Alt + ↑/↓` reorder, `Shift + Alt + →` cross-section; design draft `←/→` paging; modal `Esc` closes and returns focus.
+- **Stale propagation**: add a page after design completes; both plan and design stages show the "needs rerun" dot and `aria-label`.
+- **Responsive**: 1440 / 1180 / 920 / 720 / 390 walkthrough; at 390px stage nav switches to `<select>`, page list is a horizontal strip, canvas 680px horizontally scrollable.
+- **Contrast**: primary text `#161c2d` / `#566079` / `#626c82` on `#ffffff` and `#f5f6fa` all ≥ 4.5:1; white button text on `#4f46e5` is 6.29:1.
+- **Reduced motion**: under `prefers-reduced-motion: reduce`, animation durations approach zero and the typewriter outputs full text.
 
-| 区域 | 按键 | 行为 |
+---
+
+## 7. Accessibility and responsive baseline (for reuse in implementation)
+
+### 7.1 Keyboard matrix
+
+| Area | Key | Behavior |
 | --- | --- | --- |
-| 全局 | `Tab` / `Shift+Tab` | 按视觉顺序移动；弹窗内循环 |
-| 全局 | `Esc` | 关闭当前弹窗，焦点回到触发元素 |
-| 首页模式 | `←` / `→` / `↑` / `↓` | 在"全自动 / 专家陪跑"间切换 |
-| 访谈 | `Tab` + `Space` / `Enter` | 选择选项；多选逐项确认 |
-| 便利贴 | `Alt + ↑/↓` | 本章内上移/下移 |
-| 便利贴 | `Shift + Alt + ←/→` | 移到相邻章节末尾 |
-| 便利贴 | `Enter` | 结束标题编辑并保存 |
-| 风格 | `←` / `→` / `↑` / `↓` | 切换风格卡并选中 |
-| 设计稿 | `←` / `→` | 上一页/下一页 |
+| Global | `Tab` / `Shift+Tab` | Move in visual order; cycle within modals |
+| Global | `Esc` | Close the current modal; focus returns to the trigger |
+| Home mode | `←` / `→` / `↑` / `↓` | Switch between "fully automatic / expert copilot" |
+| Interview | `Tab` + `Space` / `Enter` | Select an option; confirm multi-select items individually |
+| Sticky notes | `Alt + ↑/↓` | Move up/down within the section |
+| Sticky notes | `Shift + Alt + ←/→` | Move to the end of an adjacent section |
+| Sticky notes | `Enter` | Finish title editing and save |
+| Style | `←` / `→` / `↑` / `↓` | Switch and select style cards |
+| Design draft | `←` / `→` | Previous/next page |
 
-### 7.2 语义与状态
+### 7.2 Semantics and states
 
-- 对话容器 `role="log"`、`aria-live="off"`；里程碑通过独立 `role="status"` 区域播报，避免逐 token 刷屏。
-- 问题选项 `role="radio"` / `role="checkbox"` + `aria-checked`；缺口用原生 checkbox。
-- 画布 `role="img"` + `aria-label`；缩略图装饰性 `aria-hidden="true"`。
-- 生成中容器 `aria-busy`；进度条 `role="progressbar"` + `aria-valuenow`。
-- 当前阶段 `aria-current="step"`；待重跑在 `aria-label` 中明示。
+- Conversation container `role="log"`, `aria-live="off"`; milestones are announced through a separate `role="status"` region to avoid per-token chatter.
+- Question options `role="radio"` / `role="checkbox"` + `aria-checked`; gaps use native checkboxes.
+- Canvas `role="img"` + `aria-label`; thumbnails are decorative with `aria-hidden="true"`.
+- Generation container `aria-busy`; progress bar `role="progressbar"` + `aria-valuenow`.
+- Current stage `aria-current="step"`; needs-rerun stated explicitly in `aria-label`.
 
-### 7.3 断点
+### 7.3 Breakpoints
 
-| 断点 | 布局 |
+| Breakpoint | Layout |
 | --- | --- |
-| ≥1180 | 调研/策划/设计三栏或两栏完整布局 |
-| ≤1180 | 右侧面板下移；设计稿"画布 → 操作 → 缩略图" |
-| ≤920 | 顶部阶段导航切换为原生 `<select>` |
-| ≤720 | 首页单列、问卷全宽、页面列表横条、画布 680px 横向滚动 |
-| ≤480 | 精简品牌与示例 chips，保留核心操作 |
+| ≥1180 | Full three- or two-column layout for research/plan/design |
+| ≤1180 | Right panel moves below; design draft order "canvas → actions → thumbnails" |
+| ≤920 | Top stage nav switches to native `<select>` |
+| ≤720 | Home single column, survey full-width, page list horizontal strip, canvas 680px with horizontal scroll |
+| ≤480 | Trim brand and example chips; keep core actions |

@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light">
-<title>Bound PPT · Agent 交互原型（Mock）</title>
+<title>Bound PPT · Agent interaction prototype (Mock)</title>
 <style>
 /* ============================================================
-   Bound PPT · 设计令牌
-   方向：AI-Native + Bento Grid（ui-ux-pro-max）
-   主色靛蓝承担操作，便利贴琥珀承担内容，避免通用 SaaS 紫渐变
+   Bound PPT · Design tokens
+   Direction: AI-Native + Bento Grid (ui-ux-pro-max)
+   Indigo carries actions, sticky-note amber carries content;
+   avoid the generic SaaS purple gradient.
    ============================================================ */
 :root{
   --brand:#4f46e5; --brand-strong:#4338ca; --brand-soft:#eef0ff; --brand-line:#d9ddff;
@@ -25,7 +26,7 @@
   --sh-1:0 1px 2px rgba(16,24,40,.04);
   --sh-2:0 1px 2px rgba(16,24,40,.04), 0 14px 32px -22px rgba(16,24,40,.22);
   --sh-3:0 24px 60px -28px rgba(16,24,40,.38);
-  --font:"Inter","SF Pro Text",-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI","Microsoft YaHei",sans-serif;
+  --font:"Inter","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
   --ease:cubic-bezier(.2,.7,.3,1); --dur:180ms;
   --header-h:60px;
@@ -57,7 +58,7 @@ a{color:var(--brand-strong)}
 .skip-link:focus{transform:none}
 .sr-status{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
 
-/* ---------- 顶栏 ---------- */
+/* ---------- Top bar ---------- */
 .topbar{
   position:sticky; top:0; z-index:60; display:flex; align-items:center; gap:14px;
   min-height:var(--header-h); padding:0 22px;
@@ -90,7 +91,7 @@ a{color:var(--brand-strong)}
 .topbtn:hover{border-color:var(--line-strong); background:var(--surface-2)}
 .stage-select{display:none; height:32px; max-width:132px; padding:0 8px; border:1px solid var(--line); border-radius:9px; background:#fff; font-size:12px; color:var(--ink-2)}
 
-/* ---------- 阶段壳 ---------- */
+/* ---------- Stage shell ---------- */
 main{max-width:1400px; margin:0 auto; padding:24px 24px 72px}
 .stage{display:none}
 .stage.on{display:block; animation:stageIn .28s var(--ease) both}
@@ -105,7 +106,7 @@ main{max-width:1400px; margin:0 auto; padding:24px 24px 72px}
 .panel{background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); box-shadow:var(--sh-1)}
 .panel-head{display:flex; align-items:center; justify-content:space-between; gap:10px}
 
-/* ---------- 按钮 / 输入 ---------- */
+/* ---------- Buttons / inputs ---------- */
 .btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; height:40px; padding:0 18px; border-radius:12px; background:var(--brand); color:#fff; font-size:14px; font-weight:650; letter-spacing:.005em; white-space:nowrap; box-shadow:0 1px 2px rgba(79,70,229,.28); transition:background var(--dur) var(--ease),box-shadow var(--dur),border-color var(--dur),color var(--dur),opacity var(--dur)}
 .btn:hover:not(:disabled){background:var(--brand-strong)}
 .btn:active:not(:disabled){box-shadow:inset 0 2px 6px rgba(0,0,0,.16)}
@@ -136,7 +137,7 @@ textarea.field{height:auto; padding:10px 12px; line-height:1.6; resize:vertical}
 .tiny{font-size:11.5px; color:var(--faint)}
 .divider{height:1px; background:var(--line); border:0; margin:0}
 
-/* ---------- 首页 ---------- */
+/* ---------- Home ---------- */
 .hero{max-width:820px; margin:22px auto 0; text-align:center}
 .eyebrow{display:inline-flex; align-items:center; gap:7px; padding:5px 12px; border-radius:999px; background:#fff; border:1px solid var(--brand-line); color:var(--brand-strong); font-size:11.5px; font-weight:650; letter-spacing:.01em; box-shadow:var(--sh-1)}
 .eyebrow .ico{width:14px; height:14px}
@@ -202,7 +203,7 @@ textarea.field{height:auto; padding:10px 12px; line-height:1.6; resize:vertical}
 .credit{max-width:660px; margin:34px auto 0; color:var(--faint); font-size:11.5px; line-height:1.8}
 .credit a{text-underline-offset:2px}
 
-/* ---------- 阶段 2 · 需求调研 ---------- */
+/* ---------- Stage 2 · Research ---------- */
 .rsplit{display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:16px; align-items:start}
 .chat{height:calc(100vh - 186px); height:calc(100dvh - 186px); min-height:460px; overflow:auto; display:flex; flex-direction:column; gap:12px; padding:20px; overscroll-behavior:contain}
 .chat::-webkit-scrollbar,.srcpanel::-webkit-scrollbar,.pagelist::-webkit-scrollbar,.thumbs::-webkit-scrollbar{width:8px; height:8px}
@@ -296,7 +297,7 @@ textarea.field{height:auto; padding:10px 12px; line-height:1.6; resize:vertical}
 .profile-card.dirty .pc-status{color:var(--warn); background:var(--warn-soft)}
 .profile-card.dirty .pc-dirty{display:flex}
 
-/* 内容源面板 */
+/* Content source panel */
 .srcpanel{padding:16px; position:sticky; top:calc(var(--header-h) + 16px); max-height:calc(100dvh - 96px); overflow:auto}
 .src-title{display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:700}
 .src-title .ico{color:var(--brand)}
@@ -323,7 +324,7 @@ textarea.field{height:auto; padding:10px 12px; line-height:1.6; resize:vertical}
 .src-foot{margin-top:14px; padding-top:12px; border-top:1px solid var(--line); font-size:10.5px; line-height:1.6; color:var(--muted)}
 .src-foot b{color:var(--ink-2); font-weight:650}
 
-/* ---------- 阶段 3 · 便利贴 ---------- */
+/* ---------- Stage 3 · Sticky notes ---------- */
 .board-status{display:flex; align-items:center; gap:8px; min-height:22px; margin-bottom:10px; font-size:12px; color:var(--muted)}
 .board-status .ico{color:var(--brand)}
 .board-top{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-bottom:16px}
@@ -372,7 +373,7 @@ textarea.field{height:auto; padding:10px 12px; line-height:1.6; resize:vertical}
 @keyframes pulse{50%{opacity:.35}}
 .autobar .btn{height:22px; padding:0 7px; border-radius:999px; font-size:10.5px}
 
-/* ---------- 阶段 4 · 策划稿 ---------- */
+/* ---------- Stage 4 · Plan draft ---------- */
 .psplit{display:grid; grid-template-columns:280px minmax(0,1fr); gap:16px; align-items:start}
 .pagelist{position:sticky; top:calc(var(--header-h) + 16px); max-height:calc(100dvh - 96px); overflow:auto; padding:10px}
 .plgroup{display:flex; align-items:center; gap:6px; margin:11px 6px 5px; font-size:10px; font-weight:800; letter-spacing:.06em; color:var(--faint)}
@@ -403,7 +404,7 @@ textarea.field{height:auto; padding:10px 12px; line-height:1.6; resize:vertical}
 .tweaknote .err{color:var(--danger)}
 .plan-note{display:flex; align-items:center; gap:8px; padding:10px 12px; border:1px solid var(--line); border-left:3px solid var(--brand); border-radius:9px; background:#fbfbff; font-size:11.5px; color:var(--muted)}
 
-/* ---------- 阶段 5 · 风格 ---------- */
+/* ---------- Stage 5 · Style ---------- */
 .stylegrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(248px,1fr)); gap:14px}
 .stylecard{position:relative; overflow:hidden; border:1.5px solid var(--line); border-radius:var(--r-md); background:#fff; text-align:left; transition:transform var(--dur) var(--ease),box-shadow var(--dur),border-color var(--dur)}
 .stylecard:hover{transform:translateY(-2px); box-shadow:var(--sh-2); border-color:var(--line-strong)}
@@ -421,7 +422,7 @@ textarea.field{height:auto; padding:10px 12px; line-height:1.6; resize:vertical}
 .stylecard .meta .t .pal{margin-left:0}
 .style-foot{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:18px; padding:14px 16px; border:1px solid var(--line); border-radius:var(--r-md); background:#fff; box-shadow:var(--sh-1)}
 
-/* ---------- 阶段 6 · 设计稿 ---------- */
+/* ---------- Stage 6 · Design draft ---------- */
 .dsplit{display:grid; grid-template-columns:252px minmax(0,1fr) 310px; gap:16px; align-items:start}
 .thumbs{position:sticky; top:calc(var(--header-h) + 16px); max-height:calc(100dvh - 96px); overflow:auto; padding:10px}
 .thumb{display:flex; align-items:center; gap:8px; width:100%; padding:5px 6px; border:1px solid transparent; border-radius:9px; color:var(--ink-2); font-size:11.5px; transition:background var(--dur),border-color var(--dur),color var(--dur)}
@@ -458,7 +459,7 @@ textarea.field{height:auto; padding:10px 12px; line-height:1.6; resize:vertical}
 .versionline strong{color:var(--ink-2); font-weight:650}
 .export-hint{margin-top:8px; font-size:10.5px; line-height:1.6; color:var(--faint)}
 
-/* ---------- Slide 渲染器（Bento Grid） ---------- */
+/* ---------- Slide renderer (Bento Grid) ---------- */
 .slide{container-type:inline-size; position:relative; aspect-ratio:16/9; overflow:hidden; border-radius:12px; background:var(--s-bg); color:var(--s-fg); box-shadow:0 18px 40px -26px rgba(16,24,40,.45);
   --s-bg:#101728; --s-card:#18203a; --s-fg:#eef1ff; --s-muted:#96a3c7; --s-accent:#6ea8ff; --s-accent2:#8b5cf6; --s-line:rgba(255,255,255,.1); --s-title-font:inherit; --s-radius:1.2cqi; font-family:var(--font);}
 .slide .sl-inner{position:absolute; inset:0; display:flex; flex-direction:column; gap:2cqi; padding:3.2cqi}
@@ -523,7 +524,7 @@ textarea.field{height:auto; padding:10px 12px; line-height:1.6; resize:vertical}
 .wcard .wk{display:flex; gap:1cqi; margin-top:auto}
 .wcard .wk i{flex:1; height:2.6cqi; border-radius:4px; background:#e2e5f0}
 
-/* ---------- 弹窗 / Toast ---------- */
+/* ---------- Modals / Toast ---------- */
 .overlay{position:fixed; inset:0; z-index:100; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(18,22,38,.46); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px)}
 .overlay.on{display:flex}
 .modal{width:460px; max-width:100%; max-height:calc(100dvh - 40px); overflow:auto; padding:22px; border-radius:20px; background:#fff; box-shadow:var(--sh-3); animation:modalIn .2s var(--ease)}
@@ -559,7 +560,7 @@ textarea.field{height:auto; padding:10px 12px; line-height:1.6; resize:vertical}
 .confirm-icon .ico{width:20px; height:20px}
 .confirm-copy{font-size:12.5px; line-height:1.7; color:var(--muted)}
 
-/* ---------- 响应式 ---------- */
+/* ---------- Responsive ---------- */
 @media (max-width:1180px){
   .rsplit,.psplit,.dsplit{grid-template-columns:1fr}
   .srcpanel,.pagelist,.thumbs,.opsarea{position:static; max-height:none}
@@ -618,7 +619,7 @@ textarea.field{height:auto; padding:10px 12px; line-height:1.6; resize:vertical}
   .thumbs .thumb .mini{width:78px}
 }
 
-/* ---------- 组件补丁 ---------- */
+/* ---------- Component patches ---------- */
 .step .n .ico{width:11px; height:11px; stroke-width:2.4}
 .no-anim,.no-anim *{animation:none!important}
 .pstate .spinner,.thumb .ts .spinner{width:11px; height:11px; border-width:1.5px}
@@ -664,7 +665,7 @@ textarea.field{height:auto; padding:10px 12px; line-height:1.6; resize:vertical}
   .mobile-hint{display:flex}
 }
 
-/* ---------- 减少动态 ---------- */
+/* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.001ms!important; animation-iteration-count:1!important; transition-duration:.001ms!important; scroll-behavior:auto!important}
@@ -672,9 +673,9 @@ textarea.field{height:auto; padding:10px 12px; line-height:1.6; resize:vertical}
 </style>
 </head>
 <body>
-<a class="skip-link" href="#main">跳到主内容</a>
+<a class="skip-link" href="#main">Skip to main content</a>
 
-<!-- ============ SVG 图标库（线性 1.7px，随文字颜色） ============ -->
+<!-- ============ SVG icon library (1.7px line icons, inherit text color) ============ -->
 <svg aria-hidden="true" focusable="false" width="0" height="0" style="position:absolute;overflow:hidden">
   <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"/><path d="M18.5 15.5l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9z"/></symbol>
   <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></symbol>
@@ -720,200 +721,200 @@ textarea.field{height:auto; padding:10px 12px; line-height:1.6; resize:vertical}
     <span class="logo" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
     <span class="brand-name">Bound PPT<span class="brand-sub"> · PPT Agent</span></span>
   </div>
-  <span class="badge-mock" title="原型演示：所有 LLM 返回均为内置 mock 数据"><span class="dot"></span>MOCK 演示</span>
-  <nav class="steps" id="steps" aria-label="阶段导航"></nav>
-  <select class="stage-select" id="stageSelect" aria-label="阶段导航"></select>
+  <span class="badge-mock" title="Prototype demo: all LLM responses are built-in mock data"><span class="dot"></span>MOCK DEMO</span>
+  <nav class="steps" id="steps" aria-label="Stage navigation"></nav>
+  <select class="stage-select" id="stageSelect" aria-label="Stage navigation"></select>
   <div class="top-actions">
-    <button class="topbtn" id="restartBtn" type="button" aria-label="重新开始">
+    <button class="topbtn" id="restartBtn" type="button" aria-label="Restart">
       <svg class="ico sm" aria-hidden="true" focusable="false"><use href="#i-refresh"></use></svg>
-      <span>重新开始</span>
+      <span>Restart</span>
     </button>
   </div>
 </header>
 
 <main id="main" tabindex="-1">
-  <!-- ================= 阶段 1 · 新建项目 ================= -->
+  <!-- ================= Stage 1 · New project ================= -->
   <section class="stage" id="stage-home" aria-labelledby="homeTitle">
     <div class="hero">
       <span class="eyebrow">
         <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-spark"></use></svg>
-        素材接入 · 需求访谈 · 便利贴大纲 · 策划稿 · 设计稿
+        Material intake · Requirements interview · Sticky-note outline · Plan draft · Design draft
       </span>
-      <h1 id="homeTitle">把主题交给<em>专家团队</em><br>你只需要泡杯咖啡</h1>
-      <p class="lead">Bound PPT 先消化你手上的素材，缺什么再联网补；再用“数字便利贴”与你对齐大纲。确认后分两阶段生成——先版式策划稿，再风格设计稿。</p>
+      <h1 id="homeTitle">Give the topic to an <em>expert team</em><br>All you need is a cup of coffee</h1>
+      <p class="lead">Bound PPT first digests the materials you have and fills gaps online only when needed; then it aligns the outline with you using “digital sticky notes”. Once confirmed, generation runs in two stages — a layout plan draft first, then a styled design draft.</p>
 
       <div class="flowline" aria-hidden="true">
-        <span class="fl"><svg class="ico"><use href="#i-inbox"></use></svg>素材接入</span>
+        <span class="fl"><svg class="ico"><use href="#i-inbox"></use></svg>Material intake</span>
         <span class="arr"><svg class="ico"><use href="#i-arrow-right"></use></svg></span>
-        <span class="fl"><svg class="ico"><use href="#i-compass"></use></svg>需求访谈</span>
+        <span class="fl"><svg class="ico"><use href="#i-compass"></use></svg>Requirements interview</span>
         <span class="arr"><svg class="ico"><use href="#i-arrow-right"></use></svg></span>
-        <span class="fl"><svg class="ico"><use href="#i-clipboard"></use></svg>便利贴大纲</span>
+        <span class="fl"><svg class="ico"><use href="#i-clipboard"></use></svg>Sticky-note outline</span>
         <span class="arr"><svg class="ico"><use href="#i-arrow-right"></use></svg></span>
-        <span class="fl"><svg class="ico"><use href="#i-bento"></use></svg>Bento 策划稿</span>
+        <span class="fl"><svg class="ico"><use href="#i-bento"></use></svg>Bento plan draft</span>
         <span class="arr"><svg class="ico"><use href="#i-arrow-right"></use></svg></span>
-        <span class="fl"><svg class="ico"><use href="#i-presentation"></use></svg>风格设计稿</span>
+        <span class="fl"><svg class="ico"><use href="#i-presentation"></use></svg>Styled design draft</span>
       </div>
 
       <form class="composer" id="startForm" novalidate>
-        <label class="sr-only" for="topicInput">演示主题</label>
-        <input id="topicInput" name="topic" type="text" autocomplete="off" placeholder="输入你的主题，例如：Dify 企业介绍" aria-describedby="topicHint">
+        <label class="sr-only" for="topicInput">Presentation topic</label>
+        <input id="topicInput" name="topic" type="text" autocomplete="off" placeholder="Enter your topic, e.g. Dify intro" aria-describedby="topicHint">
         <button class="btn lg" id="startBtn" type="submit">
-          开始生成
+          Start generating
           <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-arrow-right"></use></svg>
         </button>
       </form>
-      <p class="sr-only" id="topicHint">输入主题后点击开始生成，可选先在下方添加素材</p>
-      <div class="topic-chips" id="topicChips" role="group" aria-label="示例主题">
-        <button class="chip" type="button" data-t="Dify 企业介绍">Dify 企业介绍</button>
-        <button class="chip" type="button" data-t="AIoT 智能家居新品发布">智能家居新品发布</button>
-        <button class="chip" type="button" data-t="2026 年度经营复盘汇报">年度经营复盘汇报</button>
-        <button class="chip" type="button" data-t="大模型在金融行业的落地实践">大模型金融落地实践</button>
+      <p class="sr-only" id="topicHint">Enter a topic and click Start generating; you can optionally add materials below first</p>
+      <div class="topic-chips" id="topicChips" role="group" aria-label="Example topics">
+        <button class="chip" type="button" data-t="Dify company introduction">Dify company introduction</button>
+        <button class="chip" type="button" data-t="AIoT smart-home product launch">Smart-home product launch</button>
+        <button class="chip" type="button" data-t="2026 annual business review">2026 annual business review</button>
+        <button class="chip" type="button" data-t="LLM adoption in the financial industry">LLM adoption in finance</button>
       </div>
 
       <div class="matslot" id="matSlot">
         <div class="mshead">
           <div class="mst">
             <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-inbox"></use></svg>
-            有现成素材？一起丢给我
+            Have existing materials? Drop them in
             <span class="mcount" id="matCount" aria-live="polite">0 / 6</span>
           </div>
-          <span class="mshint">粘贴 / 拖入 / 链接（可选）· 不提供则默认联网调研</span>
+          <span class="mshint">Paste / drop / link (optional) · defaults to web research if omitted</span>
         </div>
         <div class="msacts">
           <button class="msbtn" id="msPasteBtn" type="button" aria-expanded="false" aria-controls="msPastePane">
-            <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-clipboard"></use></svg>粘贴文本
+            <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-clipboard"></use></svg>Paste text
           </button>
           <button class="msbtn" id="msFileBtn" type="button">
-            <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-paperclip"></use></svg>上传文件
+            <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-paperclip"></use></svg>Upload file
           </button>
           <button class="msbtn" id="msUrlBtn" type="button" aria-expanded="false" aria-controls="msUrlPane">
-            <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-link"></use></svg>添加链接
+            <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-link"></use></svg>Add link
           </button>
           <input type="file" id="msFileInput" multiple accept=".doc,.docx,.pdf,.md,.txt,.csv,.xls,.xlsx,.ppt,.pptx,image/*" hidden>
         </div>
         <div class="mspane" id="msPastePane" hidden>
-          <label class="sr-only" for="msPasteText">粘贴素材文本</label>
-          <textarea class="field" id="msPasteText" rows="3" placeholder="粘贴工作文档、会议纪要、要点列表…"></textarea>
-          <button class="btn sm" id="msPasteAdd" type="button">添加为素材</button>
+          <label class="sr-only" for="msPasteText">Paste material text</label>
+          <textarea class="field" id="msPasteText" rows="3" placeholder="Paste work docs, meeting notes, bullet lists…"></textarea>
+          <button class="btn sm" id="msPasteAdd" type="button">Add as material</button>
         </div>
         <div class="mspane" id="msUrlPane" hidden>
-          <label class="sr-only" for="msUrlInput">素材链接</label>
-          <input class="field" id="msUrlInput" type="url" inputmode="url" placeholder="https://…（产品官网 / 行业报告 / 文章链接）">
-          <button class="btn sm" id="msUrlAdd" type="button">添加为素材</button>
+          <label class="sr-only" for="msUrlInput">Material link</label>
+          <input class="field" id="msUrlInput" type="url" inputmode="url" placeholder="https://… (product site / industry report / article)">
+          <button class="btn sm" id="msUrlAdd" type="button">Add as material</button>
         </div>
         <div class="matlist" id="matList"></div>
-        <p class="matempty" id="matEmpty">素材会以芯片显示在这里，可随时移除；原型仅记录名称、类型与大小。</p>
+        <p class="matempty" id="matEmpty">Materials appear here as chips and can be removed anytime; the prototype only records name, type, and size.</p>
       </div>
 
       <div class="mode-wrap">
-        <div class="mode-label" id="modeLabel">生成模式</div>
+        <div class="mode-label" id="modeLabel">Generation mode</div>
         <div class="modecards" role="radiogroup" aria-labelledby="modeLabel">
           <button class="modecard sel" id="modeAuto" type="button" role="radio" aria-checked="true">
             <span class="mode-ic"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-rocket"></use></svg></span>
             <span class="mode-body">
-              <span class="t">全自动 <span class="mode-tag">推荐</span></span>
-              <span class="d">确认需求后一路跑完，只在风格选择处停下。适合先看效果。</span>
+              <span class="t">Fully automatic <span class="mode-tag">Recommended</span></span>
+              <span class="d">Runs all the way through after requirements are confirmed and stops only at style selection. Good for a quick preview.</span>
             </span>
             <span class="radio-mark" aria-hidden="true"><svg class="ico"><use href="#i-check"></use></svg></span>
           </button>
           <button class="modecard" id="modeGuided" type="button" role="radio" aria-checked="false">
             <span class="mode-ic"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-compass"></use></svg></span>
             <span class="mode-body">
-              <span class="t">专家陪跑</span>
-              <span class="d">每个阶段都停下等你确认，适合重要 PPT 精调。</span>
+              <span class="t">Expert copilot</span>
+              <span class="d">Stops at every stage for your confirmation. Good for fine-tuning important decks.</span>
             </span>
             <span class="radio-mark" aria-hidden="true"><svg class="ico"><use href="#i-check"></use></svg></span>
           </button>
         </div>
       </div>
 
-      <p class="credit">交互与工作流借鉴自 <a href="https://linux.do/t/topic/1782304" target="_blank" rel="noopener">linux.do 帖子《应该是目前最强的PPT Agent，附上完整思路分享》</a>（作者 sandun）。<br>本页面为交互原型：所有“AI 返回”均为内置 mock 数据，可直接点击体验完整流程。</p>
+      <p class="credit">Interaction and workflow inspired by the linux.do post <a href="https://linux.do/t/topic/1782304" target="_blank" rel="noopener">“Probably the strongest PPT Agent right now, with a full breakdown of the approach”</a> (author sandun).<br>This page is an interaction prototype: all “AI responses” are built-in mock data; click through to experience the full flow.</p>
     </div>
   </section>
 
-  <!-- ================= 阶段 2 · 需求调研 ================= -->
+  <!-- ================= Stage 2 · Research ================= -->
   <section class="stage" id="stage-research" aria-labelledby="researchTitle">
     <div class="stage-head">
       <div>
-        <h1 id="researchTitle">需求调研</h1>
-        <p class="hint">Agent 先消化你提供的素材，缺什么再联网补；问题逐题进行，答错了随时可以改。</p>
+        <h1 id="researchTitle">Research</h1>
+        <p class="hint">The Agent first digests the materials you provide and fills gaps online only when needed; questions are asked one at a time, and answers can be changed anytime.</p>
       </div>
       <div class="stage-meta">
-        <span class="meta-pill" id="researchMode"><svg class="ico sm" aria-hidden="true"><use href="#i-rocket"></use></svg>全自动</span>
+        <span class="meta-pill" id="researchMode"><svg class="ico sm" aria-hidden="true"><use href="#i-rocket"></use></svg>Fully automatic</span>
       </div>
     </div>
     <div class="rsplit">
-      <div class="panel chat" id="chatPanel" role="log" aria-live="off" aria-label="需求调研对话"></div>
+      <div class="panel chat" id="chatPanel" role="log" aria-live="off" aria-label="Research conversation"></div>
       <aside class="panel srcpanel" aria-labelledby="srcTitle">
         <div class="panel-head" style="margin-bottom:12px">
-          <span class="src-title" id="srcTitle"><svg class="ico" aria-hidden="true"><use href="#i-inbox"></use></svg>内容源</span>
-          <span class="src-count" id="srcCount">0 份</span>
+          <span class="src-title" id="srcTitle"><svg class="ico" aria-hidden="true"><use href="#i-inbox"></use></svg>Content sources</span>
+          <span class="src-count" id="srcCount">0 items</span>
         </div>
         <div id="provWrap" hidden>
-          <div class="srcgroup"><svg class="ico" aria-hidden="true"><use href="#i-inbox"></use></svg>你提供的素材<span class="n" id="provCount">0</span></div>
+          <div class="srcgroup"><svg class="ico" aria-hidden="true"><use href="#i-inbox"></use></svg>Your materials<span class="n" id="provCount">0</span></div>
           <div id="provList"></div>
         </div>
         <div id="webWrap" hidden>
-          <div class="srcgroup"><svg class="ico" aria-hidden="true"><use href="#i-search"></use></svg>联网补充资料<span class="n" id="webCount">0</span></div>
+          <div class="srcgroup"><svg class="ico" aria-hidden="true"><use href="#i-search"></use></svg>Web supplements<span class="n" id="webCount">0</span></div>
           <div id="webList"></div>
         </div>
         <div class="src-empty" id="srcEmpty">
           <svg class="ico" aria-hidden="true"><use href="#i-search"></use></svg>
-          联网检索结果会出现在这里
+          Web research results will appear here
         </div>
-        <p class="src-foot"><b>一手素材优先</b>；联网只用于补齐缺口。素材与检索冲突时，以你的素材为准。</p>
+        <p class="src-foot"><b>First-party materials come first</b>; web search only fills gaps. When materials and search results conflict, your materials win.</p>
       </aside>
     </div>
   </section>
 
-  <!-- ================= 阶段 3 · 大纲便利贴 ================= -->
+  <!-- ================= Stage 3 · Outline sticky notes ================= -->
   <section class="stage" id="stage-outline" aria-labelledby="outlineTitle">
     <div class="stage-head">
       <div>
-        <h1 id="outlineTitle">大纲 · 数字便利贴</h1>
-        <p class="hint">点击标题改名；拖动便签可跨章节排序；悬停有上移、下移、插入、删除；键盘聚焦后 Alt + ↑/↓ 移动。</p>
+        <h1 id="outlineTitle">Outline · Digital sticky notes</h1>
+        <p class="hint">Click a title to rename; drag notes across sections to reorder; hover for move up, move down, insert, delete; keyboard focus then Alt + ↑/↓ to move.</p>
       </div>
       <div class="stage-meta">
-        <span class="meta-pill" id="outlineMeta">共 0 页</span>
+        <span class="meta-pill" id="outlineMeta">0 pages</span>
       </div>
     </div>
     <div class="board-status" id="outlineStatus" role="status"></div>
     <div id="boardWrap"></div>
     <div class="confirmbar">
       <div class="confirm-note">
-        <span class="note" id="outlineStat">共 0 页</span>
-        <span class="kbd-hint">键盘：Alt + ↑/↓ 在本章内移动；Shift + Alt + ←/→ 移到相邻章节；回车编辑标题。</span>
+        <span class="note" id="outlineStat">0 pages</span>
+        <span class="kbd-hint">Keyboard: Alt + ↑/↓ moves within the section; Shift + Alt + ←/→ moves to an adjacent section; Enter edits the title.</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
         <span class="autobar" id="autoBar" hidden>
           <span class="pulse" aria-hidden="true"></span>
-          <span id="autoText">3 秒后自动进入策划稿</span>
-          <button class="btn ghost" id="autoPauseBtn" type="button">暂停</button>
+          <span id="autoText">Entering plan draft in 3 seconds</span>
+          <button class="btn ghost" id="autoPauseBtn" type="button">Pause</button>
         </span>
         <button class="btn" id="outlineConfirmBtn" type="button" disabled>
-          大纲没问题，生成策划稿
+          Outline looks good, generate plan draft
           <svg class="ico" aria-hidden="true"><use href="#i-arrow-right"></use></svg>
         </button>
       </div>
     </div>
   </section>
 
-  <!-- ================= 阶段 4 · 策划稿 ================= -->
+  <!-- ================= Stage 4 · Plan draft ================= -->
   <section class="stage" id="stage-plan" aria-labelledby="planTitle">
     <div class="stage-head">
       <div>
-        <h1 id="planTitle">策划稿 · 版面规划</h1>
-        <p class="hint">先定“每页放什么”，不谈风格；点击左侧页面逐页检查，不满意可重策划或一句话微调。</p>
+        <h1 id="planTitle">Plan draft · Layout planning</h1>
+        <p class="hint">Decide “what goes on each page” first, without styling; click pages in the left list to inspect, and re-plan or tweak with one sentence if unhappy.</p>
       </div>
       <div class="stage-meta">
-        <span class="meta-pill" id="planMeta">0 / 0 页</span>
+        <span class="meta-pill" id="planMeta">0 / 0 pages</span>
       </div>
     </div>
     <div class="psplit">
-      <aside class="panel pagelist" id="planList" aria-label="策划页面列表"></aside>
+      <aside class="panel pagelist" id="planList" aria-label="Plan page list"></aside>
       <div class="planmain">
         <div class="progcard">
-          <span class="ptxt" id="planProgText">已策划 0 / 0 页</span>
+          <span class="ptxt" id="planProgText">Planned 0 / 0 pages</span>
           <div class="prog-track"><i class="prog-fill" id="planProgBar"></i></div>
           <span class="ppct" id="planProgPct">0%</span>
         </div>
@@ -921,86 +922,86 @@ textarea.field{height:auto; padding:10px 12px; line-height:1.6; resize:vertical}
           <div class="slide-holder" id="wireHolder"></div>
         </div>
         <p class="mobile-hint" aria-hidden="true">
-          <svg class="ico"><use href="#i-arrow-left"></use></svg>左右滑动查看整页<svg class="ico"><use href="#i-arrow-right"></use></svg>
+          <svg class="ico"><use href="#i-arrow-left"></use></svg>Swipe left/right to view the full page<svg class="ico"><use href="#i-arrow-right"></use></svg>
         </p>
         <div class="tweakbar">
-          <label class="sr-only" for="planTweakInput">微调当前页策划</label>
-          <input class="field" id="planTweakInput" type="text" placeholder="用一句话微调当前页，例如：把数据卡片放大，案例移到右侧">
+          <label class="sr-only" for="planTweakInput">Tweak current page plan</label>
+          <input class="field" id="planTweakInput" type="text" placeholder="Tweak the current page in one sentence, e.g. make the data card larger, move the case to the right">
           <button class="btn ghost sm" id="planRedoBtn" type="button">
-            <svg class="ico" aria-hidden="true"><use href="#i-refresh"></use></svg>重新策划本页
+            <svg class="ico" aria-hidden="true"><use href="#i-refresh"></use></svg>Re-plan this page
           </button>
           <button class="btn sm" id="planTweakBtn" type="button">
-            <svg class="ico" aria-hidden="true"><use href="#i-spark"></use></svg>微调
+            <svg class="ico" aria-hidden="true"><use href="#i-spark"></use></svg>Tweak
           </button>
         </div>
         <div class="plan-note" id="planNote">
           <svg class="ico sm" aria-hidden="true"><use href="#i-info"></use></svg>
-          <span>微调只影响当前页；改动大纲后，下游策划与设计会标记为待重跑。</span>
+          <span>Tweaks affect only the current page; after the outline changes, downstream plan and design will be marked for rerun.</span>
         </div>
       </div>
     </div>
     <div class="confirmbar">
       <div class="confirm-note">
-        <span class="note" id="planConfirmNote">全部页面策划完成后即可进入风格选择。</span>
-        <span class="kbd-hint">专家陪跑模式下，建议逐页看清“每张卡片放什么”再确认。</span>
+        <span class="note" id="planConfirmNote">All pages will be ready for style selection once planning is complete.</span>
+        <span class="kbd-hint">In expert copilot mode, inspect “what goes in each card” page by page before confirming.</span>
       </div>
       <button class="btn" id="planConfirmBtn" type="button" disabled>
-        策划稿确认，去选风格
+        Confirm plan draft, choose style
         <svg class="ico" aria-hidden="true"><use href="#i-arrow-right"></use></svg>
       </button>
     </div>
   </section>
 
-  <!-- ================= 阶段 5 · 风格 ================= -->
+  <!-- ================= Stage 5 · Style ================= -->
   <section class="stage" id="stage-style" aria-labelledby="styleTitle">
     <div class="stage-head">
       <div>
-        <h1 id="styleTitle">选择风格</h1>
-        <p class="hint">设计师开始上风格了：选一套气质，统一应用到封面、正文与结尾。预览使用真实的“公司简介”页。</p>
+        <h1 id="styleTitle">Choose a style</h1>
+        <p class="hint">The designer starts styling: choose a mood and apply it consistently to cover, body, and ending. Previews use the real “company intro” page.</p>
       </div>
       <div class="stage-meta">
-        <span class="meta-pill" id="styleMeta">4 套风格</span>
+        <span class="meta-pill" id="styleMeta">4 styles</span>
       </div>
     </div>
-    <div class="stylegrid" id="styleGrid" role="radiogroup" aria-label="风格选择"></div>
+    <div class="stylegrid" id="styleGrid" role="radiogroup" aria-label="Style selection"></div>
     <div class="style-foot">
       <label class="checkline" for="rememberStyle">
         <input type="checkbox" id="rememberStyle">
-        记住我的偏好，下次自动选中
+        Remember my preference and auto-select next time
       </label>
       <button class="btn" id="styleConfirmBtn" type="button" disabled>
-        开始生成设计稿
+        Start generating design draft
         <svg class="ico" aria-hidden="true"><use href="#i-arrow-right"></use></svg>
       </button>
     </div>
   </section>
 
-  <!-- ================= 阶段 6 · 设计稿 ================= -->
+  <!-- ================= Stage 6 · Design draft ================= -->
   <section class="stage" id="stage-design" aria-labelledby="designTitle">
     <div class="stage-head">
       <div>
-        <h1 id="designTitle">设计稿 · 预览与编辑</h1>
-        <p class="hint">翻页查看每一页；不满意可“换一版”或输入微调指令，随时能撤销回上一版。</p>
+        <h1 id="designTitle">Design draft · Preview and edit</h1>
+        <p class="hint">Page through each slide; if unhappy, “Regenerate” or enter a tweak instruction, and undo to the previous version anytime.</p>
       </div>
       <div class="stage-meta">
-        <span class="meta-pill" id="designMeta">0 / 0 页</span>
+        <span class="meta-pill" id="designMeta">0 / 0 pages</span>
       </div>
     </div>
     <div class="dsplit">
-      <aside class="panel thumbs" id="thumbList" aria-label="设计稿页面列表"></aside>
+      <aside class="panel thumbs" id="thumbList" aria-label="Design page list"></aside>
       <div class="ds-main">
         <div class="slide-stage">
           <div class="slide-holder" id="slideHolder"></div>
         </div>
         <p class="mobile-hint" aria-hidden="true">
-          <svg class="ico"><use href="#i-arrow-left"></use></svg>左右滑动查看整页<svg class="ico"><use href="#i-arrow-right"></use></svg>
+          <svg class="ico"><use href="#i-arrow-left"></use></svg>Swipe left/right to view the full page<svg class="ico"><use href="#i-arrow-right"></use></svg>
         </p>
         <div class="slide-nav">
-          <button class="navbtn" id="prevBtn" type="button" aria-label="上一页">
+          <button class="navbtn" id="prevBtn" type="button" aria-label="Previous page">
             <svg class="ico" aria-hidden="true"><use href="#i-arrow-left"></use></svg>
           </button>
-          <span class="page-indicator" id="pageIndicator" aria-live="polite">第 1 / 16 页</span>
-          <button class="navbtn" id="nextBtn" type="button" aria-label="下一页">
+          <span class="page-indicator" id="pageIndicator" aria-live="polite">Page 1 / 16</span>
+          <button class="navbtn" id="nextBtn" type="button" aria-label="Next page">
             <svg class="ico" aria-hidden="true"><use href="#i-arrow-right"></use></svg>
           </button>
         </div>
@@ -1008,39 +1009,39 @@ textarea.field{height:auto; padding:10px 12px; line-height:1.6; resize:vertical}
       <aside class="panel opsarea" aria-labelledby="opsTitle">
         <section class="ops-sec">
           <div class="ops-label" id="opsTitle">
-            <svg class="ico" aria-hidden="true"><use href="#i-pencil"></use></svg>当前页操作
+            <svg class="ico" aria-hidden="true"><use href="#i-pencil"></use></svg>Current page actions
           </div>
-          <div class="layouttag" id="layoutTag">便当网格 · 单一焦点</div>
+          <div class="layouttag" id="layoutTag">Bento grid · Single focus</div>
           <div class="designote" id="designNote"></div>
-          <label class="sr-only" for="tweakInput">微调指令</label>
-          <input class="field" id="tweakInput" type="text" placeholder="输入微调指令，如：主卡片再大一点" aria-describedby="tweakError">
+          <label class="sr-only" for="tweakInput">Tweak instruction</label>
+          <input class="field" id="tweakInput" type="text" placeholder="Enter a tweak instruction, e.g. make the main card larger" aria-describedby="tweakError">
           <div class="field-error" id="tweakError" role="alert"></div>
           <div class="opsrow">
             <button class="btn ghost sm" id="undoBtn" type="button" disabled>
-              <svg class="ico" aria-hidden="true"><use href="#i-history"></use></svg>上一版
+              <svg class="ico" aria-hidden="true"><use href="#i-history"></use></svg>Previous version
             </button>
             <button class="btn ghost sm" id="redesignBtn" type="button">
-              <svg class="ico" aria-hidden="true"><use href="#i-refresh"></use></svg>换一版
+              <svg class="ico" aria-hidden="true"><use href="#i-refresh"></use></svg>Regenerate
             </button>
           </div>
           <div class="opsrow" style="margin-top:7px">
             <button class="btn sm" id="tweakBtn" type="button" style="flex:1">
-              <svg class="ico" aria-hidden="true"><use href="#i-spark"></use></svg>按指令微调
+              <svg class="ico" aria-hidden="true"><use href="#i-spark"></use></svg>Apply tweak
             </button>
           </div>
           <p class="opsmsg" id="designMsgLine" role="status"></p>
           <div class="versionline">
-            <span>当前变体 <strong id="variantLabel">V1</strong></span>
-            <span id="historyLabel">历史 0 版</span>
+            <span>Current variant <strong id="variantLabel">V1</strong></span>
+            <span id="historyLabel">History 0 versions</span>
           </div>
         </section>
         <section class="ops-sec">
           <div class="ops-label">
-            <svg class="ico" aria-hidden="true"><use href="#i-download"></use></svg>导出
+            <svg class="ico" aria-hidden="true"><use href="#i-download"></use></svg>Export
           </div>
-          <p class="export-hint" style="margin-top:8px">PPTX 用 SVG 合成，进 Office 后文字与形状可编辑；也可导出 HTML 或 PDF。</p>
+          <p class="export-hint" style="margin-top:8px">PPTX is composed from SVG, so text and shapes stay editable in Office; you can also export HTML or PDF.</p>
           <button class="btn full" id="exportBtn" type="button" style="margin-top:10px">
-            <svg class="ico" aria-hidden="true"><use href="#i-download"></use></svg>导出成品
+            <svg class="ico" aria-hidden="true"><use href="#i-download"></use></svg>Export deck
           </button>
         </section>
       </aside>
@@ -1048,58 +1049,58 @@ textarea.field{height:auto; padding:10px 12px; line-height:1.6; resize:vertical}
   </section>
 </main>
 
-<!-- ================= 导出弹窗 ================= -->
+<!-- ================= Export modal ================= -->
 <div class="overlay" id="exportOverlay" role="dialog" aria-modal="true" aria-labelledby="exportTitle" aria-describedby="exportDesc">
   <div class="modal">
     <div class="mt">
-      <span id="exportTitle">导出成品</span>
-      <button class="x" id="exportClose" type="button" aria-label="关闭导出弹窗">
+      <span id="exportTitle">Export deck</span>
+      <button class="x" id="exportClose" type="button" aria-label="Close export dialog">
         <svg class="ico sm" aria-hidden="true"><use href="#i-x"></use></svg>
       </button>
     </div>
-    <p class="md" id="exportDesc">原型演示：以下选项仅模拟导出过程，不生成真实文件。</p>
+    <p class="md" id="exportDesc">Prototype demo: the options below only simulate the export process and do not generate real files.</p>
     <div class="exp-summary" id="expSummary"></div>
     <div id="expOptions">
       <button class="expopt" type="button" data-k="pptx">
         <span class="ic"><svg class="ico" aria-hidden="true"><use href="#i-table"></use></svg></span>
-        <span><span class="t">PPTX · SVG 合成<span class="rec">推荐</span></span><span class="d">SVG 矢量页直接进 Office 2016+，文字与形状完全可编辑</span></span>
+        <span><span class="t">PPTX · SVG-composited<span class="rec">Recommended</span></span><span class="d">SVG vector pages go straight into Office 2016+, with fully editable text and shapes</span></span>
       </button>
       <button class="expopt" type="button" data-k="html">
         <span class="ic"><svg class="ico" aria-hidden="true"><use href="#i-globe"></use></svg></span>
-        <span><span class="t">HTML · 单文件网页</span><span class="d">浏览器直接放映，适合线上分享与链接投递</span></span>
+        <span><span class="t">HTML · Single-file web page</span><span class="d">Present directly in a browser; good for online sharing and link delivery</span></span>
       </button>
       <button class="expopt" type="button" data-k="pdf">
         <span class="ic"><svg class="ico" aria-hidden="true"><use href="#i-file-text"></use></svg></span>
-        <span><span class="t">PDF · 打印分发</span><span class="d">定稿归档、邮件附件场景</span></span>
+        <span><span class="t">PDF · Print and distribute</span><span class="d">Final archiving and email attachments</span></span>
       </button>
     </div>
     <div class="exp-progress" id="expProgress" aria-busy="false">
-      <div class="exp-status" id="expText">正在导出…</div>
+      <div class="exp-status" id="expText">Exporting…</div>
       <div class="exp-bar" role="progressbar" id="expBarWrap" aria-labelledby="expText" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
         <i id="expBar"></i>
       </div>
     </div>
     <div class="exp-success" id="expSuccess" role="status">
       <div class="okic"><svg class="ico" aria-hidden="true"><use href="#i-check"></use></svg></div>
-      <div class="t" id="expSuccessText">导出完成</div>
-      <div class="d">原型演示：未生成真实文件。</div>
+      <div class="t" id="expSuccessText">Export complete</div>
+      <div class="d">Prototype demo: no real file was generated.</div>
       <div class="modal-actions">
-        <button class="btn ghost sm" id="exportAgainBtn" type="button">再导出一份</button>
-        <button class="btn sm" id="exportDoneBtn" type="button">完成</button>
+        <button class="btn ghost sm" id="exportAgainBtn" type="button">Export another</button>
+        <button class="btn sm" id="exportDoneBtn" type="button">Done</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ================= 重新开始确认 ================= -->
+<!-- ================= Restart confirmation ================= -->
 <div class="overlay" id="confirmOverlay" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmDesc">
   <div class="modal sm">
     <div class="confirm-icon"><svg class="ico" aria-hidden="true"><use href="#i-alert"></use></svg></div>
-    <div class="mt"><span id="confirmTitle">重新开始？</span></div>
-    <p class="md confirm-copy" id="confirmDesc">当前主题、素材、大纲与已生成的设计稿都会被清空，此操作不可撤销。</p>
+    <div class="mt"><span id="confirmTitle">Restart?</span></div>
+    <p class="md confirm-copy" id="confirmDesc">The current topic, materials, outline, and generated design draft will all be cleared. This cannot be undone.</p>
     <div class="modal-actions">
-      <button class="btn ghost" id="confirmCancel" type="button">取消</button>
-      <button class="btn danger" id="confirmOk" type="button">清空并重新开始</button>
+      <button class="btn ghost" id="confirmCancel" type="button">Cancel</button>
+      <button class="btn danger" id="confirmOk" type="button">Clear and restart</button>
     </div>
   </div>
 </div>
@@ -1109,238 +1110,238 @@ textarea.field{height:auto; padding:10px 12px; line-height:1.6; resize:vertical}
 <script>
 "use strict";
 /* =====================================================================
- * Bound PPT · 交互原型（v3）
- * 工作流：素材接入（可选）→ 需求调研（素材消化 + Agent 缺口建议）
- *        → 便利贴大纲 → 策划稿 → 风格 → 设计稿
- * 所有 LLM 返回均为内置 mock 数据（SSE 风格的分步模拟器）
- * 设计系统：AI-Native + Bento Grid，线性 SVG 图标，无外部依赖
+ * Bound PPT · Interaction prototype (v3)
+ * Workflow: material intake (optional) → research (material digestion + Agent gap suggestions)
+ *        → sticky-note outline → plan draft → style → design draft
+ * All LLM responses are built-in mock data (an SSE-style step-by-step simulator)
+ * Design system: AI-Native + Bento Grid, line SVG icons, no external dependencies
  * ===================================================================== */
 
-/* ---------------- MOCK 数据区 ---------------- */
+/* ---------------- MOCK data ---------------- */
 const MOCK = {
-  topic: "Dify 企业介绍",
+  topic: "Dify company introduction",
   sources: [
-    ["Dify 官网 · 产品定位", "dify.ai — “最完整的 LLM 应用开发平台”"],
-    ["Dify GitHub 仓库 README", "GitHub — 100k+ Stars 开源项目说明"],
-    ["2026 LLM 应用开发平台行业报告", "行业白皮书节选 · 平台能力对比"],
-    ["Dify 完成 B 轮融资报道", "科技媒体 · 公司最新动态"],
-    ["Dify 企业客户案例集", "官网博客 · 金融/制造/互联网案例"],
-    ["开发者社区高赞反馈整理", "linux.do / V2EX / Reddit 精华帖"],
-    ["Dify 文档 · Workflow 与 Agent 概念", "docs.dify.ai — 核心概念说明"],
-    ["竞品对比：Dify vs LangChain vs Coze", "第三方评测 · 能力矩阵"],
-    ["Dify 云服务定价页", "dify.ai/pricing — 订阅方案"],
-    ["全球 LLM 模型接入适配清单", "社区维护 · 400+ 模型适配表"],
-    ["私有化部署方案白皮书", "企业版资料 · 合规与国产化"],
-    ["2026 AI 应用采用度调研", "调研机构摘要 · 企业采用趋势"],
+    ["Dify official site · Product positioning", "dify.ai — “the most complete LLM application development platform”"],
+    ["Dify GitHub repository README", "GitHub — README for a 100k+ star open-source project"],
+    ["2026 LLM application platform industry report", "Industry white paper excerpt · platform capability comparison"],
+    ["Coverage of Dify's Series B funding", "Tech media · latest company news"],
+    ["Dify enterprise customer case collection", "Official blog · finance/manufacturing/internet cases"],
+    ["Top-voted developer community feedback", "linux.do / V2EX / Reddit highlights"],
+    ["Dify docs · Workflow and Agent concepts", "docs.dify.ai — core concept guide"],
+    ["Competitor comparison: Dify vs LangChain vs Coze", "Third-party review · capability matrix"],
+    ["Dify cloud pricing page", "dify.ai/pricing — subscription plans"],
+    ["Global LLM model integration checklist", "Community-maintained · 400+ model compatibility list"],
+    ["Private deployment white paper", "Enterprise edition material · compliance and domestic deployment"],
+    ["2026 AI adoption survey", "Research firm summary · enterprise adoption trends"],
   ],
   questions: [
-    { q: "这份 PPT 主要给谁看？", opts: ["潜在客户与合作伙伴", "投资人", "内部管理层", "公开大会听众"] },
-    { q: "你希望达到什么目的？", opts: ["产品推介与试用转化", "品牌与信任建设", "融资路演", "汇报与对齐"] },
-    { q: "期望的页数规模？", opts: ["10 页左右", "16 页左右", "25 页以上"] },
-    { q: "偏好的风格气质？", opts: ["科技感 · 深色炫酷", "商务专业 · 稳重", "温暖亲和 · 杂志感", "极简克制 · 黑白"] },
+    { q: "Who is this deck mainly for?", opts: ["Prospects and partners", "Investors", "Internal management", "Public conference audience"] },
+    { q: "What outcome do you want?", opts: ["Product promotion and trial conversion", "Brand and trust building", "Fundraising roadshow", "Reporting and alignment"] },
+    { q: "What page count do you expect?", opts: ["Around 10 pages", "Around 16 pages", "25+ pages"] },
+    { q: "Preferred style and mood?", opts: ["Techy · dark and bold", "Business professional · steady", "Warm and approachable · magazine", "Minimal · black and white"] },
   ],
   gapSuggestions: [
-    { label: "竞品对比", reason: "素材里只有自我定位，缺少与竞品的横向对比", recommended: true },
-    { label: "行业与市场数据", reason: "缺少第三方市场规模与增速，汇报或路演容易被追问", recommended: true },
-    { label: "客户案例", reason: "有产品能力描述，但缺少可引用的客户结果", recommended: false },
+    { label: "Competitor comparison", reason: "The materials only cover your own positioning; there is no side-by-side comparison with competitors", recommended: true },
+    { label: "Industry and market data", reason: "Missing third-party market size and growth rates; hard questions may come up in reports or roadshows", recommended: true },
+    { label: "Customer cases", reason: "There is product capability description, but no citable customer outcomes", recommended: false },
   ],
   outline: {
-    cover: { id: "c", title: "Dify 企业介绍", sub: "开源 LLM 应用开发平台 · 产品推介" },
-    toc: { id: "t", title: "目录" },
+    cover: { id: "c", title: "Dify company introduction", sub: "Open-source LLM application development platform · Product pitch" },
+    toc: { id: "t", title: "Table of contents" },
     parts: [
-      { title: "公司概况", pages: [{ id: "p1", title: "公司简介" }, { id: "p2", title: "发展里程碑" }, { id: "p3", title: "团队与荣誉" }] },
-      { title: "产品与技术", pages: [{ id: "p4", title: "产品全景" }, { id: "p5", title: "核心能力" }, { id: "p6", title: "技术架构" }, { id: "p7", title: "模型与生态集成" }] },
-      { title: "客户与生态", pages: [{ id: "p8", title: "关键数据" }, { id: "p9", title: "客户案例" }, { id: "p10", title: "开发者生态" }] },
-      { title: "增长与规划", pages: [{ id: "p11", title: "商业模式" }, { id: "p12", title: "增长数据" }, { id: "p13", title: "未来规划" }] },
+      { title: "Company overview", pages: [{ id: "p1", title: "Company introduction" }, { id: "p2", title: "Milestones" }, { id: "p3", title: "Team and recognition" }] },
+      { title: "Product and technology", pages: [{ id: "p4", title: "Product overview" }, { id: "p5", title: "Core capabilities" }, { id: "p6", title: "Technical architecture" }, { id: "p7", title: "Models and ecosystem integrations" }] },
+      { title: "Customers and ecosystem", pages: [{ id: "p8", title: "Key metrics" }, { id: "p9", title: "Customer cases" }, { id: "p10", title: "Developer ecosystem" }] },
+      { title: "Growth and roadmap", pages: [{ id: "p11", title: "Business model" }, { id: "p12", title: "Growth data" }, { id: "p13", title: "Future roadmap" }] },
     ],
-    end: { id: "e", title: "总结与展望" },
+    end: { id: "e", title: "Summary and outlook" },
   },
   pageNotes: {
-    c: "封面页：单一焦点式构图，主标题占版心 60%，右上一枚渐变光斑制造氛围，标签行点出四个关键词。",
-    t: "目录页：2×2 编号卡片，序号用品牌渐变字，给观众清晰的导航预期。",
-    p1: "公司简介采用「单一焦点」版式：一张大卡片承载定位一句话，底部四枚 KPI 递进给出体量感。",
-    p2: "里程碑页用「顶部英雄式」：宽幅时间线卡片讲故事，下方两张小卡片补充社区与商业两条线索。",
-    p3: "双栏对称：左栏团队气质，右栏权威背书，保持克制留白。",
-    p4: "产品全景用三栏并列，三个产品支柱各占一张等宽卡片，扫读友好。",
-    p5: "核心能力页：顶部宽幅“英雄”卡片讲工作流编排主线，下方等宽卡片网格展开支撑能力。",
-    p6: "技术架构页采用「混合网格」：左侧 2/3 卡片承载三层架构，右侧 1/3 放私有化部署亮点，统一 20px 间距。",
-    p7: "非对称两栏：左 2/3 展示 400+ 模型生态，右 1/3 收敛成一句结论，避免信息均质。",
-    p8: "数据页是「KPI 英雄式」：四枚大数字卡最有冲击力，底部引语补充行业视角。",
-    p9: "三个行业案例并列三栏，客户匿名 + 场景明确，增强可信度。",
-    p10: "混合网格：社区数据大卡片 + 活动/插件/认证三张小卡片，展示生态纵深。",
-    p11: "商业模式页：主卡片讲“开源 ↔ 商业”飞轮，侧卡放订阅层级摘要。",
-    p12: "增长页用图表卡：云 ARR 四年柱状趋势，一眼看到增长斜率。",
-    p13: "未来规划：顶部宽幅卡片放三年路线图，下方小卡片点出开放共建心态。",
-    e: "结尾页：致谢 + 行动号召，保持与封面呼应的渐变光斑。",
+    c: "Cover: single-focus composition; the main title occupies 60% of the live area, a gradient glow in the top right sets the mood, and a tag row highlights four keywords.",
+    t: "Contents: 2×2 numbered cards; the numbers use the brand gradient to set clear navigation expectations.",
+    p1: "Company intro uses the “single focus” layout: one large card carries the one-line positioning, and four KPIs along the bottom convey scale progressively.",
+    p2: "Milestones use the “top hero” layout: a wide timeline card tells the story, with two small cards below covering the community and commercial tracks.",
+    p3: "Two-column symmetric: team character on the left, authoritative endorsements on the right, with restrained whitespace.",
+    p4: "Product overview uses three equal columns; each of the three product pillars gets one card, easy to scan.",
+    p5: "Core capabilities: a wide “hero” card at the top explains workflow orchestration, with an equal-width card grid below for supporting capabilities.",
+    p6: "Technical architecture uses a “mixed grid”: the left 2/3 card carries the three-layer architecture, the right 1/3 highlights private deployment, with unified 20px spacing.",
+    p7: "Asymmetric two columns: the left 2/3 shows the 400+ model ecosystem, the right 1/3 distills it into one conclusion, avoiding uniform information density.",
+    p8: "The data page is “KPI hero”: four large number cards have the most impact, with a bottom quote adding an industry perspective.",
+    p9: "Three industry cases in equal columns; anonymized customers + clear scenarios increase credibility.",
+    p10: "Mixed grid: a large community-data card plus three small cards for events/plugins/certification, showing ecosystem depth.",
+    p11: "Business model page: the main card explains the “open source ↔ commercial” flywheel; the side card summarizes subscription tiers.",
+    p12: "Growth page uses a chart card: a four-year cloud ARR bar trend that shows the growth slope at a glance.",
+    p13: "Future roadmap: a wide card at the top holds the three-year roadmap; small cards below convey the open co-building mindset.",
+    e: "Ending: thanks + call to action, with a gradient glow echoing the cover.",
   },
   genericSpecPool: [
-    { layout: "2col", cards: [{ t: "主题展开", items: ["要点一：现象与背景", "要点二：当前做法", "要点三：带来的改变"] }, { t: "小结", b: "用一句话收住本页观点，让信息有落点。" }] },
-    { layout: "3col", cards: [{ t: "视角 A", b: "第一个观察角度的说明。" }, { t: "视角 B", b: "第二个观察角度的说明。" }, { t: "视角 C", b: "第三个观察角度的说明。" }] },
-    { layout: "hero", cards: [{ t: "主线结论", b: "先给结论，再展开支撑。" }, { t: "支撑 1", b: "证据或数据。" }, { t: "支撑 2", b: "案例或对比。" }, { t: "支撑 3", b: "下一步动作。" }] },
+    { layout: "2col", cards: [{ t: "Topic development", items: ["Point 1: phenomenon and background", "Point 2: current approach", "Point 3: the change it brings"] }, { t: "Summary", b: "Wrap up this page's point in one sentence so the information lands." }] },
+    { layout: "3col", cards: [{ t: "Perspective A", b: "Description of the first angle." }, { t: "Perspective B", b: "Description of the second angle." }, { t: "Perspective C", b: "Description of the third angle." }] },
+    { layout: "hero", cards: [{ t: "Main conclusion", b: "Give the conclusion first, then the support." }, { t: "Support 1", b: "Evidence or data." }, { t: "Support 2", b: "Case or comparison." }, { t: "Support 3", b: "Next action." }] },
   ],
   pageSpecs: {
-    c: [{ layout: "cover", title: "Dify 企业介绍", sub: "开源 LLM 应用开发平台 · 产品推介", tags: ["开 源", "LLM 平台", "Agent", "企业级"] }],
-    t: [{ layout: "toc", items: ["公司概况", "产品与技术", "客户与生态", "增长与规划"] }],
+    c: [{ layout: "cover", title: "Dify company introduction", sub: "Open-source LLM application development platform · Product pitch", tags: ["Open source", "LLM platform", "Agent", "Enterprise"] }],
+    t: [{ layout: "toc", items: ["Company overview", "Product and technology", "Customers and ecosystem", "Growth and roadmap"] }],
     p1: [
       { layout: "hero", cards: [
-        { t: "为全球开发者打造的<em class='em'>开源 LLM 应用开发平台</em>", b: "从原型到生产：把大模型能力，变成稳定可靠的 AI 应用。", items: ["可视化编排 · Workflow", "RAG 管线 · 知识库", "Agent 策略 · 多智能体", "LLMOps · 观测运维"], kpis: [["40万+", "全球开发者"], ["100k+", "GitHub Stars"], ["2000+", "企业客户"]] },
+        { t: "The <em class='em'>open-source LLM application development platform</em> built for developers worldwide", b: "From prototype to production: turn LLM capabilities into stable, reliable AI applications.", items: ["Visual orchestration · Workflow", "RAG pipeline · Knowledge base", "Agent strategies · Multi-agent", "LLMOps · Observability"], kpis: [["400k+", "Developers worldwide"], ["100k+", "GitHub Stars"], ["2,000+", "Enterprise customers"]] },
       ] },
       { layout: "async", cards: [
-        { t: "我们的使命", b: "让每一个团队都能以最低门槛，把 AI 变成真实生产力。Dify 把模型、知识与业务流程装进同一条可视化的生产流水线。", items: ["一套平台覆盖「原型 → 验证 → 生产」全周期", "开源开放：代码可审计、可私有化"], kpis: [["40万+", "开发者"], ["100k+", "Stars"]] },
-        { t: "一句话定位", b: "开源 LLM 应用开发平台，AI 应用的“生产流水线”。" },
+        { t: "Our mission", b: "Empower every team to turn AI into real productivity with the lowest barrier. Dify puts models, knowledge, and business processes on the same visual production line.", items: ["One platform covers the full cycle «prototype → validation → production»", "Open source: auditable code, private deployment"], kpis: [["400k+", "Developers"], ["100k+", "Stars"]] },
+        { t: "One-line positioning", b: "Open-source LLM application development platform, the “production line” for AI applications." },
       ] },
     ],
     p2: [
       { layout: "hero", cards: [
-        { t: "三年，从开源项目到平台生态", items: ["2023.05 — 开源发布，首月 8k Stars", "2024.06 — 完成 B 轮融资，发布 Workflow 2.0", "2026.01 — Agent 引擎与企业版 3.0"] },
-        { t: "开源社区爆发", b: "GitHub 增速长期位居 LLM 平台类目第一。" },
-        { t: "商业化加速", b: "云服务与企业版双线增长。" },
+        { t: "Three years, from open-source project to platform ecosystem", items: ["May 2023 — open-sourced, 8k Stars in the first month", "Jun 2024 — Series B funding, Workflow 2.0 released", "Jan 2026 — Agent engine and Enterprise 3.0"] },
+        { t: "Open-source community surge", b: "GitHub growth has long ranked first in the LLM platform category." },
+        { t: "Commercialization accelerates", b: "Cloud service and enterprise edition growing in parallel." },
       ] },
       { layout: "3col", cards: [
-        { t: "2023 · 起步", b: "开源发布，定位 LLMOps，首月 8k Stars。" },
-        { t: "2024 · 成长", b: "Workflow 2.0 与 RAG 管线成型，完成 B 轮融资。" },
-        { t: "2026 · 平台化", b: "Agent 引擎 + 企业版 3.0，生态闭环。" },
+        { t: "2023 · Beginnings", b: "Open-sourced, positioned as LLMOps, 8k Stars in the first month." },
+        { t: "2024 · Growth", b: "Workflow 2.0 and the RAG pipeline mature; Series B completed." },
+        { t: "2026 · Platform", b: "Agent engine + Enterprise 3.0, ecosystem loop closes." },
       ] },
     ],
     p3: [
       { layout: "2col", cards: [
-        { t: "团队", items: ["核心成员来自一线 AI 与云平台团队", "超过 60% 为研发工程师", "全球远程 + 本地双中心协作"] },
-        { t: "荣誉与背书", items: ["GitHub Accelerator 成员企业", "信通院优秀开源案例", "2026 年度最佳 AI 基础设施（行业媒体评选）"] },
+        { t: "Team", items: ["Core members come from leading AI and cloud platform teams", "Over 60% are R&D engineers", "Global remote + two local hubs"] },
+        { t: "Recognition and endorsements", items: ["GitHub Accelerator member company", "CAICT outstanding open-source case", "2026 Best AI Infrastructure (industry media award)"] },
       ] },
       { layout: "mix", cards: [
-        { t: "一支“既懂开发者，又懂企业”的团队", b: "工程师文化驱动，开源社区贡献者与核心研发并肩作战。", kpis: [["60%+", "研发占比"], ["10+", "全球城市"]] },
-        { t: "权威背书", items: ["信通院优秀开源案例", "GitHub Accelerator"] },
-        { t: "行业评选", b: "2026 年度最佳 AI 基础设施。" },
-        { t: "社区声誉", b: "开发者口碑长期第一梯队。" },
+        { t: "A team that “understands both developers and enterprises”", b: "Engineering culture driven; open-source community contributors work alongside core R&D.", kpis: [["60%+", "R&D share"], ["10+", "Global cities"]] },
+        { t: "Authoritative endorsements", items: ["CAICT outstanding open-source case", "GitHub Accelerator"] },
+        { t: "Industry awards", b: "2026 Best AI Infrastructure." },
+        { t: "Community reputation", b: "Long-standing top-tier developer reputation." },
       ] },
     ],
     p4: [
       { layout: "3col", cards: [
-        { t: "BaaS · 模型底座", b: "统一网关接入 400+ 模型，一行配置完成切换与灰度。" },
-        { t: "Workflow · 可视化编排", b: "拖拽式 DAG，把提示词、工具与数据流串成生产级流水线。" },
-        { t: "Agent · 引擎", b: "多智能体协作与工具调用策略，内置观测与回溯。" },
+        { t: "BaaS · Model foundation", b: "Unified gateway connects 400+ models; switch and canary release with one line of config." },
+        { t: "Workflow · Visual orchestration", b: "Drag-and-drop DAG chains prompts, tools, and data flows into a production-grade pipeline." },
+        { t: "Agent · Engine", b: "Multi-agent collaboration and tool-calling strategies with built-in observability and replay." },
       ] },
       { layout: "async", cards: [
-        { t: "一个平台，三层能力", items: ["BaaS：模型统一网关与密钥治理", "Workflow：可视化 DAG 编排引擎", "Agent：策略、工具与多智能体运行时"], kpis: [["400+", "接入模型"], ["99.95%", "云服务可用性"]] },
-        { t: "设计哲学", b: "低门槛起步，不牺牲生产级能力。" },
+        { t: "One platform, three layers of capability", items: ["BaaS: unified model gateway and key governance", "Workflow: visual DAG orchestration engine", "Agent: strategies, tools, and multi-agent runtime"], kpis: [["400+", "Models connected"], ["99.95%", "Cloud service availability"]] },
+        { t: "Design philosophy", b: "Start with a low barrier without sacrificing production-grade capability." },
       ] },
     ],
     p5: [
       { layout: "hero", cards: [
-        { t: "核心能力：把“能跑通”变成“跑得稳”", items: ["拖拽式 Workflow：节点级调试与版本回滚", "多 Agent 协作：规划-执行-校验闭环", "企业级观测：全链路 Trace 与成本看板"] },
-        { t: "RAG 管线", b: "分段、索引、召回策略可全量配置。" },
-        { t: "Prompt IDE", b: "提示词与变量版本化管理，团队协同评审。" },
-        { t: "集成网关", b: "企业微信 / 飞书 / 钉钉 / API 一步接入。" },
+        { t: "Core capabilities: from “it runs” to “it runs reliably”", items: ["Drag-and-drop Workflow: node-level debugging and version rollback", "Multi-agent collaboration: plan-execute-verify loop", "Enterprise observability: full-link traces and cost dashboards"] },
+        { t: "RAG pipeline", b: "Chunking, indexing, and retrieval strategies are fully configurable." },
+        { t: "Prompt IDE", b: "Versioned prompt and variable management with team review." },
+        { t: "Integration gateway", b: "WeCom / Feishu / DingTalk / API in one step." },
       ] },
       { layout: "3col", cards: [
-        { t: "编排", b: "拖拽式 DAG + 节点级调试，版本可回滚。" },
-        { t: "知识", b: "RAG 管线：分段、索引、召回全量可配。" },
-        { t: "运维", b: "全链路 Trace、成本看板与告警。" },
+        { t: "Orchestration", b: "Drag-and-drop DAG + node-level debugging, version rollback." },
+        { t: "Knowledge", b: "RAG pipeline: chunking, indexing, retrieval all configurable." },
+        { t: "Operations", b: "Full-link traces, cost dashboards, and alerts." },
       ] },
     ],
     p6: [
       { layout: "async", cards: [
-        { t: "分层架构：从数据层到编排层", items: ["编排层 · DAG 执行引擎：任务调度与重试策略", "模型层 · 统一网关：400+ 模型、密钥治理与灰度", "数据层 · 向量检索与知识库：多租户隔离"] },
-        { t: "部署形态", b: "私有化部署 + 国产化软硬件适配，数据不出域。" },
+        { t: "Layered architecture: from data layer to orchestration layer", items: ["Orchestration layer · DAG execution engine: task scheduling and retry policies", "Model layer · Unified gateway: 400+ models, key governance, and canary release", "Data layer · Vector search and knowledge base: multi-tenant isolation"] },
+        { t: "Deployment options", b: "Private deployment + domestic hardware/software adaptation; data never leaves your domain." },
       ] },
       { layout: "mix", cards: [
-        { t: "编排层", b: "DAG 执行引擎：调度、重试、人机节点。" },
-        { t: "模型层", b: "统一网关：400+ 模型与灰度发布。" },
-        { t: "数据层", b: "向量检索 + 知识库，多租户隔离。" },
-        { t: "私有化部署", items: ["国产化适配", "数据不出域", "K8s 一键部署"] },
+        { t: "Orchestration layer", b: "DAG execution engine: scheduling, retries, human-in-the-loop nodes." },
+        { t: "Model layer", b: "Unified gateway: 400+ models and canary releases." },
+        { t: "Data layer", b: "Vector search + knowledge base, multi-tenant isolation." },
+        { t: "Private deployment", items: ["Domestic stack adaptation", "Data never leaves your domain", "One-click K8s deployment"] },
       ] },
     ],
     p7: [
       { layout: "2col", cards: [
-        { t: "模型生态", items: ["OpenAI / Anthropic / Gemini / DeepSeek / Qwen …", "本地模型：Ollama、vLLM 一键挂载", "切换模型不改业务逻辑"] },
-        { t: "生态与集成", items: ["IM 通道：企业微信 / 飞书 / 钉钉", "身份与审计：SSO / RBAC / 审计日志", "插件市场：200+ 官方与社区插件"] },
+        { t: "Model ecosystem", items: ["OpenAI / Anthropic / Gemini / DeepSeek / Qwen …", "Local models: one-click Ollama and vLLM mounting", "Switch models without changing business logic"] },
+        { t: "Ecosystem and integrations", items: ["IM channels: WeCom / Feishu / DingTalk", "Identity and audit: SSO / RBAC / audit logs", "Plugin marketplace: 200+ official and community plugins"] },
       ] },
       { layout: "3col", cards: [
-        { t: "模型无锁定", b: "400+ 模型适配，业务逻辑与模型解耦。" },
-        { t: "集成即插即用", b: "IM、SSO、审计日志原生打通。" },
-        { t: "插件市场", b: "200+ 插件，社区共建生态。" },
+        { t: "No model lock-in", b: "400+ model adapters; business logic decoupled from models." },
+        { t: "Plug-and-play integrations", b: "IM, SSO, and audit logs connected natively." },
+        { t: "Plugin marketplace", b: "200+ plugins, co-built by the community." },
       ] },
     ],
     p8: [
       { layout: "async", cards: [
-        { t: "用数据说话", kpis: [["40万+", "全球开发者"], ["100k+", "GitHub Stars"], ["2000+", "企业客户"], ["99.95%", "云服务可用性"]] },
-        { t: "行业视角", quote: "“增长最快的开源 LLM 应用平台之一，社区与商业双轮驱动。” — 行业报告（2026）" },
+        { t: "Let the data speak", kpis: [["400k+", "Developers worldwide"], ["100k+", "GitHub Stars"], ["2,000+", "Enterprise customers"], ["99.95%", "Cloud service availability"]] },
+        { t: "Industry perspective", quote: "“One of the fastest-growing open-source LLM application platforms, driven by both community and commerce.” — Industry report (2026)" },
       ] },
       { layout: "hero", cards: [
-        { t: "关键数据", kpis: [["40万+", "全球开发者"], ["100k+", "GitHub Stars"], ["2000+", "企业客户"], ["99.95%", "云可用性"]] },
-        { t: "增长质量", b: "企业客户留存率 130%（NDR），社区贡献者覆盖 30+ 国家。" },
+        { t: "Key metrics", kpis: [["400k+", "Developers worldwide"], ["100k+", "GitHub Stars"], ["2,000+", "Enterprise customers"], ["99.95%", "Cloud availability"]] },
+        { t: "Growth quality", b: "Enterprise customer retention is 130% (NDR); community contributors span 30+ countries." },
       ] },
     ],
     p9: [
       { layout: "3col", cards: [
-        { t: "金融 · 智能客服", b: "某股份制银行：基于 RAG 的合规问答，上线 3 个月解决率提升 38%。" },
-        { t: "制造 · 设备知识库", b: "某装备集团：设备手册 → 问答助手，一线排障时间缩短 45%。" },
-        { t: "互联网 · 内容流水线", b: "某头部社区：多 Agent 内容生产，日均 2 万篇初稿自动生成。" },
+        { t: "Finance · Intelligent customer service", b: "A joint-stock bank: RAG-based compliance Q&A raised the resolution rate by 38% within 3 months of launch." },
+        { t: "Manufacturing · Equipment knowledge base", b: "An equipment group: equipment manuals → Q&A assistant cut frontline troubleshooting time by 45%." },
+        { t: "Internet · Content pipeline", b: "A leading community: multi-agent content production, 20k first drafts generated daily." },
       ] },
       { layout: "hero", cards: [
-        { t: "客户案例：三个行业，同一平台", b: "从合规严格的金融，到产线复杂的制造，Dify 以同一套能力支撑差异场景。" },
-        { t: "金融", b: "智能客服 · 解决率 +38%" },
-        { t: "制造", b: "设备问答 · 排障 -45%" },
-        { t: "互联网", b: "内容流水线 · 日均 2 万篇" },
+        { t: "Customer cases: three industries, one platform", b: "From compliance-heavy finance to complex manufacturing lines, Dify supports diverse scenarios with one set of capabilities." },
+        { t: "Finance", b: "Intelligent customer service · resolution +38%" },
+        { t: "Manufacturing", b: "Equipment Q&A · troubleshooting -45%" },
+        { t: "Internet", b: "Content pipeline · 20k/day" },
       ] },
     ],
     p10: [
       { layout: "mix", cards: [
-        { t: "开发者生态", items: ["GitHub 100k+ Stars，贡献者 3,800+", "社区教程 1,200+ 篇", "30+ 国家开发者自建本地化"], kpis: [["3,800+", "贡献者"], ["1,200+", "社区教程"]] },
-        { t: "线下与活动", b: "全球 12 城市开发者沙龙，年度大会 5,000 人。" },
-        { t: "插件市场", b: "200+ 官方与社区插件。" },
-        { t: "认证体系", b: "开发者认证 + 企业实施伙伴认证。" },
+        { t: "Developer ecosystem", items: ["GitHub 100k+ Stars, 3,800+ contributors", "1,200+ community tutorials", "Developers in 30+ countries building localizations"], kpis: [["3,800+", "Contributors"], ["1,200+", "Community tutorials"]] },
+        { t: "Offline and events", b: "Developer salons in 12 cities worldwide; 5,000 attendees at the annual conference." },
+        { t: "Plugin marketplace", b: "200+ official and community plugins." },
+        { t: "Certification", b: "Developer certification + enterprise implementation partner certification." },
       ] },
       { layout: "2col", cards: [
-        { t: "社区数据", items: ["GitHub 100k+ Stars", "贡献者 3,800+", "社区教程 1,200+ 篇"], kpis: [["12 城", "开发者沙龙"], ["5,000 人", "年度大会"]] },
-        { t: "生态设施", items: ["插件市场：200+ 插件", "开发者认证体系", "企业实施伙伴网络"] },
+        { t: "Community data", items: ["GitHub 100k+ Stars", "3,800+ contributors", "1,200+ community tutorials"], kpis: [["12 cities", "Developer salons"], ["5,000", "Annual conference"]] },
+        { t: "Ecosystem infrastructure", items: ["Plugin marketplace: 200+ plugins", "Developer certification program", "Enterprise implementation partner network"] },
       ] },
     ],
     p11: [
       { layout: "async", cards: [
-        { t: "商业模式：开源 ↔ 商业飞轮", items: ["开源核心：社区增长与产品验证", "云服务：SaaS 订阅，按量计费", "企业版：私有化 + SLA + 安全合规"] },
-        { t: "订阅层级", b: "免费团队版 → 专业版 → 企业版，迁移零成本。" },
+        { t: "Business model: open source ↔ commercial flywheel", items: ["Open-source core: community growth and product validation", "Cloud service: SaaS subscription, usage-based billing", "Enterprise edition: private deployment + SLA + security compliance"] },
+        { t: "Subscription tiers", b: "Free team edition → Pro → Enterprise; zero-cost migration." },
       ] },
       { layout: "2col", cards: [
-        { t: "飞轮逻辑", b: "开源获客 → 云服务变现 → 企业版深水区价值，三段式承接不同规模客户。", kpis: [["130%", "净收入留存"], ["70+", "国家与地区"]] },
-        { t: "定价结构", items: ["团队版：免费起步", "专业版：按量计费", "企业版：私有化与 SLA"] },
+        { t: "Flywheel logic", b: "Open-source acquisition → cloud monetization → deep enterprise value; three tiers serve customers of different sizes.", kpis: [["130%", "Net revenue retention"], ["70+", "Countries and regions"]] },
+        { t: "Pricing structure", items: ["Team edition: free to start", "Pro edition: usage-based billing", "Enterprise edition: private deployment and SLA"] },
       ] },
     ],
     p12: [
       { layout: "single", cards: [
-        { t: "增长曲线：云 ARR（百万美元）", chart: { vals: [6, 22, 58, 104], labels: ["2023", "2024", "2025", "2026"], unit: "$M" }, kpis: [["3.0x", "2026 同比增速"], ["130%", "净收入留存"]] },
+        { t: "Growth curve: cloud ARR (USD millions)", chart: { vals: [6, 22, 58, 104], labels: ["2023", "2024", "2025", "2026"], unit: "$M" }, kpis: [["3.0x", "2026 YoY growth"], ["130%", "Net revenue retention"]] },
       ] },
       { layout: "async", cards: [
-        { t: "云 ARR（百万美元）", chart: { vals: [6, 22, 58, 104], labels: ["2023", "2024", "2025", "2026"], unit: "$M" } },
-        { t: "增长解读", items: ["连续三年 3 倍以上增长", "付费转化：社区 → 云 → 企业版漏斗健康"], kpis: [["3.0x", "YoY"]] },
+        { t: "Cloud ARR (USD millions)", chart: { vals: [6, 22, 58, 104], labels: ["2023", "2024", "2025", "2026"], unit: "$M" } },
+        { t: "Growth interpretation", items: ["Three consecutive years of 3x+ growth", "Paid conversion: healthy community → cloud → enterprise funnel"], kpis: [["3.0x", "YoY"]] },
       ] },
     ],
     p13: [
       { layout: "hero", cards: [
-        { t: "未来三年：从工具到生态", items: ["Agent 经济：多智能体市场与结算协议", "模型无关：业务零迁移成本", "企业级：合规、审计与安全纵深"] },
-        { t: "开放共建", b: "持续把核心能力开源，与社区定义下一代标准。" },
+        { t: "The next three years: from tool to ecosystem", items: ["Agent economy: multi-agent marketplace and settlement protocols", "Model-agnostic: zero migration cost for business logic", "Enterprise-grade: compliance, audit, and security depth"] },
+        { t: "Open co-building", b: "Keep open-sourcing core capabilities and define the next standard with the community." },
       ] },
       { layout: "3col", cards: [
-        { t: "Agent 经济", b: "多智能体市场与结算协议。" },
-        { t: "模型无关", b: "业务零迁移成本。" },
-        { t: "企业级", b: "合规、审计与安全纵深。" },
+        { t: "Agent economy", b: "Multi-agent marketplace and settlement protocols." },
+        { t: "Model-agnostic", b: "Zero migration cost for business logic." },
+        { t: "Enterprise-grade", b: "Compliance, audit, and security depth." },
       ] },
     ],
-    e: [{ layout: "end", title: "谢谢观看", sub: "共建 LLM 应用新生态", tags: ["dify.ai", "hello@dify.ai", "@dify_ai"] }],
+    e: [{ layout: "end", title: "Thank you", sub: "Building the new LLM application ecosystem together", tags: ["dify.ai", "hello@dify.ai", "@dify_ai"] }],
   },
   styles: [
-    { id: "tech", name: "深空科技", desc: "深色底 + 渐变光斑，适合发布会与产品推介", vars: { "--s-bg": "#0d1322", "--s-card": "#161e35", "--s-fg": "#eef1ff", "--s-muted": "#93a1c8", "--s-accent": "#6ea8ff", "--s-accent2": "#9d6bff", "--s-line": "rgba(255,255,255,.1)", "--s-radius": "1.2cqi", "--s-title-font": "inherit" } },
-    { id: "biz", name: "商务蓝", desc: "白底沉稳蓝调，董事会与对外提案通用", vars: { "--s-bg": "#ffffff", "--s-card": "#f2f6fc", "--s-fg": "#16233b", "--s-muted": "#5b6b85", "--s-accent": "#2563eb", "--s-accent2": "#38bdf8", "--s-line": "#dfe6f1", "--s-radius": "1cqi", "--s-title-font": "inherit" } },
-    { id: "warm", name: "暖色杂志", desc: "奶油底 + 橘调强调，品牌故事与招聘宣讲", vars: { "--s-bg": "#faf5ee", "--s-card": "#ffffff", "--s-fg": "#31281f", "--s-muted": "#8a7c6b", "--s-accent": "#e2653a", "--s-accent2": "#e9a13b", "--s-line": "#ecdfcf", "--s-radius": "1.6cqi", "--s-title-font": "'Georgia','Songti SC',serif" } },
-    { id: "mono", name: "极简黑白", desc: "黑白灰细线，内容为王的技术分享", vars: { "--s-bg": "#ffffff", "--s-card": "#fafafa", "--s-fg": "#141414", "--s-muted": "#6b6b6b", "--s-accent": "#141414", "--s-accent2": "#8a8a8a", "--s-line": "#e3e3e3", "--s-radius": "0.6cqi", "--s-title-font": "'Georgia','Songti SC',serif" } },
+    { id: "tech", name: "Deep Space Tech", desc: "Dark background + gradient glow; suited to launch events and product pitches", vars: { "--s-bg": "#0d1322", "--s-card": "#161e35", "--s-fg": "#eef1ff", "--s-muted": "#93a1c8", "--s-accent": "#6ea8ff", "--s-accent2": "#9d6bff", "--s-line": "rgba(255,255,255,.1)", "--s-radius": "1.2cqi", "--s-title-font": "inherit" } },
+    { id: "biz", name: "Business Blue", desc: "White background with steady blue tones; general-purpose for boardrooms and external proposals", vars: { "--s-bg": "#ffffff", "--s-card": "#f2f6fc", "--s-fg": "#16233b", "--s-muted": "#5b6b85", "--s-accent": "#2563eb", "--s-accent2": "#38bdf8", "--s-line": "#dfe6f1", "--s-radius": "1cqi", "--s-title-font": "inherit" } },
+    { id: "warm", name: "Warm Magazine", desc: "Cream background + orange accents; brand stories and recruiting talks", vars: { "--s-bg": "#faf5ee", "--s-card": "#ffffff", "--s-fg": "#31281f", "--s-muted": "#8a7c6b", "--s-accent": "#e2653a", "--s-accent2": "#e9a13b", "--s-line": "#ecdfcf", "--s-radius": "1.6cqi", "--s-title-font": "'Georgia',serif" } },
+    { id: "mono", name: "Minimal Mono", desc: "Black, white, and gray hairlines; content-first tech sharing", vars: { "--s-bg": "#ffffff", "--s-card": "#fafafa", "--s-fg": "#141414", "--s-muted": "#6b6b6b", "--s-accent": "#141414", "--s-accent2": "#8a8a8a", "--s-line": "#e3e3e3", "--s-radius": "0.6cqi", "--s-title-font": "'Georgia',serif" } },
   ],
 };
 
-const LAYOUT_NAMES = { cover: "封面 · 单一焦点", toc: "目录 · 编号卡片", end: "结尾 · 致谢构图", hero: "便当网格 · 顶部英雄式", async: "便当网格 · 非对称两栏", "2col": "便当网格 · 50/50 对称", "3col": "便当网格 · 三栏并列", single: "便当网格 · 单一焦点", mix: "便当网格 · 混合网格" };
-const TYPE_LABEL = { cover: "封面", toc: "目录", end: "结尾", body: "正文" };
-const GAP_SKIP = "不需要——就用我的素材";
+const LAYOUT_NAMES = { cover: "Cover · Single focus", toc: "Contents · Numbered cards", end: "Ending · Thank-you composition", hero: "Bento grid · Top hero", async: "Bento grid · Asymmetric two-column", "2col": "Bento grid · 50/50 symmetric", "3col": "Bento grid · Three columns", single: "Bento grid · Single focus", mix: "Bento grid · Mixed grid" };
+const TYPE_LABEL = { cover: "Cover", toc: "Contents", end: "Ending", body: "Body" };
+const GAP_SKIP = "Not needed — just use my materials";
 
-/* ---------------- 工具函数 ---------------- */
+/* ---------------- Utility functions ---------------- */
 const $ = (s, root = document) => root.querySelector(s);
 const $$ = (s, root = document) => Array.from(root.querySelectorAll(s));
 const REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1379,7 +1380,7 @@ function scrollChat() {
 function styleName(id) { const s = MOCK.styles.find(x => x.id === id); return s ? s.name : ""; }
 function kindIcon(kind) { return kind === "file" ? "file-text" : kind === "url" ? "link" : "clipboard"; }
 
-/* ---------------- 全局状态 ---------------- */
+/* ---------------- Global state ---------------- */
 const S = {
   topic: "", mode: "auto", stage: "",
   materials: [],                       // [{id, kind:'paste'|'file'|'url', title, meta}]
@@ -1404,7 +1405,7 @@ const flatPages = () => pages().map((p, i) => ({ page: p, num: i + 1 }));
 const pageById = id => pages().find(p => p.id === id);
 const answeredCount = () => { let n = 0; for (let i = 0; i < S.qTotal; i++) if (S.answers[i]) n++; return n; };
 
-/* ---------------- 弹窗 / 焦点管理 ---------------- */
+/* ---------------- Modals / focus management ---------------- */
 let lastFocus = null;
 function openModal(ov, focusSel) {
   lastFocus = document.activeElement;
@@ -1434,14 +1435,14 @@ function closeModal(ov) {
   lastFocus = null;
 }
 
-/* ---------------- 阶段导航 ---------------- */
+/* ---------------- Stage navigation ---------------- */
 const STAGES = [
-  ["home", "新建", "新建项目"],
-  ["research", "调研", "需求调研"],
-  ["outline", "大纲", "大纲"],
-  ["plan", "策划", "策划稿"],
-  ["style", "风格", "风格选择"],
-  ["design", "设计", "设计稿"],
+  ["home", "New", "New project"],
+  ["research", "Research", "Research"],
+  ["outline", "Outline", "Outline"],
+  ["plan", "Plan", "Plan draft"],
+  ["style", "Style", "Style selection"],
+  ["design", "Design", "Design draft"],
 ];
 function stageDone(k) { return k !== "home" && !!S.done[k]; }
 function reachable(k) {
@@ -1466,7 +1467,7 @@ function renderSteps() {
       else if (done) cls += " done";
       if (!reach) cls += " locked";
       if (stale) cls += " stale";
-      return `<button class="${cls}" type="button" data-k="${k}" ${reach ? "" : "disabled"} ${active ? 'aria-current="step"' : ""} aria-label="${full}${stale ? "，待重跑" : ""}">
+      return `<button class="${cls}" type="button" data-k="${k}" ${reach ? "" : "disabled"} ${active ? 'aria-current="step"' : ""} aria-label="${full}${stale ? ", needs rerun" : ""}">
         <span class="n">${done ? icon("check") : i + 1}</span>${label}${stale ? '<span class="stale-dot" aria-hidden="true"></span>' : ""}
       </button>`;
     }).join("");
@@ -1475,7 +1476,7 @@ function renderSteps() {
   if (sel) {
     sel.innerHTML = STAGES.map(([k, label, full], i) => {
       const stale = (k === "plan" && S.stale.plan) || (k === "design" && S.stale.design);
-      return `<option value="${k}" ${reachable(k) ? "" : "disabled"} ${S.stage === k ? "selected" : ""}>${i + 1}. ${full}${stale ? "（待重跑）" : ""}</option>`;
+      return `<option value="${k}" ${reachable(k) ? "" : "disabled"} ${S.stage === k ? "selected" : ""}>${i + 1}. ${full}${stale ? " (needs rerun)" : ""}</option>`;
     }).join("");
     sel.value = S.stage;
   }
@@ -1488,7 +1489,7 @@ function focusStage(k) {
 }
 function jumpTo(k, opts = {}) {
   if (k === S.stage && !opts.force) { renderSteps(); return; }
-  if (k === "outline" && S.profileDirty) { toast("需求已修改，请先更新需求画像"); return; }
+  if (k === "outline" && S.profileDirty) { toast("Requirements changed; update the requirements profile first"); return; }
   if (!reachable(k) && k !== S.stage) return;
   runSeq++;
   clearAutoTimer();
@@ -1521,24 +1522,24 @@ function clearAutoTimer() {
 function startAutoAdvance(token, from) {
   if (S.mode !== "auto" || S.autoPaused) return;
   const target = from === "outline" ? "plan" : "style";
-  const targetLabel = from === "outline" ? "策划稿" : "风格选择";
+  const targetLabel = from === "outline" ? "plan draft" : "style selection";
   const bar = $("#autoBar");
   const text = $("#autoText");
   if (bar) bar.hidden = false;
   let left = 3;
-  if (text) text.textContent = `3 秒后自动进入${targetLabel}`;
+  if (text) text.textContent = `Entering ${targetLabel} in 3 seconds`;
   clearInterval(S.autoTimer);
   S.autoTimer = setInterval(() => {
     if (!alive(token) || S.stage !== from || S.autoPaused) { clearAutoTimer(); return; }
     left--;
     if (left > 0) {
-      if (text) text.textContent = `${left} 秒后自动进入${targetLabel}`;
+      if (text) text.textContent = `Entering ${targetLabel} in ${left} seconds`;
     } else {
       const ae = document.activeElement;
       if (ae && (ae.isContentEditable || ae.tagName === "INPUT" || ae.tagName === "TEXTAREA")) {
         S.autoPaused = true;
         clearAutoTimer();
-        toast("检测到正在编辑，已暂停自动推进");
+        toast("Editing detected — auto-advance paused");
         return;
       }
       clearAutoTimer();
@@ -1554,10 +1555,10 @@ function pauseAutoAdvance(msg) {
   if (running && msg) toast(msg);
 }
 function loadStylePref() { try { return localStorage.getItem("boundppt.style"); } catch (e) { return null; } }
-function saveStylePref(id) { try { if (id) localStorage.setItem("boundppt.style", id); else localStorage.removeItem("boundppt.style"); } catch (e) { /* file:// 环境可能禁用存储 */ } }
+function saveStylePref(id) { try { if (id) localStorage.setItem("boundppt.style", id); else localStorage.removeItem("boundppt.style"); } catch (e) { /* file:// environments may disable storage */ } }
 
-/* ---------------- 阶段 1 · 素材槽 ---------------- */
-function renderHome() { /* 首页为静态结构；动态内容由 renderMatList / 模式按钮维护 */ }
+/* ---------------- Stage 1 · Material slot ---------------- */
+function renderHome() { /* Home is a static shell; dynamic content is maintained by renderMatList / mode buttons */ }
 function initHome() {
   $("#startForm").addEventListener("submit", startProject);
   $$("#topicChips .chip").forEach(c => {
@@ -1611,26 +1612,26 @@ function initMatSlot() {
   });
   $("#msPasteAdd").addEventListener("click", () => {
     const t = $("#msPasteText").value.trim();
-    if (!t) { toast("先粘贴一些内容"); $("#msPasteText").focus(); return; }
-    if (!addMaterial({ kind: "paste", title: short(t, 14), meta: `粘贴文本 · ${t.length} 字` })) return;
+    if (!t) { toast("Paste some content first"); $("#msPasteText").focus(); return; }
+    if (!addMaterial({ kind: "paste", title: short(t, 28), meta: `Pasted text · ${t.length} chars` })) return;
     $("#msPasteText").value = "";
     $("#msPastePane").hidden = true;
     $("#msPasteBtn").setAttribute("aria-expanded", "false");
-    toast("已添加粘贴文本素材");
+    toast("Pasted text added as material");
   });
   $("#msUrlAdd").addEventListener("click", () => {
     let u = $("#msUrlInput").value.trim();
-    if (!u) { toast("先输入链接"); $("#msUrlInput").focus(); return; }
+    if (!u) { toast("Enter a link first"); $("#msUrlInput").focus(); return; }
     if (!/^https?:\/\//i.test(u)) u = "https://" + u;
     let parsed;
-    try { parsed = new URL(u); } catch (e) { toast("链接格式不对，请检查后重试"); $("#msUrlInput").focus(); return; }
-    if (!parsed.hostname.includes(".")) { toast("链接格式不对，请检查后重试"); $("#msUrlInput").focus(); return; }
+    try { parsed = new URL(u); } catch (e) { toast("Invalid link format; check it and try again"); $("#msUrlInput").focus(); return; }
+    if (!parsed.hostname.includes(".")) { toast("Invalid link format; check it and try again"); $("#msUrlInput").focus(); return; }
     const label = parsed.host + (parsed.pathname && parsed.pathname !== "/" ? parsed.pathname : "");
-    if (!addMaterial({ kind: "url", title: short(label, 26), meta: "网页链接 · 待抓取" })) return;
+    if (!addMaterial({ kind: "url", title: short(label, 26), meta: "Web link · pending fetch" })) return;
     $("#msUrlInput").value = "";
     $("#msUrlPane").hidden = true;
     $("#msUrlBtn").setAttribute("aria-expanded", "false");
-    toast("已添加链接素材");
+    toast("Link added as material");
   });
   const slot = $("#matSlot");
   slot.addEventListener("dragover", e => { e.preventDefault(); slot.classList.add("dragover"); });
@@ -1662,17 +1663,17 @@ function toggleMatPane(id) {
 function addFileMaterials(files) {
   if (!files.length) return;
   const room = 6 - S.materials.length;
-  if (room <= 0) { toast("原型最多演示 6 份素材"); return; }
+  if (room <= 0) { toast("The prototype demonstrates up to 6 materials"); return; }
   const list = files.slice(0, room);
-  if (files.length > room) toast(`最多 6 份素材，已添加前 ${room} 份`);
+  if (files.length > room) toast(`Up to 6 materials; added the first ${room}`);
   list.forEach(f => {
-    const ext = (f.name.split(".").pop() || "文件").toLowerCase();
+    const ext = (f.name.split(".").pop() || "file").toLowerCase();
     addMaterial({ kind: "file", title: f.name, meta: `${ext} · ${(f.size / 1024).toFixed(0)} KB` });
   });
-  announce(`已添加 ${list.length} 份文件素材，共 ${S.materials.length} 份`);
+  announce(`Added ${list.length} file materials; ${S.materials.length} total`);
 }
 function addMaterial(m) {
-  if (S.materials.length >= 6) { toast("原型最多演示 6 份素材"); return false; }
+  if (S.materials.length >= 6) { toast("The prototype demonstrates up to 6 materials"); return false; }
   m.id = "m" + Math.random().toString(36).slice(2, 7);
   S.materials.push(m);
   renderMatList();
@@ -1687,14 +1688,14 @@ function renderMatList() {
       <span class="kico">${icon(ic[m.kind])}</span>
       <span class="mt1" title="${esc(m.title)}">${esc(m.title)}</span>
       <span class="mt2">${esc(m.meta)}</span>
-      <button class="mx" type="button" aria-label="移除素材 ${esc(m.title)}">${icon("x")}</button>
+      <button class="mx" type="button" aria-label="Remove material ${esc(m.title)}">${icon("x")}</button>
     </span>`).join("");
   $$("#matList .matchip").forEach(ch => {
     ch.querySelector(".mx").addEventListener("click", () => {
       const removed = S.materials.find(x => x.id === ch.dataset.id);
       S.materials = S.materials.filter(x => x.id !== ch.dataset.id);
       renderMatList();
-      if (removed) { toast(`已移除素材：${removed.title}`); }
+      if (removed) { toast(`Removed material: ${removed.title}`); }
     });
   });
   const full = S.materials.length >= 6;
@@ -1708,7 +1709,7 @@ function renderMatList() {
 function startProject(e) {
   if (e) e.preventDefault();
   const t = $("#topicInput").value.trim();
-  if (!t) { toast("先输入一个主题，或点一个示例"); $("#topicInput").focus(); return; }
+  if (!t) { toast("Enter a topic first, or click an example"); $("#topicInput").focus(); return; }
   S.topic = t;
   resetFlowState();
   jumpTo("research");
@@ -1727,7 +1728,7 @@ function resetFlowState() {
   clearAutoTimer();
 }
 
-/* ---------------- 阶段 2 · 需求调研 ---------------- */
+/* ---------------- Stage 2 · Research ---------------- */
 function agentMsg() {
   const div = document.createElement("div");
   div.className = "msg";
@@ -1754,7 +1755,7 @@ async function typeInto(el, text, token, speed = 15) {
 function toolCard(name, target) {
   const div = document.createElement("div");
   div.className = "toolcard";
-  div.innerHTML = `<span class="ic"><span class="spinner"></span></span><span class="tname"></span><span class="ttarget"></span><span class="tstat">运行中</span>`;
+  div.innerHTML = `<span class="ic"><span class="spinner"></span></span><span class="tname"></span><span class="ttarget"></span><span class="tstat">Running</span>`;
   div.querySelector(".tname").textContent = name;
   div.querySelector(".ttarget").textContent = target || "";
   $("#chatPanel").appendChild(div);
@@ -1765,13 +1766,13 @@ function finishTool(div) {
   if (!div) return;
   div.classList.add("done");
   div.querySelector(".ic").innerHTML = icon("check");
-  div.querySelector(".tstat").textContent = "完成";
+  div.querySelector(".tstat").textContent = "Done";
 }
 function materialSummary(m) {
-  if (m.kind === "paste") return `提取 ${Math.min(9, Math.max(3, Math.round(m.title.length / 3)))} 个要点`;
-  if (m.kind === "url") return "抓取正文 · 提取 5 个要点";
-  const ext = (m.meta.split("·")[0] || "文件").trim().toUpperCase();
-  return `解析 ${ext} · 提取 2 张表 / 4 段正文`;
+  if (m.kind === "paste") return `Extracted ${Math.min(9, Math.max(3, Math.round(m.title.length / 3)))} key points`;
+  if (m.kind === "url") return "Fetched body · extracted 5 key points";
+  const ext = (m.meta.split("·")[0] || "file").trim().toUpperCase();
+  return `Parsed ${ext} · extracted 2 tables / 4 body sections`;
 }
 async function digestMaterials(token) {
   const items = [];
@@ -1784,7 +1785,7 @@ async function digestMaterials(token) {
     finishTool(tc);
     addSource("prov", mt.title, mt.meta, mt.kind);
     items.push({ ...mt, sum: materialSummary(mt) });
-    announce(`已消化素材：${mt.title}`);
+    announce(`Digested material: ${mt.title}`);
     await sleep(110);
   }
   return { items };
@@ -1793,7 +1794,7 @@ function showDigestCard(digest) {
   if (!digest || !digest.items.length) return;
   const div = document.createElement("div");
   div.className = "digest";
-  div.innerHTML = `<div class="digest-head">${icon("check")}素材消化完成<span class="sub">${digest.items.length} 份 · 摘要仅用于本次大纲</span></div>
+  div.innerHTML = `<div class="digest-head">${icon("check")}Material digestion complete<span class="sub">${digest.items.length} items · summary used only for this outline</span></div>
     <ul>${digest.items.map(it => `<li><span class="kico">${icon(kindIcon(it.kind))}</span><span><b>${esc(it.title)}</b><span class="sum"> · ${esc(it.sum)}</span></span></li>`).join("")}</ul>`;
   $("#chatPanel").appendChild(div);
   scrollChat();
@@ -1806,14 +1807,14 @@ function askSingle(def, idx) {
     qc.innerHTML = `<div class="qhead">
         <span class="qnum">Q${idx + 1}</span>
         <span class="qt">${esc(def.q)}</span>
-        <span class="qtag">单选</span>
+        <span class="qtag">Single choice</span>
       </div>
       <div class="qsummary"></div>
       <div class="qopts" role="radiogroup" aria-label="${esc(def.q)}">        ${def.opts.map((o, j) => `<button class="qopt" type="button" role="radio" aria-checked="false" data-j="${j}">${esc(o)}</button>`).join("")}
       </div>
       <div class="qfoot">
-        <span class="qhint">问题 ${idx + 1} / ${S.qTotal} · 选择后自动进入下一题</span>
-        <button class="qedit" type="button">${icon("pencil")}修改</button>
+        <span class="qhint">Question ${idx + 1} / ${S.qTotal} · moves to the next question after selection</span>
+        <button class="qedit" type="button">${icon("pencil")}Edit</button>
       </div>`;
     $("#chatPanel").appendChild(qc);
     S.qCards[idx] = qc;
@@ -1826,10 +1827,10 @@ function askSingle(def, idx) {
       btn.setAttribute("aria-checked", "true");
       const label = def.opts[+btn.dataset.j];
       S.answers[idx] = { label };
-      summary.innerHTML = `${icon("check")}<span>已记录：<b>${esc(label)}</b></span>`;
+      summary.innerHTML = `${icon("check")}<span>Recorded: <b>${esc(label)}</b></span>`;
       qc.classList.add("answered");
       markProfileDirty();
-      announce(`第 ${idx + 1} 题已选择：${label}`);
+      announce(`Question ${idx + 1} answered: ${label}`);
       if (!answered) { answered = true; resolve(label); }
     };
     opts.forEach(btn => btn.addEventListener("click", () => choose(btn)));
@@ -1841,28 +1842,28 @@ function askSingle(def, idx) {
 }
 async function askGap(token) {
   const m = agentMsg();
-  await typeInto(m.bubble, "素材消化完成。我按“能否直接支撑大纲”检查了一遍：你的素材能覆盖定位、能力和部分数据，但还有几处会被追问。下面是我建议补的缺口——你勾选后，我只查缺的部分。", token, 14);
+  await typeInto(m.bubble, "Material digestion complete. I checked everything against “can this directly support the outline”: your materials cover positioning, capabilities, and some data, but a few spots will likely be questioned. Below are the gaps I suggest filling — check the ones you want, and I'll only search those.", token, 14);
   if (!alive(token)) return [];
   return new Promise(resolve => {
     const card = document.createElement("div");
     card.className = "gapcard";
     card.innerHTML = `<div class="gaphead">
         <span class="gi">${icon("alert")}</span>
-        <div><div class="gt">缺口确认 · 哪些需要我联网补？</div><div class="gs">Agent 建议已预选，可随时取消；选“不需要”则完全基于你的素材。</div></div>
+        <div><div class="gt">Gap confirmation · Which gaps should I fill online?</div><div class="gs">Agent suggestions are pre-selected and can be unchecked anytime; choosing “not needed” means the outline will be based entirely on your materials.</div></div>
       </div>
       ${MOCK.gapSuggestions.map((g, i) => `<label class="gaprow">
         <input type="checkbox" data-g="${i}" ${g.recommended ? "checked" : ""} aria-label="${esc(g.label)}">
         <span class="gbox" aria-hidden="true"></span>
-        <span class="gtext"><span class="glabel">${esc(g.label)}${g.recommended ? '<span class="gbadge">建议</span>' : ""}</span><span class="greason">${esc(g.reason)}</span></span>
+        <span class="gtext"><span class="glabel">${esc(g.label)}${g.recommended ? '<span class="gbadge">Suggested</span>' : ""}</span><span class="greason">${esc(g.reason)}</span></span>
       </label>`).join("")}
       <label class="gaprow exclusive">
-        <input type="checkbox" data-skip="1" aria-label="不需要联网补充，就用我的素材">
+        <input type="checkbox" data-skip="1" aria-label="No web supplements needed; just use my materials">
         <span class="gbox" aria-hidden="true"></span>
-        <span class="gtext"><span class="glabel">不需要——就用我的素材</span><span class="greason">跳过联网检索，大纲完全基于你提供的内容。</span></span>
+        <span class="gtext"><span class="glabel">Not needed — just use my materials</span><span class="greason">Skip web research; the outline will be based entirely on the content you provided.</span></span>
       </label>
       <div class="gapfoot">
-        <span class="gcount" id="gapCount">已选 2 项</span>
-        <button class="btn sm" id="gapConfirm" type="button">确认缺口，继续</button>
+        <span class="gcount" id="gapCount">2 selected</span>
+        <button class="btn sm" id="gapConfirm" type="button">Confirm gaps, continue</button>
       </div>`;
     $("#chatPanel").appendChild(card);
     scrollChat();
@@ -1874,7 +1875,7 @@ async function askGap(token) {
       if (skip.checked) sugg.forEach(b => { b.checked = false; b.disabled = true; });
       else sugg.forEach(b => { b.disabled = false; });
       const n = sugg.filter(b => b.checked).length;
-      count.textContent = skip.checked ? "已选：不联网" : `已选 ${n} 项`;
+      count.textContent = skip.checked ? "Selected: no web" : `${n} selected`;
       confirm.disabled = !skip.checked && n === 0;
     };
     sugg.forEach(b => b.addEventListener("change", () => { if (b.checked) skip.checked = false; sync(); }));
@@ -1886,7 +1887,7 @@ async function askGap(token) {
       S.gaps = labels;
       card.classList.add("answered");
       $$("input,button", card).forEach(el => { el.disabled = true; });
-      announce(labels.length ? `已确认联网补充：${labels.join("、")}` : "已确认不联网，完全使用素材");
+      announce(labels.length ? `Confirmed web supplements: ${labels.join(", ")}` : "Confirmed no web; using materials only");
       resolve(labels);
     });
   });
@@ -1895,7 +1896,7 @@ function addSource(origin, title, sub, kind) {
   const el = document.createElement("div");
   el.className = "srcitem" + (origin === "prov" ? " prov" : "");
   const ic = origin === "prov" ? kindIcon(kind || "paste") : "globe";
-  el.innerHTML = `<span class="sic">${icon(ic)}</span><span class="sbody"><span class="st">${esc(title)}${origin === "prov" ? '<span class="src-badge">素材</span>' : ""}</span><span class="su">${esc(sub || "")}</span></span>`;
+  el.innerHTML = `<span class="sic">${icon(ic)}</span><span class="sbody"><span class="st">${esc(title)}${origin === "prov" ? '<span class="src-badge">Material</span>' : ""}</span><span class="su">${esc(sub || "")}</span></span>`;
   $(origin === "prov" ? "#provList" : "#webList").appendChild(el);
   $(origin === "prov" ? "#provWrap" : "#webWrap").hidden = false;
   $("#srcEmpty").hidden = true;
@@ -1906,8 +1907,8 @@ function updateSrcCount() {
   const wn = $("#webList").children.length;
   $("#provCount").textContent = pn;
   $("#webCount").textContent = wn;
-  $("#srcCount").textContent = `${pn + wn} 份`;
-  $("#srcCount").setAttribute("aria-label", `共 ${pn + wn} 份内容源，其中素材 ${pn} 份，联网 ${wn} 份`);
+  $("#srcCount").textContent = `${pn + wn} items`;
+  $("#srcCount").setAttribute("aria-label", `${pn + wn} content sources: ${pn} materials, ${wn} web`);
 }
 async function runWebResearch(token, gaps) {
   const hasMats = S.materials.length > 0;
@@ -1922,17 +1923,17 @@ async function runWebResearch(token, gaps) {
   }
   let tools, sources;
   if (hasMats) {
-    const map = { "竞品对比": [7], "行业与市场数据": [2, 11], "客户案例": [4, 5] };
+    const map = { "Competitor comparison": [7], "Industry and market data": [2, 11], "Customer cases": [4, 5] };
     const ids = [...new Set((gaps || []).flatMap(g => map[g] || []))].sort((a, b) => a - b);
     sources = ids.map(i => MOCK.sources[i]);
-    tools = (gaps || []).map(g => ["web_search", `补充检索 · ${g}`]);
+    tools = (gaps || []).map(g => ["web_search", `Supplemental search · ${g}`]);
   } else {
     sources = MOCK.sources;
     tools = [
-      ["web_search", `“${S.topic}” 官网与产品定位`],
-      ["web_search", `“${S.topic}” 最新融资与公司动态`],
-      ["web_search", "行业报告与竞品对比"],
-      ["web_search", "开发者社区反馈"],
+      ["web_search", `“${S.topic}” official site and product positioning`],
+      ["web_search", `“${S.topic}” latest funding and company news`],
+      ["web_search", "Industry reports and competitor comparison"],
+      ["web_search", "Developer community feedback"],
     ];
   }
   for (const [name, target] of tools) {
@@ -1950,7 +1951,7 @@ async function runWebResearch(token, gaps) {
   }
   S.webUsed = sources.length > 0;
   if (!alive(token)) return;
-  announce(`联网补充完成，共 ${sources.length} 份资料`);
+  announce(`Web supplements complete: ${sources.length} sources`);
 }
 async function startResearchFlow(token) {
   const chat = $("#chatPanel");
@@ -1963,18 +1964,18 @@ async function startResearchFlow(token) {
   const empty = $("#srcEmpty");
   empty.hidden = false;
   empty.innerHTML = hasMats
-    ? `${icon("inbox")}素材消化后会出现在这里`
-    : `${icon("search")}联网检索结果会出现在这里`;
+    ? `${icon("inbox")}Digested materials will appear here`
+    : `${icon("search")}Web research results will appear here`;
   updateSrcCount();
-  $("#researchMode").innerHTML = `${icon(S.mode === "auto" ? "rocket" : "compass", "sm")}${S.mode === "auto" ? "全自动" : "专家陪跑"}`;
+  $("#researchMode").innerHTML = `${icon(S.mode === "auto" ? "rocket" : "compass", "sm")}${S.mode === "auto" ? "Fully automatic" : "Expert copilot"}`;
   S.answers = {}; S.qCards = {}; S.answeredCount = 0;
   S.gaps = []; S.webUsed = false; S.webSkipped = false;
   S.profileShown = false; S.profileDirty = false; S.reviewMode = false;
   S.qTotal = 4 + (hasMats ? 1 : 0);
 
   const intro = hasMats
-    ? `收到。主题是「${S.topic}」，你还带来了 ${S.materials.length} 份素材。我先消化你的素材——能用的直接用，缺什么再联网补。`
-    : `收到。主题是「${S.topic}」。这次没有现成素材，我先像调研员一样联网搜集资料，再和你确认几个关键问题。`;
+    ? `Got it. The topic is “${S.topic}”, and you brought ${S.materials.length} materials. I'll digest your materials first — use what works and fill gaps online only if needed.`
+    : `Got it. The topic is “${S.topic}”. There are no existing materials this time, so I'll research the web like a researcher first, then confirm a few key questions with you.`;
   const m1 = agentMsg();
   const typing = typeInto(m1.bubble, intro, token, 14);
   await sleep(380);
@@ -2003,7 +2004,7 @@ async function startResearchFlow(token) {
   if (hasMats && S.gaps.length === 0) {
     S.webSkipped = true;
     const m = agentMsg();
-    await typeInto(m.bubble, `明白，这次不联网。大纲将完全围绕你的 ${S.materials.length} 份素材展开——一手素材优先，我不会额外引入外部信息。`, token, 14);
+    await typeInto(m.bubble, `Understood, no web this time. The outline will be built entirely around your ${S.materials.length} materials — first-party materials come first, and I won't introduce outside information.`, token, 14);
   } else {
     await runWebResearch(token, hasMats ? S.gaps : null);
   }
@@ -2015,10 +2016,10 @@ async function startResearchFlow(token) {
   let tail;
   if (hasMats) {
     tail = S.gaps.length
-      ? `调研完成。${pn} 份你的素材 + ${wn} 份定向补充（右侧可见）。为了让大纲有的放矢，最后确认一下需求画像。`
-      : `调研完成。全部基于你的 ${pn} 份素材，未联网。为了让大纲有的放矢，最后确认一下需求画像。`;
+      ? `Research complete. ${pn} of your materials + ${wn} targeted supplements (visible on the right). To keep the outline on target, let's confirm the requirements profile.`
+      : `Research complete. Based entirely on your ${pn} materials, with no web research. To keep the outline on target, let's confirm the requirements profile.`;
   } else {
-    tail = `调研完成。我读完了 ${wn} 份资料（右侧可见）。为了让大纲有的放矢，最后确认一下需求画像。`;
+    tail = `Research complete. I've read ${wn} sources (visible on the right). To keep the outline on target, let's confirm the requirements profile.`;
   }
   await typeInto(m2.bubble, tail, token, 14);
   if (!alive(token)) return;
@@ -2029,7 +2030,7 @@ function offerProfile() {
   const wrap = document.createElement("div");
   wrap.id = "profileCta";
   wrap.style.marginLeft = "39px";
-  wrap.innerHTML = `<button class="btn" id="profileBuildBtn" type="button">${icon("clipboard")}生成需求画像${icon("arrow-right")}</button>`;
+  wrap.innerHTML = `<button class="btn" id="profileBuildBtn" type="button">${icon("clipboard")}Generate requirements profile${icon("arrow-right")}</button>`;
   $("#chatPanel").appendChild(wrap);
   $("#profileBuildBtn").addEventListener("click", () => { wrap.remove(); showProfile(); });
   scrollChat();
@@ -2041,7 +2042,7 @@ function markProfileDirty() {
   if (!pc) return;
   pc.classList.add("dirty");
   const status = pc.querySelector(".pc-status");
-  if (status) { status.textContent = "待更新"; status.classList.add("warn"); }
+  if (status) { status.textContent = "Needs update"; status.classList.add("warn"); }
   const next = $("#profileNextBtn", pc), upd = $("#profileUpdateBtn", pc);
   if (next) next.disabled = true;
   if (upd) upd.hidden = false;
@@ -2053,8 +2054,8 @@ async function showProfile() {
   const hasMats = S.materials.length > 0;
   const m = agentMsg();
   const text = hasMats
-    ? `好的，我记下了：受众「${a[0].label}」· 目的「${a[1].label}」· 规模「${a[2].label}」· 风格「${a[3].label}」。\n素材优先，联网只做佐证；两者冲突时以你的素材为准。`
-    : `好的，我记下了：受众「${a[0].label}」· 目的「${a[1].label}」· 规模「${a[2].label}」· 风格「${a[3].label}」。\n结合刚检索的资料，大纲会围绕这些需求展开。`;
+    ? `Got it. I've noted: audience “${a[0].label}” · goal “${a[1].label}” · scale “${a[2].label}” · style “${a[3].label}”.\nMaterials come first; web research only supports them. If they conflict, your materials win.`
+    : `Got it. I've noted: audience “${a[0].label}” · goal “${a[1].label}” · scale “${a[2].label}” · style “${a[3].label}”.\nCombined with the research just gathered, the outline will be built around these requirements.`;
   await typeInto(m.bubble, text, token, 14);
   if (!alive(token)) return;
   const pc = document.createElement("div");
@@ -2064,33 +2065,33 @@ async function showProfile() {
   renderProfileInto(pc);
   S.done.research = true;
   renderSteps();
-  announce("需求画像已生成，可以修改需求或进入大纲");
+  announce("Requirements profile generated; you can edit requirements or continue to the outline");
   scrollChat();
 }
 function renderProfileInto(pc) {
   const a = S.answers;
   const hasMats = S.materials.length > 0;
-  const gapText = S.gaps.length ? `补充 ${S.gaps.join("、")}` : (hasMats ? "不联网" : "默认联网 12 份");
-  const mats = hasMats ? `${S.materials.length} 份素材` : "无（纯联网调研）";
+  const gapText = S.gaps.length ? `Supplements: ${S.gaps.join(", ")}` : (hasMats ? "No web" : "Default web research: 12 sources");
+  const mats = hasMats ? `${S.materials.length} materials` : "None (web-only research)";
   const strategy = hasMats
-    ? "① 优先引用你提供的素材 ② 联网信息只做佐证 ③ 一手素材与检索冲突时，以你的素材为准"
-    : "① 关键数据给出可验证出处 ② 客户案例按行业分组 ③ 结尾给出行动入口";
-  pc.innerHTML = `<div class="pc-head">${icon("clipboard")}需求画像<span class="pc-status${S.profileDirty ? " warn" : ""}">${S.profileDirty ? "待更新" : "已对齐"}</span></div>
+    ? "① Cite your materials first ② Web information is supporting evidence only ③ When first-party materials conflict with search results, your materials win"
+    : "① Give verifiable sources for key data ② Group customer cases by industry ③ End with a clear call to action";
+  pc.innerHTML = `<div class="pc-head">${icon("clipboard")}Requirements profile<span class="pc-status${S.profileDirty ? " warn" : ""}">${S.profileDirty ? "Needs update" : "Aligned"}</span></div>
     <dl class="pc-grid">
-      <div class="pc-item"><dt>受众</dt><dd>${esc(a[0]?.label || "—")}</dd></div>
-      <div class="pc-item"><dt>目的</dt><dd>${esc(a[1]?.label || "—")}</dd></div>
-      <div class="pc-item"><dt>页数规模</dt><dd>${esc(a[2]?.label || "—")}</dd></div>
-      <div class="pc-item"><dt>风格气质</dt><dd>${esc(a[3]?.label || "—")}</dd></div>
-      <div class="pc-item"><dt>素材</dt><dd>${esc(mats)}</dd></div>
-      <div class="pc-item"><dt>联网</dt><dd>${esc(gapText)}</dd></div>
+      <div class="pc-item"><dt>Audience</dt><dd>${esc(a[0]?.label || "—")}</dd></div>
+      <div class="pc-item"><dt>Goal</dt><dd>${esc(a[1]?.label || "—")}</dd></div>
+      <div class="pc-item"><dt>Page count</dt><dd>${esc(a[2]?.label || "—")}</dd></div>
+      <div class="pc-item"><dt>Style and mood</dt><dd>${esc(a[3]?.label || "—")}</dd></div>
+      <div class="pc-item"><dt>Materials</dt><dd>${esc(mats)}</dd></div>
+      <div class="pc-item"><dt>Web</dt><dd>${esc(gapText)}</dd></div>
     </dl>
-    <div class="pc-strategy"><b>内容策略：</b>${esc(strategy)}</div>
-    <p class="pc-dirty">${icon("alert")} 需求已修改，请更新画像后再生成大纲</p>
+    <div class="pc-strategy"><b>Content strategy: </b>${esc(strategy)}</div>
+    <p class="pc-dirty">${icon("alert")} Requirements changed; update the profile before generating the outline</p>
     <div class="pc-actions">
-      <button class="btn ghost sm" id="profileEditBtn" type="button">${icon("pencil")}修改需求答案</button>
+      <button class="btn ghost sm" id="profileEditBtn" type="button">${icon("pencil")}Edit requirements answers</button>
       <span class="spacer"></span>
-      <button class="btn ghost sm" id="profileUpdateBtn" type="button" hidden>${icon("refresh")}更新画像</button>
-      <button class="btn sm" id="profileNextBtn" type="button">需求没问题，生成大纲${icon("arrow-right")}</button>
+      <button class="btn ghost sm" id="profileUpdateBtn" type="button" hidden>${icon("refresh")}Update profile</button>
+      <button class="btn sm" id="profileNextBtn" type="button">Requirements look good, generate outline${icon("arrow-right")}</button>
     </div>`;
   const edit = $("#profileEditBtn", pc), next = $("#profileNextBtn", pc), upd = $("#profileUpdateBtn", pc);
   if (S.profileDirty) { next.disabled = true; upd.hidden = false; pc.classList.add("dirty"); }
@@ -2105,14 +2106,14 @@ function renderProfileInto(pc) {
       S.stale.plan = true;
       S.stale.design = true;
       renderSteps();
-      toast("需求已更新：请重新确认大纲，策划与设计将重跑");
+      toast("Requirements updated: reconfirm the outline; plan and design will rerun");
     } else {
-      toast("需求画像已更新");
+      toast("Requirements profile updated");
     }
     renderProfileInto(pc);
   });
   next.addEventListener("click", () => {
-    if (S.profileDirty) { toast("需求已修改，请先更新画像"); return; }
+    if (S.profileDirty) { toast("Requirements changed; update the profile first"); return; }
     jumpTo("outline");
   });
 }
@@ -2126,17 +2127,17 @@ function enterReviewMode(pc) {
   if (next) next.disabled = true;
   pc.classList.add("dirty");
   const status = pc.querySelector(".pc-status");
-  if (status) { status.textContent = "待更新"; status.classList.add("warn"); }
+  if (status) { status.textContent = "Needs update"; status.classList.add("warn"); }
   if (first) {
     first.scrollIntoView({ block: "center", behavior: REDUCED ? "auto" : "smooth" });
     const e = first.querySelector(".qedit");
     if (e) setTimeout(() => e.focus(), 80);
   }
-  toast("点题目下方的“修改”即可调整，改完记得更新画像");
+  toast("Click “Edit” under a question to adjust it; remember to update the profile when done");
 }
-function renderResearchStatic() { /* 对话 DOM 保留，无需重播 */ }
+function renderResearchStatic() { /* Chat DOM is kept; no need to replay */ }
 
-/* ---------------- 阶段 3 · 大纲便利贴 ---------------- */
+/* ---------------- Stage 3 · Outline sticky notes ---------------- */
 function pageType(p) {
   if (!S.outline) return "body";
   if (p.id === S.outline.cover.id) return "cover";
@@ -2148,15 +2149,15 @@ function stickyHTML(p, num, opts = {}) {
   const t = pageType(p);
   const fixed = t !== "body";
   const ops = fixed ? "" : `<div class="ops">
-      <button class="op" data-act="up" type="button" title="上移" aria-label="P${num} 上移">${icon("arrow-up")}</button>
-      <button class="op" data-act="down" type="button" title="下移" aria-label="P${num} 下移">${icon("arrow-down")}</button>
-      <button class="op" data-act="add" type="button" title="在此页后插入" aria-label="在 P${num} 后插入一页">${icon("plus")}</button>
-      <button class="op" data-act="del" type="button" title="删除" aria-label="删除 P${num}">${icon("trash")}</button>
+      <button class="op" data-act="up" type="button" title="Move up" aria-label="P${num} move up">${icon("arrow-up")}</button>
+      <button class="op" data-act="down" type="button" title="Move down" aria-label="P${num} move down">${icon("arrow-down")}</button>
+      <button class="op" data-act="add" type="button" title="Insert after this page" aria-label="Insert a page after P${num}">${icon("plus")}</button>
+      <button class="op" data-act="del" type="button" title="Delete" aria-label="Delete P${num}">${icon("trash")}</button>
     </div>`;
-  return `<div class="sticky ${opts.pop ? "pop" : ""} ${fixed ? "fixed" : ""}" data-id="${p.id}" draggable="${fixed ? "false" : "true"}" tabindex="0" aria-label="P${num} ${esc(p.title)}，${TYPE_LABEL[t]}页${fixed ? "，位置固定" : "，可拖动排序"}">
+  return `<div class="sticky ${opts.pop ? "pop" : ""} ${fixed ? "fixed" : ""}" data-id="${p.id}" draggable="${fixed ? "false" : "true"}" tabindex="0" aria-label="P${num} ${esc(p.title)}, ${TYPE_LABEL[t]} page${fixed ? ", fixed position" : ", draggable to reorder"}">
     <span class="grip" aria-hidden="true">${icon("grip")}</span>
     <span class="pgnum">P${num}</span><span class="pgtype">${TYPE_LABEL[t]}</span>
-    <div class="st-title" contenteditable="true" role="textbox" aria-label="P${num} 标题" spellcheck="false">${esc(p.title)}</div>
+    <div class="st-title" contenteditable="true" role="textbox" aria-label="P${num} title" spellcheck="false">${esc(p.title)}</div>
     ${ops}
   </div>`;
 }
@@ -2164,16 +2165,16 @@ function expectedPageCount() {
   const label = S.answers[2]?.label || "";
   const m = label.match(/(\d+)/);
   if (!m) return null;
-  return { n: +m[1], plus: label.includes("以上") };
+  return { n: +m[1], plus: label.includes("+") };
 }
 function pageCountWarning(total) {
   const e = expectedPageCount();
   if (!e) return "";
   if (e.plus) {
-    if (total < e.n) return `<span class="stat-warn">${icon("alert")}比约定少 ${e.n - total} 页</span>`;
+    if (total < e.n) return `<span class="stat-warn">${icon("alert")}${e.n - total} pages fewer than agreed</span>`;
     return "";
   }
-  if (Math.abs(total - e.n) > 2) return `<span class="stat-warn">${icon("alert")}与约定相差 ${Math.abs(total - e.n)} 页</span>`;
+  if (Math.abs(total - e.n) > 2) return `<span class="stat-warn">${icon("alert")}${Math.abs(total - e.n)} pages off the agreed count</span>`;
   return "";
 }
 function renderOutlineBoard(focusId) {
@@ -2189,20 +2190,20 @@ function renderOutlineBoard(focusId) {
     html += `<div class="partcol" data-part="${pi}">
       <div class="part-head">
         <span class="part-title">${esc(part.title)}</span>
-        <span class="part-count">${part.pages.length} 页</span>
-        <button class="part-add" type="button" data-part-add="${pi}" aria-label="在章节「${esc(part.title)}」末尾插入一页">${icon("plus")}</button>
+        <span class="part-count">${part.pages.length} pages</span>
+        <button class="part-add" type="button" data-part-add="${pi}" aria-label="Insert a page at the end of section “${esc(part.title)}”">${icon("plus")}</button>
       </div>
-      ${part.pages.length ? part.pages.map(p => stickyHTML(p, numOf(p.id))).join("") : `<div class="part-empty">拖一页到这里，或点右上角 +</div>`}
+      ${part.pages.length ? part.pages.map(p => stickyHTML(p, numOf(p.id))).join("") : `<div class="part-empty">Drag a page here, or click + in the top right</div>`}
     </div>`;
   });
   html += `</div>`;
   $("#boardWrap").innerHTML = html;
   const total = nums.length;
-  $("#outlineStat").innerHTML = `共 <strong>${total}</strong> 页 · ${S.outline.parts.length} 个章节（需求约定：${esc(S.answers[2]?.label || "未约定")}）${pageCountWarning(total)}`;
-  $("#outlineMeta").textContent = `共 ${total} 页`;
+  $("#outlineStat").innerHTML = `<strong>${total}</strong> pages · ${S.outline.parts.length} sections (agreed count: ${esc(S.answers[2]?.label || "not set")})${pageCountWarning(total)}`;
+  $("#outlineMeta").textContent = `${total} pages`;
   const statusEl = $("#outlineStatus");
   if (S.done.outline && statusEl && !statusEl.querySelector(".spinner")) {
-    statusEl.innerHTML = `${icon("check")}<span>大纲已就绪：${total} 页。调整后可直接确认。</span>`;
+    statusEl.innerHTML = `${icon("check")}<span>Outline ready: ${total} pages. Adjust and confirm when ready.</span>`;
   }
   $("#outlineConfirmBtn").disabled = false;
   bindBoard();
@@ -2226,7 +2227,7 @@ function bindBoard() {
       if (val !== p.title) {
         p.title = val;
         onOutlineEdit("title");
-        announce(`已改名为：${val}`);
+        announce(`Renamed to: ${val}`);
       }
     });
     st.querySelectorAll(".op").forEach(op => op.addEventListener("click", e => {
@@ -2262,10 +2263,10 @@ function bindBoard() {
   $$("#boardWrap [data-part-add]").forEach(btn => btn.addEventListener("click", () => {
     const pi = +btn.dataset.partAdd;
     const nid = "n" + Math.random().toString(36).slice(2, 7);
-    S.outline.parts[pi].pages.push({ id: nid, title: "新页面" });
+    S.outline.parts[pi].pages.push({ id: nid, title: "New page" });
     onOutlineEdit("structure");
     renderOutlineBoard(nid);
-    announce(`已在章节「${S.outline.parts[pi].title}」末尾插入一页`);
+    announce(`Inserted a page at the end of section “${S.outline.parts[pi].title}”`);
   }));
   $$("#boardWrap .partcol").forEach(col => {
     col.addEventListener("dragover", e => { e.preventDefault(); col.classList.add("dragover"); });
@@ -2300,33 +2301,33 @@ function doStickyOp(id, act, keyboard) {
     focusId = nextId;
   } else if (act === "add") {
     const nid = "n" + Math.random().toString(36).slice(2, 7);
-    arr.splice(idx + 1, 0, { id: nid, title: "新页面" });
+    arr.splice(idx + 1, 0, { id: nid, title: "New page" });
     focusId = nid;
   } else if (act === "up" && idx > 0) {
     [arr[idx - 1], arr[idx]] = [arr[idx], arr[idx - 1]];
   } else if (act === "down" && idx < arr.length - 1) {
     [arr[idx + 1], arr[idx]] = [arr[idx], arr[idx + 1]];
   } else if (act === "up" || act === "down") {
-    toast(act === "up" ? "已经是本章第一页" : "已经是本章最后一页");
+    toast(act === "up" ? "Already the first page in this section" : "Already the last page in this section");
     return;
   }
   onOutlineEdit(act === "add" || act === "del" ? "structure" : "order");
   renderOutlineBoard(focusId);
-  if (keyboard) announce(`已${act === "up" ? "上移" : act === "down" ? "下移" : act === "add" ? "插入" : "删除"} P${id}`);
+  if (keyboard) announce(`P${id} ${act === "up" ? "moved up" : act === "down" ? "moved down" : act === "add" ? "inserted" : "deleted"}`);
 }
 function moveAcrossParts(id, dir) {
   const loc = findPartOf(id);
   if (!loc) return;
   const target = loc.pi + dir;
   if (target < 0 || target >= S.outline.parts.length) {
-    toast(dir < 0 ? "已经是第一个章节" : "已经是最后一个章节");
+    toast(dir < 0 ? "Already the first section" : "Already the last section");
     return;
   }
   const [pg] = S.outline.parts[loc.pi].pages.splice(loc.idx, 1);
   S.outline.parts[target].pages.push(pg);
   onOutlineEdit("structure");
   renderOutlineBoard(id);
-  announce(`已移动「${pg.title}」到章节「${S.outline.parts[target].title}」`);
+  announce(`Moved “${pg.title}” to section “${S.outline.parts[target].title}”`);
 }
 function movePageToPart(id, targetPi) {
   if (!S.outline.parts[targetPi]) return;
@@ -2336,7 +2337,7 @@ function movePageToPart(id, targetPi) {
   S.outline.parts[targetPi].pages.push(pg);
   onOutlineEdit("structure");
   renderOutlineBoard(id);
-  announce(`已移动「${pg.title}」到章节「${S.outline.parts[targetPi].title}」`);
+  announce(`Moved “${pg.title}” to section “${S.outline.parts[targetPi].title}”`);
 }
 function movePageBefore(srcId, targetId) {
   if (srcId === targetId) return;
@@ -2349,10 +2350,10 @@ function movePageBefore(srcId, targetId) {
   dstArr.splice(di < 0 ? dstArr.length : di, 0, pg);
   onOutlineEdit("structure");
   renderOutlineBoard(srcId);
-  announce(`已移动「${pg.title}」`);
+  announce(`Moved “${pg.title}”`);
 }
 function onOutlineEdit(kind) {
-  pauseAutoAdvance("大纲有改动，已暂停自动推进");
+  pauseAutoAdvance("Outline changed; auto-advance paused");
   let changed = false;
   if (kind === "structure" || kind === "order") {
     if (S.done.plan) { S.done.plan = false; S.stale.plan = true; changed = true; }
@@ -2361,7 +2362,7 @@ function onOutlineEdit(kind) {
   else if (S.stale.plan) { S.stale.design = true; }
   renderSteps();
   if (changed) {
-    toast(kind === "title" ? "标题已更新，设计稿需重新渲染" : "大纲有改动，策划稿与设计稿需重跑");
+    toast(kind === "title" ? "Title updated; design needs re-rendering" : "Outline changed; plan and design need rerun");
   }
 }
 async function runOutlineStage(token) {
@@ -2372,7 +2373,7 @@ async function runOutlineStage(token) {
   if (S._outlineVisited) { renderOutlineBoard(); return; }
   S._outlineVisited = true;
   const status = $("#outlineStatus");
-  status.innerHTML = `<span class="spinner"></span><span>正在流式解析 [PPT_OUTLINE]，便利贴逐张贴上来…</span>`;
+  status.innerHTML = `<span class="spinner"></span><span>Streaming and parsing [PPT_OUTLINE]; sticky notes are being placed one by one…</span>`;
   const els = $$("#boardWrap .sticky");
   els.forEach(s => { s.style.visibility = "hidden"; });
   for (let i = 0; i < els.length; i++) {
@@ -2382,17 +2383,17 @@ async function runOutlineStage(token) {
     await sleep(110);
   }
   if (!alive(token)) return;
-  status.innerHTML = `${icon("check")}<span>大纲已生成：${pages().length} 页。可以拖拽调整，或直接确认。</span>`;
-  announce(`大纲已生成，共 ${pages().length} 页`);
+  status.innerHTML = `${icon("check")}<span>Outline generated: ${pages().length} pages. Drag to adjust, or confirm directly.</span>`;
+  announce(`Outline generated with ${pages().length} pages`);
   if (S.mode === "auto") startAutoAdvance(token, "outline");
 }
 function renderOutlineStatic() {
   renderOutlineBoard();
   const status = $("#outlineStatus");
-  if (S.done.outline) status.innerHTML = `${icon("check")}<span>大纲已就绪：${pages().length} 页。调整后可直接确认。</span>`;
+  if (S.done.outline) status.innerHTML = `${icon("check")}<span>Outline ready: ${pages().length} pages. Adjust and confirm when ready.</span>`;
 }
 
-/* ---------------- Slide 渲染器（Bento Grid） ---------------- */
+/* ---------------- Slide renderer (Bento Grid) ---------------- */
 function specForPage(page, variant) {
   const seeded = MOCK.pageSpecs[page.id];
   const base = seeded && seeded[variant % seeded.length] ? seeded[variant % seeded.length] : MOCK.genericSpecPool[variant % MOCK.genericSpecPool.length];
@@ -2409,23 +2410,23 @@ function slideHTML(spec, mode, styleId, opts = {}) {
   if (wire) {
     let cards = spec.cards;
     if (!cards) {
-      if (spec.layout === "cover") cards = [{ t: spec.title || "封面标题", b: spec.sub || "副标题" }, { t: "标签行", b: (spec.tags || []).join(" / ") }];
-      else if (spec.layout === "toc") cards = (spec.items || []).map((x, i) => ({ t: `0${i + 1} ${x}`, b: "目录条目" }));
-      else if (spec.layout === "end") cards = [{ t: spec.title || "结尾", b: spec.sub || "行动号召" }];
+      if (spec.layout === "cover") cards = [{ t: spec.title || "Cover title", b: spec.sub || "Subtitle" }, { t: "Tag row", b: (spec.tags || []).join(" / ") }];
+      else if (spec.layout === "toc") cards = (spec.items || []).map((x, i) => ({ t: `0${i + 1} ${x}`, b: "Contents item" }));
+      else if (spec.layout === "end") cards = [{ t: spec.title || "Ending", b: spec.sub || "Call to action" }];
       else cards = [];
     }
     const wireSpans = { single: [6], "2col": [3, 3], async: [4, 2], "3col": [2, 2, 2], hero: [6, 2, 2, 2], mix: [4, 2, 3, 3] }[spec.layout] || [6];
     let h = `<div class="${cls}" ${vars} ${aria}><div class="sl-inner">`;
-    h += `<div class="sl-head"><div class="h">${esc(spec.__pageTitle || "页面标题")}</div><div class="k">策划稿 · 版面规划</div></div><div class="sl-grid">`;
+    h += `<div class="sl-head"><div class="h">${esc(spec.__pageTitle || "Page title")}</div><div class="k">Plan draft · Layout planning</div></div><div class="sl-grid">`;
     cards.forEach((c, i) => {
       const span = spec.layout === "toc" ? 3 : (wireSpans[i] || 2);
-      const label = c.t ? stripTags(c.t) : "内容卡片";
+      const label = c.t ? stripTags(c.t) : "Content card";
       const hint = [];
-      if (c.b) hint.push("正文：" + short(stripTags(c.b), 26));
-      if (c.items) hint.push("要点 ×" + c.items.length + "：" + short(c.items[0], 18));
-      if (c.kpis) hint.push("数据卡 ×" + c.kpis.length);
-      if (c.chart) hint.push("图表 · " + (c.chart.unit || ""));
-      if (c.quote) hint.push("引语");
+      if (c.b) hint.push("Body: " + short(stripTags(c.b), 26));
+      if (c.items) hint.push("Points ×" + c.items.length + ": " + short(c.items[0], 18));
+      if (c.kpis) hint.push("Data cards ×" + c.kpis.length);
+      if (c.chart) hint.push("Chart · " + (c.chart.unit || ""));
+      if (c.quote) hint.push("Quote");
       h += `<div class="wcard" style="grid-column:span ${span}; animation-delay:${(opts.delay || 0) + i * 90}ms"><div class="wl">${esc(label)}</div>${hint.map(x => `<div class="wh">${esc(x)}</div>`).join("")}<div class="wk"><i></i><i></i></div></div>`;
     });
     return h + `</div></div></div>`;
@@ -2438,7 +2439,7 @@ function slideHTML(spec, mode, styleId, opts = {}) {
   }
   if (spec.layout === "toc") {
     return `<div class="${cls}" ${vars} ${aria}><div class="deco d2" style="opacity:.3"></div><div class="toc-inner">
-      <div class="t">目录</div>
+      <div class="t">Contents</div>
       <div class="toc-list">${(spec.items || []).map((it, i) => `<div class="toc-item" style="animation:cardin .4s ${opts.noAnim ? 0 : i * 120}ms both"><div class="n">0${i + 1}</div><div class="x">${esc(it)}</div></div>`).join("")}</div></div></div>`;
   }
   if (spec.layout === "end") {
@@ -2469,15 +2470,15 @@ function slideHTML(spec, mode, styleId, opts = {}) {
   return h + `</div></div></div>`;
 }
 
-/* ---------------- 阶段 4 · 策划稿 ---------------- */
+/* ---------------- Stage 4 · Plan draft ---------------- */
 function ensurePlan(pid) {
   if (!S.plans[pid]) S.plans[pid] = { variant: 0, status: "idle" };
   return S.plans[pid];
 }
 function planGroups() {
-  const g = [{ title: "封面", ids: [S.outline.cover.id] }, { title: "目录", ids: [S.outline.toc.id] }];
+  const g = [{ title: "Cover", ids: [S.outline.cover.id] }, { title: "Contents", ids: [S.outline.toc.id] }];
   S.outline.parts.forEach(p => g.push({ title: p.title, ids: p.pages.map(x => x.id) }));
-  g.push({ title: "结尾", ids: [S.outline.end.id] });
+  g.push({ title: "Ending", ids: [S.outline.end.id] });
   return g;
 }
 function renderPlanList() {
@@ -2490,9 +2491,9 @@ function renderPlanList() {
       const st = (S.plans[id] || {}).status || "idle";
       const state = st === "streaming" ? `<span class="spinner" aria-hidden="true"></span>` : st === "done" ? icon("check") : icon("clock");
       const stateCls = st === "streaming" ? "run" : st === "done" ? "done" : "";
-      const stateText = st === "streaming" ? "策划中" : st === "done" ? "已完成" : "待策划";
+      const stateText = st === "streaming" ? "Planning" : st === "done" ? "Done" : "Pending";
       return `<button class="plitem ${S.curPlanPage === id ? "sel" : ""}" type="button" data-id="${id}" ${S.curPlanPage === id ? 'aria-current="true"' : ""} aria-label="P${numOf(id)} ${esc(p.title)}，${stateText}">
-        <span class="num">P${numOf(id)}</span><span class="ptxt">${esc(short(p.title, 9))}</span><span class="pstate ${stateCls}" aria-hidden="true">${state}</span>
+        <span class="num">P${numOf(id)}</span><span class="ptxt">${esc(short(p.title, 24))}</span><span class="pstate ${stateCls}" aria-hidden="true">${state}</span>
       </button>`;
     }).join("")
   ).join("");
@@ -2503,18 +2504,18 @@ function renderPlanList() {
   }));
   const total = pages().length;
   const doneN = pages().filter(p => (S.plans[p.id] || {}).status === "done").length;
-  $("#planProgText").textContent = doneN === total ? `已策划 ${doneN} / ${total} 页` : (S.plans[S.curPlanPage]?.status === "streaming" ? `正在策划 P${numOf(S.curPlanPage)}…` : `已策划 ${doneN} / ${total} 页`);
+  $("#planProgText").textContent = doneN === total ? `Planned ${doneN} / ${total} pages` : (S.plans[S.curPlanPage]?.status === "streaming" ? `Planning P${numOf(S.curPlanPage)}…` : `Planned ${doneN} / ${total} pages`);
   const pct = total ? Math.round(doneN / total * 100) : 0;
   $("#planProgBar").style.width = pct + "%";
   $("#planProgPct").textContent = pct + "%";
-  $("#planMeta").textContent = `${doneN} / ${total} 页`;
+  $("#planMeta").textContent = `${doneN} / ${total} pages`;
   $("#planConfirmBtn").disabled = !(S.done.plan || (total > 0 && doneN === total));
   $("#planConfirmNote").textContent = total > 0 && doneN === total
-    ? "全部页面策划完成，可进入风格选择。"
-    : `还有 ${total - doneN} 页在策划中，完成后即可继续。`;
+    ? "All pages planned; ready for style selection."
+    : `${total - doneN} pages still being planned; continue when they finish.`;
 }
 function wirePlaceholder() {
-  return `<div class="wire-placeholder" role="status" aria-label="正在等待策划">
+  return `<div class="wire-placeholder" role="status" aria-label="Waiting for planning">
     <div class="wph-line"><span class="skel" style="width:30%;height:22px"></span></div>
     <div class="wph-grid"><span class="skel"></span><span class="skel"></span><span class="skel"></span><span class="skel"></span></div>
   </div>`;
@@ -2533,7 +2534,7 @@ function renderWire() {
     return;
   }
   const spec = specForPage(page, plan.variant);
-  const label = `P${num} ${page.title}，策划线框，${LAYOUT_NAMES[spec.layout] || "便当网格"}`;
+  const label = `P${num} ${page.title}, plan wireframe, ${LAYOUT_NAMES[spec.layout] || "Bento grid"}`;
   $("#wireHolder").innerHTML = slideHTML(spec, "wire", null, { delay: 0, label });
 }
 async function runPlanStage(token) {
@@ -2559,12 +2560,12 @@ async function runPlanStage(token) {
   renderSteps();
   renderPlanList();
   renderWire();
-  $("#planConfirmNote").textContent = "全部页面策划完成，可以进入风格选择。";
-  toast("策划稿完成，可以逐页精调或进入风格选择");
+  $("#planConfirmNote").textContent = "All pages planned; ready for style selection.";
+  toast("Plan draft complete; tweak page by page or continue to style selection");
   if (S.mode === "auto") {
     await sleep(1100);
     if (alive(token) && S.stage === "plan") {
-      toast("即将进入风格选择…");
+      toast("Entering style selection…");
       jumpTo("style");
     }
   }
@@ -2586,7 +2587,7 @@ function markDesignStale() {
   return false;
 }
 
-/* ---------------- 阶段 5 · 风格 ---------------- */
+/* ---------------- Stage 5 · Style ---------------- */
 function selectStyle(id) {
   S.styleId = id;
   $$("#styleGrid .stylecard").forEach(c => {
@@ -2595,7 +2596,7 @@ function selectStyle(id) {
     c.setAttribute("aria-checked", String(on));
   });
   $("#styleConfirmBtn").disabled = !id;
-  $("#styleMeta").textContent = `已选 · ${styleName(id)}`;
+  $("#styleMeta").textContent = `Selected · ${styleName(id)}`;
 }
 function renderStyleStage() {
   const p1 = pageById("p1") || S.outline.parts.flatMap(p => p.pages)[0] || S.outline.cover;
@@ -2607,7 +2608,7 @@ function renderStyleStage() {
     return `<button class="stylecard ${S.styleId === s.id ? "sel" : ""}" type="button" role="radio" aria-checked="${S.styleId === s.id}" data-id="${s.id}">
       <span class="style-check" aria-hidden="true">${icon("check")}</span>
       <span class="prevwrap" aria-hidden="true"><span class="mini">${preview}</span></span>
-      <span class="meta"><span class="t">${esc(s.name)}<span class="pal">${Object.entries(s.vars).filter(([k]) => ["--s-bg", "--s-card", "--s-accent", "--s-fg"].includes(k)).map(([k, v]) => `<i style="background:${v}"></i>`).join("")}</span>${saved === s.id ? '<span class="use">上次使用</span>' : ""}</span><span class="d">${esc(s.desc)}</span></span>
+      <span class="meta"><span class="t">${esc(s.name)}<span class="pal">${Object.entries(s.vars).filter(([k]) => ["--s-bg", "--s-card", "--s-accent", "--s-fg"].includes(k)).map(([k, v]) => `<i style="background:${v}"></i>`).join("")}</span>${saved === s.id ? '<span class="use">Last used</span>' : ""}</span><span class="d">${esc(s.desc)}</span></span>
     </button>`;
   }).join("");
   const cards = $$("#styleGrid .stylecard");
@@ -2623,7 +2624,7 @@ function renderStyleStage() {
   });
   $("#rememberStyle").checked = S.styleRemember;
   $("#styleConfirmBtn").disabled = !S.styleId;
-  $("#styleMeta").textContent = S.styleId ? `已选 · ${styleName(S.styleId)}` : `${MOCK.styles.length} 套风格`;
+  $("#styleMeta").textContent = S.styleId ? `Selected · ${styleName(S.styleId)}` : `${MOCK.styles.length} styles`;
 }
 function confirmStyle() {
   if (!S.styleId) return;
@@ -2639,7 +2640,7 @@ function confirmStyle() {
   jumpTo("design");
 }
 
-/* ---------------- 阶段 6 · 设计稿 ---------------- */
+/* ---------------- Stage 6 · Design draft ---------------- */
 function designGroups() { return planGroups(); }
 function renderThumbs() {
   if (!S.outline) return;
@@ -2656,8 +2657,8 @@ function renderThumbs() {
       const done = !!S.slides[id];
       const state = run ? `<span class="spinner" aria-hidden="true"></span>` : done ? icon("check") : "";
       const stateCls = run ? "run" : done ? "done" : "";
-      return `<button class="thumb ${S.curDesignPage === id ? "sel" : ""}" type="button" data-id="${id}" ${S.curDesignPage === id ? 'aria-current="true"' : ""} aria-label="第 ${numOf(id)} 页 ${esc(p.title)}${done ? "，已生成" : run ? "，生成中" : ""}">
-        <span class="mini" aria-hidden="true">${mini}</span><span class="tt">P${numOf(id)} ${esc(short(p.title, 8))}</span><span class="ts ${stateCls}" aria-hidden="true">${state}</span>
+      return `<button class="thumb ${S.curDesignPage === id ? "sel" : ""}" type="button" data-id="${id}" ${S.curDesignPage === id ? 'aria-current="true"' : ""} aria-label="Page ${numOf(id)} ${esc(p.title)}${done ? ", generated" : run ? ", generating" : ""}">
+        <span class="mini" aria-hidden="true">${mini}</span><span class="tt">P${numOf(id)} ${esc(short(p.title, 18))}</span><span class="ts ${stateCls}" aria-hidden="true">${state}</span>
       </button>`;
     }).join("")
   ).join("");
@@ -2691,15 +2692,15 @@ function showDesignPage(pid, fromUser) {
   const spec = specForPage(page, slide.variant);
   const nums = flatPages();
   const num = (nums.find(n => n.page.id === pid) || { num: 0 }).num;
-  const label = `P${num} ${page.title}，${LAYOUT_NAMES[spec.layout] || "便当网格"}，风格${styleName(S.styleApplied) || "默认"}`;
+  const label = `P${num} ${page.title}, ${LAYOUT_NAMES[spec.layout] || "Bento grid"}, style ${styleName(S.styleApplied) || "default"}`;
   $("#slideHolder").innerHTML = slideHTML(spec, "design", S.styleApplied, { delay: 0, label });
-  $("#pageIndicator").textContent = `第 ${num} / ${pages().length} 页`;
+  $("#pageIndicator").textContent = `Page ${num} / ${pages().length}`;
   $("#prevBtn").disabled = num <= 1;
   $("#nextBtn").disabled = num >= nums.length;
-  $("#layoutTag").textContent = LAYOUT_NAMES[spec.layout] || "便当网格";
-  $("#designNote").textContent = MOCK.pageNotes[pid] || "本页为新增页面：采用便当网格布局，按内容自动分配卡片层级。";
+  $("#layoutTag").textContent = LAYOUT_NAMES[spec.layout] || "Bento grid";
+  $("#designNote").textContent = MOCK.pageNotes[pid] || "New page: uses a Bento grid layout and assigns card hierarchy automatically based on content.";
   $("#variantLabel").textContent = `V${(slide.variant || 0) + 1}`;
-  $("#historyLabel").textContent = `历史 ${slide.history?.length || 0} 版`;
+  $("#historyLabel").textContent = `History ${slide.history?.length || 0} versions`;
   refreshDesignButtons();
   if (fromUser) { $("#designMsgLine").textContent = ""; setTweakError(""); }
 }
@@ -2708,7 +2709,7 @@ function renderDesignStatic() {
   const pid = S.curDesignPage || pages()[0].id;
   S.curDesignPage = pid;
   showDesignPage(pid);
-  $("#designMeta").textContent = `${Object.keys(S.slides).length} / ${pages().length} 页`;
+  $("#designMeta").textContent = `${Object.keys(S.slides).length} / ${pages().length} pages`;
 }
 async function runDesignStage(token) {
   if (S.done.design) { renderThumbs(); showDesignPage(S.curDesignPage || pages()[0].id); return; }
@@ -2726,8 +2727,8 @@ async function runDesignStage(token) {
     renderThumbs();
     if (!S.pinned) showDesignPage(p.id);
     n++;
-    $("#designMeta").textContent = `正在渲染 ${n} / ${all.length} 页`;
-    $("#designMsgLine").textContent = `正在为 P${n}「${p.title}」应用风格「${styleName(S.styleApplied)}」…`;
+    $("#designMeta").textContent = `Rendering ${n} / ${all.length} pages`;
+    $("#designMsgLine").textContent = `Applying style “${styleName(S.styleApplied)}” to P${n} “${p.title}”…`;
     await sleep(320);
     if (!alive(token)) return;
     S.renderingPage = null;
@@ -2738,12 +2739,12 @@ async function runDesignStage(token) {
   S.done.design = true;
   S.stale.design = false;
   S.renderingPage = null;
-  $("#designMeta").textContent = `${all.length} / ${all.length} 页`;
+  $("#designMeta").textContent = `${all.length} / ${all.length} pages`;
   $("#designMsgLine").textContent = "";
   renderSteps();
   renderThumbs();
   showDesignPage(S.curDesignPage || all[0].id);
-  toast("设计稿全部完成，可逐页微调或直接导出");
+  toast("Design draft complete; tweak page by page or export directly");
 }
 function stepPage(d) {
   const all = pages();
@@ -2767,12 +2768,12 @@ function setTweakError(msg) {
   }
 }
 async function redesignCurrent() {
-  if (!S.done.design) { toast("设计稿还在生成中，请稍后再调整"); return; }
+  if (!S.done.design) { toast("The design draft is still generating; try again later"); return; }
   const pid = S.curDesignPage;
   if (!pid) return;
   const page = pageById(pid);
   const variants = MOCK.pageSpecs[pid]?.length || MOCK.genericSpecPool.length;
-  if (variants <= 1) { toast(`${page ? page.title : "本页"}只有一种版式，试试用微调指令调整`); return; }
+  if (variants <= 1) { toast(`${page ? page.title : "This page"} has only one layout; try a tweak instruction`); return; }
   const token = ++opSeq;
   const cur = S.slides[pid] || { variant: 0, history: [] };
   cur.history = cur.history || [];
@@ -2780,21 +2781,21 @@ async function redesignCurrent() {
   cur.variant = (cur.variant || 0) + 1;
   S.slides[pid] = cur;
   setDesignBusy(true);
-  $("#designMsgLine").textContent = "换一版：正在重新规划便当网格布局…";
+  $("#designMsgLine").textContent = "Regenerate: re-planning the Bento grid layout…";
   renderThumbs();
   await sleep(500);
   if (!opAlive(token) || S.curDesignPage !== pid) { setDesignBusy(false); return; }
   showDesignPage(pid);
   setDesignBusy(false);
-  $("#designMsgLine").textContent = `第 ${flatPages().find(n => n.page.id === pid).num} 页已换为「${LAYOUT_NAMES[specForPage(pageById(pid), cur.variant).layout] || "便当网格"}」版式（V${cur.variant + 1}）。`;
-  announce("已为当前页换一版");
+  $("#designMsgLine").textContent = `Page ${flatPages().find(n => n.page.id === pid).num} switched to “${LAYOUT_NAMES[specForPage(pageById(pid), cur.variant).layout] || "Bento grid"}” layout (V${cur.variant + 1}).`;
+  announce("Current page regenerated");
 }
 async function tweakCurrent() {
-  if (!S.done.design) { toast("设计稿还在生成中，请稍后再调整"); return; }
+  if (!S.done.design) { toast("The design draft is still generating; try again later"); return; }
   const pid = S.curDesignPage;
   if (!pid) return;
   const v = $("#tweakInput").value.trim();
-  if (!v) { setTweakError("先输入一句微调指令，例如：主卡片再大一点"); return; }
+  if (!v) { setTweakError("Enter a tweak instruction first, e.g. make the main card larger"); return; }
   setTweakError("");
   const token = ++opSeq;
   const cur = S.slides[pid] || { variant: 0, history: [] };
@@ -2803,15 +2804,15 @@ async function tweakCurrent() {
   cur.variant = (cur.variant || 0) + 1;
   S.slides[pid] = cur;
   setDesignBusy(true);
-  $("#designMsgLine").textContent = `Agent 已理解指令「${v}」，正在重渲染…`;
+  $("#designMsgLine").textContent = `Agent understood “${v}”; re-rendering…`;
   renderThumbs();
   await sleep(560);
   if (!opAlive(token) || S.curDesignPage !== pid) { setDesignBusy(false); return; }
   showDesignPage(pid);
   setDesignBusy(false);
-  $("#designMsgLine").textContent = `已按指令调整（mock）：「${v}」`;
+  $("#designMsgLine").textContent = `Adjusted per instruction (mock): “${v}”`;
   $("#tweakInput").value = "";
-  announce("已按指令调整当前页");
+  announce("Current page adjusted per instruction");
 }
 function undoDesign() {
   const pid = S.curDesignPage;
@@ -2821,18 +2822,18 @@ function undoDesign() {
   cur.variant = cur.history.pop();
   S.slides[pid] = cur;
   showDesignPage(pid);
-  $("#designMsgLine").textContent = `已恢复上一版（V${cur.variant + 1}）。`;
-  toast("已恢复上一版");
+  $("#designMsgLine").textContent = `Restored the previous version (V${cur.variant + 1}).`;
+  toast("Previous version restored");
 }
 
-/* ---------------- 导出 ---------------- */
+/* ---------------- Export ---------------- */
 function openExport() {
   const total = pages().length;
   const done = Object.keys(S.slides).length;
   $("#expSummary").innerHTML = `
-    <span class="meta-pill">${icon("presentation", "sm")}${total} 页</span>
-    <span class="meta-pill">${icon("bento", "sm")}${esc(styleName(S.styleApplied) || "未选风格")}</span>
-    <span class="meta-pill ${done === total ? "good" : "warn"}">${icon(done === total ? "check" : "alert", "sm")}已渲染 ${done}/${total}</span>`;
+    <span class="meta-pill">${icon("presentation", "sm")}${total} pages</span>
+    <span class="meta-pill">${icon("bento", "sm")}${esc(styleName(S.styleApplied) || "No style selected")}</span>
+    <span class="meta-pill ${done === total ? "good" : "warn"}">${icon(done === total ? "check" : "alert", "sm")}Rendered ${done}/${total}</span>`;
   $("#expOptions").hidden = false;
   $("#expProgress").classList.remove("on");
   $("#expProgress").setAttribute("aria-busy", "false");
@@ -2842,8 +2843,8 @@ function openExport() {
   openModal($("#exportOverlay"), "#expOptions .expopt");
 }
 function runExport(kind) {
-  const label = { pptx: "PPTX（SVG 合成）", html: "HTML 单文件", pdf: "PDF" }[kind] || kind;
-  const steps = ["正在合成矢量页面…", "正在压缩资源…", "正在打包…"];
+  const label = { pptx: "PPTX (SVG-composited)", html: "HTML single file", pdf: "PDF" }[kind] || kind;
+  const steps = ["Compositing vector pages…", "Compressing assets…", "Packaging…"];
   $("#expOptions").hidden = true;
   $("#expProgress").classList.add("on");
   $("#expProgress").setAttribute("aria-busy", "true");
@@ -2860,11 +2861,11 @@ function runExport(kind) {
       S._exportTimer = null;
       $("#expBar").style.width = "100%";
       $("#expBarWrap").setAttribute("aria-valuenow", "100");
-      $("#expText").textContent = "完成";
+      $("#expText").textContent = "Done";
       $("#expProgress").setAttribute("aria-busy", "false");
       $("#expProgress").classList.remove("on");
       $("#expSuccess").classList.add("on");
-      $("#expSuccessText").textContent = `「${S.topic}」已导出为 ${label}`;
+      $("#expSuccessText").textContent = `“${S.topic}” exported as ${label}`;
       setTimeout(() => $("#exportDoneBtn").focus(), 40);
     } else {
       $("#expBar").style.width = Math.round(p) + "%";
@@ -2890,7 +2891,7 @@ function initExport() {
   });
 }
 
-/* ---------------- 重新开始 ---------------- */
+/* ---------------- Restart ---------------- */
 function resetAll() {
   runSeq++;
   opSeq++;
@@ -2921,32 +2922,32 @@ function resetAll() {
   $("#provList").innerHTML = ""; $("#webList").innerHTML = "";
   $("#provWrap").hidden = true; $("#webWrap").hidden = true;
   $("#srcEmpty").hidden = false;
-  $("#srcEmpty").innerHTML = `${icon("search")}联网检索结果会出现在这里`;
+  $("#srcEmpty").innerHTML = `${icon("search")}Web research results will appear here`;
   updateSrcCount();
   $("#boardWrap").innerHTML = ""; $("#outlineStatus").innerHTML = "";
-  $("#outlineStat").textContent = "共 0 页"; $("#outlineMeta").textContent = "共 0 页";
+  $("#outlineStat").textContent = "0 pages"; $("#outlineMeta").textContent = "0 pages";
   $("#outlineConfirmBtn").disabled = true;
   $("#planList").innerHTML = ""; $("#wireHolder").innerHTML = "";
   $("#planProgBar").style.width = "0%"; $("#planProgPct").textContent = "0%";
-  $("#planProgText").textContent = "已策划 0 / 0 页"; $("#planMeta").textContent = "0 / 0 页";
+  $("#planProgText").textContent = "Planned 0 / 0 pages"; $("#planMeta").textContent = "0 / 0 pages";
   $("#planConfirmBtn").disabled = true;
-  setPlanMsg("微调只影响当前页；改动大纲后，下游策划与设计会标记为待重跑。", false);
+  setPlanMsg("Tweaks affect only the current page; after the outline changes, downstream plan and design will be marked for rerun.", false);
   $("#planTweakInput").value = "";
   $("#styleGrid").innerHTML = ""; $("#styleConfirmBtn").disabled = true;
   $("#rememberStyle").checked = S.styleRemember;
   $("#thumbList").innerHTML = ""; $("#slideHolder").innerHTML = "";
-  $("#pageIndicator").textContent = "第 0 / 0 页"; $("#designMeta").textContent = "0 / 0 页";
+  $("#pageIndicator").textContent = "Page 0 / 0"; $("#designMeta").textContent = "0 / 0 pages";
   $("#designNote").textContent = ""; $("#layoutTag").textContent = "";
-  $("#variantLabel").textContent = "V1"; $("#historyLabel").textContent = "历史 0 版";
+  $("#variantLabel").textContent = "V1"; $("#historyLabel").textContent = "History 0 versions";
   $("#prevBtn").disabled = true; $("#nextBtn").disabled = true;
   $("#tweakInput").value = ""; setTweakError("");
   $("#designMsgLine").textContent = "";
   jumpTo("home", { force: true, focus: false });
   $("#topicInput").focus();
-  toast("已重新开始");
+  toast("Restarted");
 }
 
-/* ---------------- 全局键盘 ---------------- */
+/* ---------------- Global keyboard ---------------- */
 function initGlobalKeys() {
   document.addEventListener("keydown", e => {
     if (S.stage !== "design") return;
@@ -2957,7 +2958,7 @@ function initGlobalKeys() {
   });
 }
 
-/* ---------------- 启动 ---------------- */
+/* ---------------- Startup ---------------- */
 function init() {
   const remembered = loadStylePref();
   S.rememberedStyle = remembered;
@@ -2971,7 +2972,7 @@ function init() {
     const pid = S.curPlanPage;
     if (!pid) return;
     const v = $("#planTweakInput").value.trim();
-    if (!v) { $("#planTweakInput").focus(); setPlanMsg("先输入一句微调指令，例如：把数据卡片放大", true); return; }
+    if (!v) { $("#planTweakInput").focus(); setPlanMsg("Enter a tweak instruction first, e.g. make the data card larger", true); return; }
     const plan = ensurePlan(pid);
     plan.variant = (plan.variant || 0) + 1;
     plan.status = "streaming";
@@ -2983,8 +2984,8 @@ function init() {
       plan.status = "done";
       renderPlanList();
       renderWire();
-      setPlanMsg(`已按指令调整「${pageById(pid).title}」的版面（mock）：「${v}」`, false);
-      announce("已按指令调整当前页策划");
+      setPlanMsg(`Adjusted the layout of “${pageById(pid).title}” per instruction (mock): “${v}”`, false);
+      announce("Current page plan adjusted per instruction");
     }, 420);
     $("#planTweakInput").value = "";
   });
@@ -3005,8 +3006,8 @@ function init() {
       plan.status = "done";
       renderPlanList();
       renderWire();
-      setPlanMsg(`已为「${pageById(pid).title}」换一版策划（V${(plan.variant || 0) + 1}）。`, false);
-      announce("已为当前页换一版策划");
+      setPlanMsg(`Regenerated the plan for “${pageById(pid).title}” (V${(plan.variant || 0) + 1}).`, false);
+      announce("Current page plan regenerated");
     }, 440);
   });
   $("#planConfirmBtn").addEventListener("click", () => {
@@ -3017,7 +3018,7 @@ function init() {
   $("#autoPauseBtn").addEventListener("click", () => {
     S.autoPaused = true;
     clearAutoTimer();
-    toast("已暂停自动推进，确认后手动进入策划稿");
+    toast("Auto-advance paused; confirm manually to enter the plan draft");
   });
   $("#styleConfirmBtn").addEventListener("click", confirmStyle);
   $("#prevBtn").addEventListener("click", () => stepPage(-1));

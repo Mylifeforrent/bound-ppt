@@ -1,134 +1,134 @@
-# 帖子提取：应该是目前最强的PPT Agent，附上完整思路分享
+# Post extract: Probably the strongest PPT Agent right now, with a full breakdown of the approach
 
-> 本文档为 linux.do 帖子内容的完整提取与结构化整理，供产品设计与开发参考。
+> This document is a complete extraction and structured summary of the linux.do post, for product design and development reference.
 
-- **来源**：<https://linux.do/t/topic/1782304>
-- **作者**：sandun（Sandun，头衔"一元复始"，7 年 PPT 教学 / 3 年 AI 产品经验）
-- **发布日期**：2026-03-19（帖子显示 Mar 19）
-- **分类 / 标签**：开发调优 · 人工智能 / 软件开发 / 精华神帖
-- **社区热度**：4931 个赞 · 59.3k 浏览 · 1097 楼 · 5.8k likes
-- **提取方式**：浏览器方式（2026-11-16 提取，含正文全文与 3 个提示词代码块原文）
-- **关键截图**：已下载至本仓库 `docs/images/`（原图为 linux.do CDN 链接，见文末附录）
-
----
-
-## 一、产品定义：一段话概括
-
-给 AI 一个主题（例如"Dify 企业介绍"），它会像一个真正的专家团队那样自动跑完全流程：
-
-**需求调研 → 资料搜集 → 大纲策划 → 生成策划稿 → 生成设计稿**
-
-最终产出整套可直接使用的演示设计。作者项目使用的模型为 **Gemini 3 Flash**（作者建议：有条件可直接上 Gemini 3.1 Pro）。
-
-> ⚠️ 注意：需求调研与资料搜集两个环节的完整提示词作者未公开（帖子只放出了截图展示 UI 形态）。
+- **Source**: <https://linux.do/t/topic/1782304>
+- **Author**: sandun (title "A New Beginning"; 7 years of PPT teaching / 3 years of AI product experience)
+- **Published**: 2026-03-19 (the post shows Mar 19)
+- **Category / tags**: Development tuning · Artificial intelligence / Software development / Featured post
+- **Community traction**: 4,931 likes · 59.3k views · 1,097 replies · 5.8k likes
+- **Extraction method**: browser (extracted 2026-11-16, including the full body text and 3 prompt code blocks verbatim)
+- **Key screenshots**: downloaded to this repo's `docs/images/` (the originals are linux.do CDN links; see the appendix at the end)
 
 ---
 
-## 二、四大核心设计思路（原帖小节顺序）
+## I. Product definition: one-paragraph summary
 
-### 1. 忘了"一键生成"，从"提问"开始（需求调研）
+Give AI a topic (for example, "Dify company introduction"), and it runs the whole pipeline automatically like a real expert team:
 
-- 市面上几乎所有 AI PPT 工具的通病：**一输入主题就立刻丢出粗糙大纲 + 现成模板**。
-- 原帖核心观点：**"PPT 的灵魂是内容，不是皮囊。"**
-- 自制 PPT 的真实流程是先搞清楚：**为谁做？做什么？达到什么目的？**
-- 因此让 AI 做的第一件事是**像专业顾问一样"需求调研"**：先去网上扒一圈相关资料，然后像模像样地问用户几个关键问题，让用户把真正的需求说清楚。
-- 需求聊透之后，AI 才会结合搜集到的资料生成一份真正"有的放矢"的大纲。
+**Research → material gathering → outline planning → plan draft → design draft**
 
-**配套方法论——便利贴法（数字便利贴）**：
+The final output is a complete presentation design that can be used directly. The author's project uses **Gemini 3 Flash** (the author recommends **Gemini 3.1 Pro** if available).
 
-- 作者做复杂 PPT 的多年习惯：每页核心内容写在一张张便利贴上贴满一墙，逻辑结构一目了然，不好就撕、顺序不对就换。
-- 原帖把这个方法做进了产品：**"每一个页面，就是一张'数字便利贴'，让你看得清清楚楚，调得明明白白。"**
-- 大纲阶段可给 AI 的角色扮演指令：让 AI 扮演你的"PPT 规划师"。
-
-**配图**：需求调研 UI（[survey-ui](images/survey-ui.webp)）、数字便利贴 UI（原帖动图 "1"）。
-
-### 2. 去大量检索资料
-
-- "大纲只是骨架，血肉需要真实、准确的信息来填充。"
-- 作者项目因为工程原因使用的是**国内搜索接口**。
-- DIY 推荐：**Grok**——作者认为是"目前搜索和信息总结能力最强的 AI，没有之一"。
-- 用法："把上一步生成的大纲标题，一个一个丢给 Grok，它就能帮你把所需资料搜集、整理得妥妥帖帖。"
-
-**配图**：检索 UI（[search-ui](images/search-ui.webp)）、Grok 检索示例（[research-grok](images/research-grok.png)）。
-
-### 3. PPT 居然还有策划稿？（两阶段：先策划、后设计）
-
-- 来自行内经验的背书：国内顶尖 PPT 设计公司（报价 1 万+/页）设有专门岗位**策划师**——需求调研、资料检索、大纲规划都归策划师干。
-- 策划师最终产出一份**PPT 草稿**给设计师：**每页什么位置放什么元素、用什么版式，全部固定好**。
-- AI 化的对应做法：
-  1. **先让 AI 生成一版"策划稿"**：不带复杂效果、简简单单、清清爽爽的**页面初稿**（纯版式布局）；
-  2. **再让 AI 在初稿上加设计效果**（风格、配色、装饰）。
-- 作者团队大量测试后的结论："这套人类专家的工作流，AI 完全能理解！策划部分负责版面规划，设计部分来做风格样式，跑下来的效果非常好。"
-- 用户侧策略：普通 PPT 全自动跑完即可用；**特别重要的 PPT 可以在策划稿阶段人工精调内容，再让 AI 跑最终设计**，"把效率和颜值都最大化"。
-
-**配图**：策划师岗位（[planner-role](images/planner-role.webp)）、策划稿示例（[planning-draft](images/planning-draft.webp)）、页面初稿（[draft-page](images/draft-page.webp)）、加设计效果后（[designed-page](images/designed-page.webp)）。
-
-### 4. 用"卡片式布局（Bento Grid）"让 AI 跑设计
-
-- "卡片式布局"= 苹果发布会常见的那种：把内容装进一个个卡片里。
-- 三大好处：
-  1. **能装**：一页里能清晰地承载大量信息；
-  2. **灵活**：卡片数量、大小、位置可随意组合，版式变化无穷；
-  3. **AI 能懂（最关键）**："卡片是 AI 最容易理解和掌握的一种设计语言。"
-- 作者把这套方法论写成精确指令告诉 AI 如何像顶级设计师一样思考布局，称其为"项目的核心壁垒之一"（指令原文见第三节提示词 2/3）。
-
-**配图**：苹果发布会卡片布局（[card-layout-apple](images/card-layout-apple.webp)）、卡片式布局示例（[card-layout](images/card-layout.webp)）。
+> ⚠️ Note: the author did not publish the full prompts for the research and material-gathering stages (the post only shows screenshots of the UI).
 
 ---
 
-## 三、提示词原文（3 段，均为作者项目在用的正式版）
+## II. Four core design ideas (in the original post's order)
 
-> 以下内容为帖子内代码块的**逐字原文**（浏览器提取，保留原始格式）。`{{PAGE_REQUIREMENTS}}` 为作者项目中的页数要求模板变量。
+### 1. Forget "one-click generation" and start with "questions" (research)
 
-### 提示词 1：顶级的 PPT 结构架构师（大纲生成 · Context-Aware）
+- The common flaw of almost every AI PPT tool on the market: **it immediately spits out a rough outline + an off-the-shelf template as soon as you enter a topic**.
+- The original post's core claim: **"The soul of a PPT is the content, not the skin."**
+- The real process of making a PPT by hand starts by clarifying: **Who is it for? What is it about? What should it achieve?**
+- So the first thing the AI should do is **"research" like a professional consultant**: search the web for relevant material, then ask the user a few key questions in a professional way, so the real requirements come out.
+- Only after the requirements are fully discussed does the AI generate an outline that is genuinely **targeted**, using the material it collected.
+
+**Supporting methodology — the sticky-note method (digital sticky notes)**:
+
+- The author's long-standing habit for complex PPTs: write each page's core content on sticky notes and cover a wall with them, so the logical structure is obvious at a glance; tear off the bad ones and reorder the rest.
+- The original post turns this method into a product: **"Every page is a 'digital sticky note', so you can see clearly and adjust confidently."**
+- Role-play instruction for the outline stage: ask the AI to play your "PPT planner".
+
+**Images**: research UI ([survey-ui](images/survey-ui.webp)), digital sticky-note UI (the original post's GIF "1").
+
+### 2. Retrieve a large amount of material
+
+- "The outline is only the skeleton; the flesh needs real, accurate information."
+- For engineering reasons, the author's project uses a **domestic Chinese search API**.
+- DIY recommendation: **Grok** — in the author's view "the strongest AI for search and information summarization right now, bar none".
+- Usage: "Take the outline headings generated in the previous step and feed them to Grok one by one; it will collect and organize the material you need neatly."
+
+**Images**: search UI ([search-ui](images/search-ui.webp)), Grok research example ([research-grok](images/research-grok.png)).
+
+### 3. PPTs have a plan draft too? (two stages: plan first, design second)
+
+- Industry backing: top domestic PPT design firms (quoting 10k+ RMB/page) have a dedicated **planner** role — research, material retrieval, and outline planning are all done by planners.
+- The planner ultimately produces a **PPT draft** for the designer: **what element goes where on each page, which layout to use — all fixed in advance**.
+- The AI equivalent:
+  1. **First have the AI generate a "plan draft"**: a simple, clean **page draft** without complex effects (layout only);
+  2. **Then have the AI add design effects to the draft** (style, color, decoration).
+- The author's team, after extensive testing: "This human-expert workflow is fully understandable by AI! The planning part handles layout, the design part handles style, and the results are excellent."
+- User-side strategy: ordinary PPTs can run fully automatically and be usable; **for especially important PPTs, fine-tune the content manually at the plan-draft stage, then let the AI run the final design**, "maximizing both efficiency and polish".
+
+**Images**: planner role ([planner-role](images/planner-role.webp)), plan-draft example ([planning-draft](images/planning-draft.webp)), page draft ([draft-page](images/draft-page.webp)), after design effects ([designed-page](images/designed-page.webp)).
+
+### 4. Use "card layout (Bento Grid)" to drive AI design
+
+- "Card layout" = the style commonly seen at Apple keynotes: put content into individual cards.
+- Three benefits:
+  1. **Capacity**: a single page can clearly carry a large amount of information;
+  2. **Flexibility**: card count, size, and position can be combined freely, yielding endless layouts;
+  3. **AI can understand it (most important)**: "Cards are the design language that AI understands and masters most easily."
+- The author wrote this methodology into precise instructions telling the AI how to think about layout like a top designer, and calls it "one of the project's core moats" (see prompts 2/3 in section III).
+
+**Images**: Apple keynote card layout ([card-layout-apple](images/card-layout-apple.webp)), card-layout example ([card-layout](images/card-layout.webp)).
+
+---
+
+## III. Original prompts (3, all production versions used by the author's project)
+
+> The content below is the **verbatim text** of the post's code blocks (browser extraction, original formatting preserved). `{{PAGE_REQUIREMENTS}}` is the page-count requirement template variable used in the author's project. The Chinese prompt text has been translated into English for this edition.
+
+### Prompt 1: Top-tier PPT structure architect (outline generation · Context-Aware)
 
 ```text
-# Role: 顶级的PPT结构架构师
+# Role: Top-tier PPT structure architect
 
 ## Profile
-- 版本：2.0 (Context-Aware)
-- 专业：PPT逻辑结构设计
-- 特长：运用金字塔原理，结合**背景调研信息**构建清晰的演示逻辑
+- Version: 2.0 (Context-Aware)
+- Specialty: PPT logical structure design
+- Strength: Apply the Pyramid Principle together with **background research (Context)** to build clear presentation logic
 
 ## Goals
-基于用户提供的 **PPT主题** 和 **背景调研信息 (Context)**，设计一份逻辑严密、层次清晰的PPT大纲。
+Based on the **PPT topic** and **background research (Context)** provided by the user, design a logically rigorous, clearly layered PPT outline.
 
-## Core Methodology: 金字塔原理
-1. 结论先行：每个部分以核心观点开篇
-2. 以上统下：上层观点是下层内容的总结
-3. 归类分组：同一层级的内容属于同一逻辑范畴
-4. 逻辑递进：内容按照某种逻辑顺序展开
+## Core Methodology: Pyramid Principle
+1. Conclusion first: open each section with the core point
+2. Summarize from above: upper-level points summarize lower-level content
+3. Group by category: content at the same level belongs to the same logical category
+4. Logical progression: unfold content in a deliberate logical order
 
-## 重要：利用调研信息
-你将获得一些关于主题的搜索摘要。请务必参考这些信息来规划大纲，使其切合当前的市场现状或技术事实，而不是凭空捏造。
-例如：如果调研显示"某技术已过时"，则不要将其作为核心推荐。
+## Important: use the research
+You will receive search summaries about the topic. Be sure to reference them when planning the outline so it matches current market reality or technical facts rather than inventing things.
+For example: if the research shows "a technology is outdated", do not present it as a core recommendation.
 
-## 输出规范
-请严格按照以下JSON格式输出，结果用[PPT_OUTLINE]和[/PPT_OUTLINE]包裹：
+## Output specification
+Strictly output in the following JSON format, wrapped in [PPT_OUTLINE] and [/PPT_OUTLINE]:
 
 [PPT_OUTLINE]
 {
   "ppt_outline": {
     "cover": {
-      "title": "引人注目的主标题",
-      "sub_title": "副标题",
+      "title": "A catchy main title",
+      "sub_title": "Subtitle",
       "content": []
     },
     "table_of_contents": {
-      "title": "目录",
-      "content": ["第一部分标题", "第二部分标题", "..."]
+      "title": "Table of contents",
+      "content": ["Part 1 title", "Part 2 title", "..."]
     },
     "parts": [
       {
-        "part_title": "第一部分：章节标题",
+        "part_title": "Part 1: Section title",
         "pages": [
-          { "title": "页面标题1", "content": [] },
-          { "title": "页面标题2", "content": [] }
+          { "title": "Page title 1", "content": [] },
+          { "title": "Page title 2", "content": [] }
         ]
       }
     ],
     "end_page": {
-      "title": "总结与展望",
+      "title": "Summary and outlook",
       "content": []
     }
   }
@@ -136,120 +136,120 @@
 [/PPT_OUTLINE]
 
 ## Constraints
-1. 必须严格遵循JSON格式。
-2. **页数要求*：{{PAGE_REQUIREMENTS}}
+1. Must strictly follow the JSON format.
+2. **Page count requirement**: {{PAGE_REQUIREMENTS}}
 ```
 
-### 提示词 2：便当网格（Bento Grid）布局方法论（作者称"核心壁垒"）
+### Prompt 2: Bento Grid layout methodology (the author calls it the "core moat")
 
 ```text
-内容页的便当网格 (Bento Grid) 布局
-这是一种灵活的网格系统，其布局应由内容本身的需求驱动，而非僵硬的模板。通过组合不同尺寸的卡片，创造出动态且视觉有趣的布局。
-- 核心原则:
-    - 灵活性: 卡片数量不固定。可以是 1, 2, 3, 4, 5 或更多个，取决于如何更好地呈现信息。
-    - 层级感: 使用卡片尺寸建立视觉层级。最重要的信息放在最大的卡片上。
-    - 留白: 在所有卡片之间保持至少 20px 的间距。
-- 布局组合示例:
-    - 单一焦点: 一张大卡片覆盖大部分区域 (w=1200, h=580)。适用于单一、有力的信息或详细的图表。
-    - 两栏布局:
-        - 50/50 对称: 两张等宽的卡片。
-        - 非对称: 一张较宽的卡片（如 2/3 宽度）用于主内容，一张较窄的（1/3 宽度）用于辅助信息、数据或图片。
-    - 三栏布局: 三张等宽的卡片，适合并列比较三项内容。
-    - 主次结合: 一张大的居中卡片，两侧各一张小的垂直卡片。
-    - 顶部英雄式: 顶部一张宽幅"英雄"卡片，下方是 2-4 个较小的等宽卡片网格。
-    - 混合网格 (自由度最高): 自由混合各种尺寸的卡片，例如一个中等方块、两个小的水平矩形和一个垂直矩形。这种方式可以极大地适应不同内容的需求。
+Bento Grid layout for content pages
+This is a flexible grid system whose layout should be driven by the needs of the content itself, not by a rigid template. Combine cards of different sizes to create dynamic and visually interesting layouts.
+- Core principles:
+    - Flexibility: the number of cards is not fixed. It can be 1, 2, 3, 4, 5 or more, depending on how best to present the information.
+    - Hierarchy: use card size to establish visual hierarchy. Put the most important information in the largest card.
+    - White space: keep at least 20px of spacing between all cards.
+- Layout combination examples:
+    - Single focus: one large card covering most of the area (w=1200, h=580). Suitable for a single, powerful message or a detailed chart.
+    - Two-column layout:
+        - 50/50 symmetric: two equal-width cards.
+        - Asymmetric: one wider card (e.g. 2/3 width) for the main content and one narrower card (1/3 width) for supporting information, data, or images.
+    - Three-column layout: three equal-width cards, suitable for comparing three items side by side.
+    - Primary + secondary: one large centered card with a small vertical card on each side.
+    - Top hero: a wide "hero" card at the top, with a grid of 2-4 smaller equal-width cards below.
+    - Mixed grid (most freedom): freely mix cards of various sizes, e.g. one medium square, two small horizontal rectangles, and one vertical rectangle. This adapts extremely well to different content needs.
 ```
 
-### 提示词 3：SVG 页面生成（内容 → 设计稿 · 拼接用法）
+### Prompt 3: SVG page generation (content → design draft · concatenation usage)
 
-> 原帖用法说明：把上一版（Grok 检索整理好的）内容拼在提示词末尾"我的内容是："之后发送。作者推荐模型：Gemini 3 Flash（有条件上 3.1 Pro）。
+> Usage note from the original post: append the previous version (the content organized by Grok) at the end of the prompt after "My content is:" and send. Author's recommended model: Gemini 3 Flash (3.1 Pro if available).
 
 ```text
-作为精通信息架构与 SVG 编码的专家，你的任务是将完整的文字内容转化为一张高质量、结构化、具备高级感、简洁感和专业感的 SVG 演示文稿页面。要求如下：
+As an expert in information architecture and SVG coding, your task is to turn complete text content into a high-quality, structured SVG presentation page with a premium, clean, and professional feel. Requirements:
 
-1.画布: SVG viewBox 必须是 0 0 1280 720。
+1. Canvas: the SVG viewBox must be 0 0 1280 720.
 
-2.内容页的便当网格 (Bento Grid) 布局
-这是一种灵活的网格系统，其布局应由内容本身的需求驱动，而非僵硬的模板。通过组合不同尺寸的卡片，创造出动态且视觉有趣的布局。
-- 核心原则:
-    - 灵活性: 卡片数量不固定。可以是 1, 2, 3, 4, 5 或更多个，取决于如何更好地呈现信息。
-    - 层级感: 使用卡片尺寸建立视觉层级。最重要的信息放在最大的卡片上。
-    - 留白: 在所有卡片之间保持至少 20px 的间距。
-- 布局组合示例:
-    - 单一焦点: 一张大卡片覆盖大部分区域 (w=1200, h=580)。适用于单一、有力的信息或详细的图表。
-    - 两栏布局:
-        - 50/50 对称: 两张等宽的卡片。
-        - 非对称: 一张较宽的卡片（如 2/3 宽度）用于主内容，一张较窄的（1/3 宽度）用于辅助信息、数据或图片。
-    - 三栏布局: 三张等宽的卡片，适合并列比较三项内容。
-    - 主次结合: 一张大的居中卡片，两侧各一张小的垂直卡片。
-    - 顶部英雄式: 顶部一张宽幅"英雄"卡片，下方是 2-4 个较小的等宽卡片网格。
-    - 混合网格 (自由度最高): 自由混合各种尺寸的卡片，例如一个中等方块、两个小的水平矩形和一个垂直矩形。这种方式可以极大地适应不同内容的需求。
+2. Bento Grid layout for content pages
+This is a flexible grid system whose layout should be driven by the needs of the content itself, not by a rigid template. Combine cards of different sizes to create dynamic and visually interesting layouts.
+- Core principles:
+    - Flexibility: the number of cards is not fixed. It can be 1, 2, 3, 4, 5 or more, depending on how best to present the information.
+    - Hierarchy: use card size to establish visual hierarchy. Put the most important information in the largest card.
+    - White space: keep at least 20px of spacing between all cards.
+- Layout combination examples:
+    - Single focus: one large card covering most of the area (w=1200, h=580). Suitable for a single, powerful message or a detailed chart.
+    - Two-column layout:
+        - 50/50 symmetric: two equal-width cards.
+        - Asymmetric: one wider card (e.g. 2/3 width) for the main content and one narrower card (1/3 width) for supporting information, data, or images.
+    - Three-column layout: three equal-width cards, suitable for comparing three items side by side.
+    - Primary + secondary: one large centered card with a small vertical card on each side.
+    - Top hero: a wide "hero" card at the top, with a grid of 2-4 smaller equal-width cards below.
+    - Mixed grid (most freedom): freely mix cards of various sizes, e.g. one medium square, two small horizontal rectangles, and one vertical rectangle. This adapts extremely well to different content needs.
 
 
-请你根据我的内容输出SVG代码，我的内容是：
+Please output SVG code based on my content. My content is:
 ```
 
-**配图**：Gemini 生成 SVG 代码示例（[gemini-svg-code](images/gemini-svg-code.png)）、生成的整页 SVG 效果（[svg-result](images/svg-result.jpeg)）。
+**Images**: Gemini generating SVG code ([gemini-svg-code](images/gemini-svg-code.png)), the resulting full-page SVG ([svg-result](images/svg-result.jpeg)).
 
 ---
 
-## 四、技术选型要点：为什么生成"整页 SVG"
+## IV. Technical choice: why generate a "full-page SVG"
 
-- 市面上的 AI PPT 大多是调用 Banana（图像生成）或生成 HTML；作者团队采用**生成整页 SVG**。
-- 选择 SVG 的原因：
-  - **PPT 兼容性最好的格式**：SVG 代码可直接拖入 Office 2016 以上版本使用；
-  - **完全可编辑**，各类设计软件都支持；
-  - **无限放大不失真**，保证清晰度。
-- 代价："三个多月里我们花了大量时间处理 SVG，因为没人做过，一切都得从零开始，不断摸索。"
-- 给个人用户的建议：如果不需要可编辑性，**更推荐让 AI 生成 HTML 格式**（相关提示词在作者此前文章《把小米379页的年报转为可视化网页，附完整提示词》<https://linux.do/t/topic/604327> 中）。
+- Most AI PPT tools on the market call Banana (image generation) or generate HTML; the author's team generates a **full-page SVG**.
+- Reasons for SVG:
+  - **Best PPT compatibility**: SVG code can be dragged directly into Office 2016 and later;
+  - **Fully editable**, supported by all major design tools;
+  - **Scales infinitely without quality loss**, preserving sharpness.
+- Cost: "Over three months we spent a lot of time on SVG, because nobody had done it before; everything had to be figured out from scratch."
+- Advice for individual users: if you do not need editability, **generating HTML with AI is more recommended** (the relevant prompt is in the author's earlier article "Turning Xiaomi's 379-page annual report into a visual web page, with the complete prompt" <https://linux.do/t/topic/604327>).
 
-**配图**：AI 自动生成的成品示例——封面（[cover-sample](images/cover-sample.jpeg)）。
-
----
-
-## 五、作者动机（对产品定位的启发）
-
-- 作者自评："我现在做的这个东西，也只是挖掘了 AI 做 PPT，大概 5% 的能力。"
-- 批评市面工具："他们的开发根本都不懂 PPT。给个大纲，硬套模板。"
-- 产品信仰："AI 有能力也已经在改变我们制作和演示信息的方式。"
+**Image**: an example of an AI-generated finished piece — the cover ([cover-sample](images/cover-sample.jpeg)).
 
 ---
 
-## 六、可复用的设计要点清单（提炼）
+## V. Author motivation (implications for product positioning)
 
-1. **先调研、后生成**：把"需求访谈"做进流程，用问题澄清受众/目的/页数/风格，而不是拿到主题就出大纲。
-2. **大纲基于真实资料**：先检索（Context），再生成大纲，提示词中明确要求引用调研信息、避免捏造。
-3. **便利贴大纲**：大纲可视化为"一页一便利贴"，支持拖拽调整顺序、增删页面。
-4. **两阶段生成**：策划稿（纯版式、结构化、克制样式）→ 确认/精调 → 设计稿（加风格效果）。重要 PPT 在策划稿阶段人工精调。
-5. **卡片/Bento Grid 布局语言**：用 AI 最易理解的设计语言约束布局，给足布局组合范例而非僵硬模板。
-6. **固定画布 + 结构化输出**：SVG viewBox 0 0 1280 720（或 1920×1080），用可解析的分隔符（如 `[PPT_OUTLINE]`）包裹 JSON。
-7. **格式按需选择**：要可编辑/进 Office → SVG；自用不编辑 → HTML。
-8. **模型选型**：Gemini 3 Flash 平衡成本与效果；预算充足用 3.1 Pro。
+- Author's self-assessment: "What I'm building now only scratches about 5% of AI's PPT capability."
+- Criticism of market tools: "Their developers don't understand PPT at all. They take an outline and force it into a template."
+- Product belief: "AI is capable of changing the way we create and present information — and it already is."
 
 ---
 
-## 附录：原帖配图索引（原图 CDN 链接）
+## VI. Reusable design checklist (distilled)
 
-| 用途 | 原图链接 |
+1. **Research first, generate later**: build the "requirements interview" into the flow; use questions to clarify audience/purpose/page count/style instead of producing an outline straight from the topic.
+2. **Ground the outline in real material**: retrieve first (Context), then generate the outline; explicitly require the prompt to cite research and avoid fabrication.
+3. **Sticky-note outline**: visualize the outline as "one page per sticky note", supporting drag-to-reorder and page insertion/deletion.
+4. **Two-stage generation**: plan draft (pure layout, structured, restrained styling) → confirm/fine-tune → design draft (add style effects). Important PPTs get manual fine-tuning at the plan-draft stage.
+5. **Card/Bento Grid layout language**: constrain layout with the design language AI understands best; provide plenty of layout combination examples instead of a rigid template.
+6. **Fixed canvas + structured output**: SVG viewBox 0 0 1280 720 (or 1920×1080); wrap JSON in parseable delimiters such as `[PPT_OUTLINE]`.
+7. **Choose the format by need**: editable/Office-bound → SVG; personal use without editing → HTML.
+8. **Model choice**: Gemini 3 Flash balances cost and quality; use 3.1 Pro when budget allows.
+
+---
+
+## Appendix: image index from the original post (original CDN links)
+
+| Purpose | Original image URL |
 | --- | --- |
-| 成品示例·封面 | <https://cdn3.ldstatic.com/original/4X/c/a/7/ca785958d37aba2c5e234af1f4d969945ae87b2f.jpeg> |
-| 成品示例·分层架构设计 | <https://cdn3.ldstatic.com/original/4X/2/b/9/2b9fbeb40ca978629c4986e994c2abc701f00121.jpeg> |
-| 成品示例·核心硬件 | <https://cdn3.ldstatic.com/original/4X/a/a/f/aaf137fb6a7a4ddff3c818a7c07cd5cb44562aea.jpeg> |
-| 成品示例·其他风格 1 | <https://cdn3.ldstatic.com/original/4X/1/1/8/1181834e44162e2c873288ee999a8184e54380ad.jpeg> |
-| 成品示例·其他风格 2 | <https://cdn3.ldstatic.com/original/4X/c/f/d/cfdbb2954d1b93ffc430c8a5652b3ef34f92dc5b.jpeg> |
-| 全流程演示动图 | <https://cdn3.ldstatic.com/original/4X/2/7/3/273349036183b47dd6873ff8a6fc4b7a269bc974.gif> |
-| 完整设计演示动图 | <https://cdn3.ldstatic.com/original/4X/f/1/a/f1aab7cf304e037dc060a30e2f22555a06a83a24.gif> |
-| 需求调研 UI | <https://cdn3.ldstatic.com/original/4X/f/4/5/f45478b3c2c96c726e50d357f2b776f372267dfc.webp> |
-| 便利贴 UI 动图 | <https://cdn3.ldstatic.com/original/4X/1/c/e/1cec102727d58958c25d6da46a1955e063b95199.gif> |
-| 检索资料 UI | <https://cdn3.ldstatic.com/original/4X/6/2/a/62a898a2d1178c85985ece017fc7ec2f166280c4.webp> |
-| Grok 检索示例 | <https://cdn3.ldstatic.com/original/4X/6/3/0/6305c980802f3a1ddff840e44a71c842a9d9ea88.png> |
-| 策划师岗位介绍 | <https://cdn3.ldstatic.com/original/4X/6/b/f/6bffcac7dd291641b6cdfa71cce3538a58248974.webp> |
-| 策划稿示例 | <https://cdn3.ldstatic.com/original/4X/b/6/3/b6318bdc47fbfd9d7466fdbb944ad839d6154158.webp> |
-| 页面初稿（无设计效果） | <https://cdn3.ldstatic.com/original/4X/5/1/9/519bbc1c6824983966ca86882578e0c752288d66.webp> |
-| 加设计效果后 | <https://cdn3.ldstatic.com/original/4X/b/c/8/bc840a42bada631399f6d5c0504b9b11990210a7.webp> |
-| 苹果发布会卡片布局 | <https://cdn3.ldstatic.com/original/4X/2/8/d/28d75c58237d2ea179ddd772da651aae0ac455ce.webp> |
-| 卡片式布局示例 | <https://cdn3.ldstatic.com/original/4X/c/7/a/c7a44935dcb61e2bc0421e6e8b2a35343a044806.webp> |
-| Gemini 生成 SVG 代码 | <https://cdn3.ldstatic.com/original/4X/c/7/4/c74bd996a229c7abf44d1ad0a6ff9d1dd37d78bc.png> |
-| 生成的整页 SVG 效果 | <https://cdn3.ldstatic.com/original/4X/2/6/f/26f3fcb9890f2b0727180c9ef98a18cc01900137.jpeg> |
+| Finished example · cover | <https://cdn3.ldstatic.com/original/4X/c/a/7/ca785958d37aba2c5e234af1f4d969945ae87b2f.jpeg> |
+| Finished example · layered architecture design | <https://cdn3.ldstatic.com/original/4X/2/b/9/2b9fbeb40ca978629c4986e994c2abc701f00121.jpeg> |
+| Finished example · core hardware | <https://cdn3.ldstatic.com/original/4X/a/a/f/aaf137fb6a7a4ddff3c818a7c07cd5cb44562aea.jpeg> |
+| Finished example · other style 1 | <https://cdn3.ldstatic.com/original/4X/1/1/8/1181834e44162e2c873288ee999a8184e54380ad.jpeg> |
+| Finished example · other style 2 | <https://cdn3.ldstatic.com/original/4X/c/f/d/cfdbb2954d1b93ffc430c8a5652b3ef34f92dc5b.jpeg> |
+| Full-workflow demo GIF | <https://cdn3.ldstatic.com/original/4X/2/7/3/273349036183b47dd6873ff8a6fc4b7a269bc974.gif> |
+| Full-design demo GIF | <https://cdn3.ldstatic.com/original/4X/f/1/a/f1aab7cf304e037dc060a30e2f22555a06a83a24.gif> |
+| Research UI | <https://cdn3.ldstatic.com/original/4X/f/4/5/f45478b3c2c96c726e50d357f2b776f372267dfc.webp> |
+| Sticky-note UI GIF | <https://cdn3.ldstatic.com/original/4X/1/c/e/1cec102727d58958c25d6da46a1955e063b95199.gif> |
+| Material search UI | <https://cdn3.ldstatic.com/original/4X/6/2/a/62a898a2d1178c85985ece017fc7ec2f166280c4.webp> |
+| Grok research example | <https://cdn3.ldstatic.com/original/4X/6/3/0/6305c980802f3a1ddff840e44a71c842a9d9ea88.png> |
+| Planner role introduction | <https://cdn3.ldstatic.com/original/4X/6/b/f/6bffcac7dd291641b6cdfa71cce3538a58248974.webp> |
+| Plan-draft example | <https://cdn3.ldstatic.com/original/4X/b/6/3/b6318bdc47fbfd9d7466fdbb944ad839d6154158.webp> |
+| Page draft (no design effects) | <https://cdn3.ldstatic.com/original/4X/5/1/9/519bbc1c6824983966ca86882578e0c752288d66.webp> |
+| After design effects | <https://cdn3.ldstatic.com/original/4X/b/c/8/bc840a42bada631399f6d5c0504b9b11990210a7.webp> |
+| Apple keynote card layout | <https://cdn3.ldstatic.com/original/4X/2/8/d/28d75c58237d2ea179ddd772da651aae0ac455ce.webp> |
+| Card layout example | <https://cdn3.ldstatic.com/original/4X/c/7/a/c7a44935dcb61e2bc0421e6e8b2a35343a044806.webp> |
+| Gemini generating SVG code | <https://cdn3.ldstatic.com/original/4X/c/7/4/c74bd996a229c7abf44d1ad0a6ff9d1dd37d78bc.png> |
+| Resulting full-page SVG | <https://cdn3.ldstatic.com/original/4X/2/6/f/26f3fcb9890f2b0727180c9ef98a18cc01900137.jpeg> |
 
-> 说明：楼主在该帖回复区（27 条直接回复 + 热帖汇总）未再补充新的提示词；作者提到"需求调研"环节的完整提示词因商业项目未公开，帖子仅以截图展示产品 UI 形态。
+> Note: the OP did not add new prompts in the reply section (27 direct replies + the hot-post digest); the author said the full "research" prompt was not disclosed because of the commercial project, and the post only shows the product UI in screenshots.
