@@ -248,7 +248,7 @@ def _current_chrome(page: OutlinePageVersion, bundle: OutlineBundle) -> tuple[st
             page_id=str(page.page_id),
             title=page.title,
             position=page.position,
-            deck_order=page.position,
+            deck_order=len(bundle.pages),
             section_key=page.section_key,
             section_label=section_label,
         ),

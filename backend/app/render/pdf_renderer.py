@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -16,6 +17,7 @@ from app.render import pipeline
 PAGE_WIDTH = 960
 PAGE_HEIGHT = 540
 PX_TO_PT = 0.75
+METRIC_PATTERN = re.compile(r"^([\d.,%+$€£-]+)\s*(.*)$")
 
 
 def _color(value: str | None, fallback: str = "#111827") -> Any:
@@ -45,15 +47,16 @@ def _draw_lines(
     color: Any,
     align: str,
     bottom_limit: float,
+    line_height: float = 1.35,
 ) -> None:
-    line_height = size * 1.35
+    line_height_pt = size * max(0.9, line_height)
     cursor = top_pt
     painter.setFont(font, size)
     painter.setFillColor(color)
     for line in lines:
-        if cursor - line_height < bottom_limit:
+        if cursor - line_height_pt < bottom_limit:
             break
-        baseline = cursor - line_height * 0.78
+        baseline = cursor - line_height_pt * 0.78
         if align == "center":
             start = x_pt + max(0.0, (width_pt - stringWidth(line, font, size)) / 2)
         elif align == "right":
@@ -61,30 +64,81 @@ def _draw_lines(
         else:
             start = x_pt
         painter.drawString(start, baseline, line)
-        cursor -= line_height
+        cursor -= line_height_pt
 
 
-def _draw_block(
-    painter: Any,
-    block: dict[str, Any],
-    rect: tuple[float, float, float, float],
-    *,
-    theme: dict[str, Any],
-) -> None:
+def _rect_pt(rect: tuple[float, float, float, float]) -> tuple[float, float, float, float]:
     x, y, w, h = rect
-    role = str(block.get("role") or "body")
+    return x * PX_TO_PT, PAGE_HEIGHT - (y + h) * PX_TO_PT, w * PX_TO_PT, h * PX_TO_PT
+
+
+def _draw_card(painter: Any, slot: dict[str, Any], theme: dict[str, Any]) -> None:
+    tokens = pipeline.theme_tokens(theme)
+    x, y, w, h = _rect_pt(
+        (float(slot.get("x", 80)), float(slot.get("y", 112)), float(slot.get("w", 1120)), float(slot.get("h", 472)))
+    )
+    radius = float(tokens.get("radius") or 18) * PX_TO_PT
+    painter.setFillColor(_color(pipeline.color_for(theme, "surface")))
+    if tokens.get("cardBorder", True):
+        painter.setStrokeColor(
+            _color(pipeline.blend(pipeline.color_for(theme, "primary"), pipeline.color_for(theme, "background"), 0.16))
+        )
+        painter.setLineWidth(0.75)
+        painter.roundRect(x, y, w, h, radius, fill=1, stroke=1)
+    else:
+        painter.roundRect(x, y, w, h, radius, fill=1, stroke=0)
+
+
+def _draw_shape(painter: Any, rect: tuple[float, float, float, float], color: str) -> None:
+    x, y, w, h = _rect_pt(rect)
+    painter.setFillColor(_color(color))
+    painter.rect(x, y, w, h, fill=1, stroke=0)
+
+
+def _draw_metric(painter: Any, entry: pipeline.FittedBlock, theme: dict[str, Any]) -> None:
+    style = pipeline.style_for_role(theme, "metric")
+    size = max(8.0, entry.size * PX_TO_PT)
+    color = _color(pipeline.color_for(theme, str(style.get("colorRole") or "primary")))
+    muted = _color(pipeline.color_for(theme, "muted"))
+    raw = str(entry.block.get("text") or "")
+    match = METRIC_PATTERN.match(raw.strip())
+    value, caption = (match.group(1), match.group(2).strip()) if match else (raw, "")
+    x_pt, _y_pt, _w_pt, _h_pt = _rect_pt((entry.x, entry.y, entry.w, entry.h))
+    width_pt = max(24.0, (entry.w - 8) * PX_TO_PT)
+    top_pt = PAGE_HEIGHT - (entry.y + 8) * PX_TO_PT
+    bottom_limit = PAGE_HEIGHT - (entry.y + entry.h - 4) * PX_TO_PT
+    value_size = min(52.0, size * 1.3)
+    _draw_lines(
+        painter, _wrap(value, width_pt, "Helvetica-Bold", value_size),
+        x_pt=x_pt, top_pt=top_pt, width_pt=width_pt, size=value_size, font="Helvetica-Bold",
+        color=color, align=entry.align, bottom_limit=bottom_limit, line_height=0.95,
+    )
+    if caption:
+        caption_size = max(8.0, size * 0.42)
+        caption_top = top_pt - value_size * 1.5
+        _draw_lines(
+            painter, _wrap(caption, width_pt, "Helvetica", caption_size),
+            x_pt=x_pt, top_pt=caption_top, width_pt=width_pt, size=caption_size, font="Helvetica",
+            color=muted, align=entry.align, bottom_limit=bottom_limit, line_height=1.25,
+        )
+
+
+def _draw_block(painter: Any, entry: pipeline.FittedBlock, *, theme: dict[str, Any], toc: bool) -> None:
+    block = entry.block
+    role = entry.role
     style = pipeline.style_for_role(theme, role)
-    size = max(6.0, float(style.get("size") or 19) * PX_TO_PT)
+    size = max(6.0, entry.size * PX_TO_PT)
     bold = int(style.get("weight") or 400) >= 600 or block.get("emphasis") == "primary"
     font = "Helvetica-Bold" if bold else "Helvetica"
     color = _color(pipeline.color_for(theme, str(style.get("colorRole") or "text")))
-    raw_style = block.get("style") if isinstance(block.get("style"), dict) else {}
-    align = str(raw_style.get("align") or ("center" if role in {"headline", "metric", "quote"} else "left"))
-    x_pt = x * PX_TO_PT
-    width_pt = max(24.0, (w - 16) * PX_TO_PT)
-    top_pt = PAGE_HEIGHT - (y + 6) * PX_TO_PT
-    bottom_limit = PAGE_HEIGHT - (y + h) * PX_TO_PT
+    x_pt = entry.x * PX_TO_PT
+    width_pt = max(24.0, (entry.w - 8) * PX_TO_PT)
+    top_pt = PAGE_HEIGHT - (entry.y + 6) * PX_TO_PT
+    bottom_limit = PAGE_HEIGHT - (entry.y + entry.h) * PX_TO_PT
 
+    if role == "metric":
+        _draw_metric(painter, entry, theme)
+        return
     if role == "table" and block.get("items"):
         rows = [[cell.strip() for cell in str(item).split("|")] for item in block.get("items") or []]
         if not rows:
@@ -107,16 +161,16 @@ def _draw_block(
                 ]
             )
         )
-        _width, height = table.wrapOn(painter, width_pt, max(20.0, h * PX_TO_PT))
+        _width, height = table.wrapOn(painter, width_pt, max(20.0, entry.h * PX_TO_PT))
         table.drawOn(painter, x_pt, max(bottom_limit, top_pt - height))
         return
 
     items = block.get("items")
     if items:
         lines: list[str] = []
-        for item in items:
-            wrapped = _wrap(f"• {item}", width_pt, font, size)
-            lines.extend(wrapped)
+        for index, item in enumerate(items):
+            prefix = f"{index + 1}. " if toc else "• "
+            lines.extend(_wrap(f"{prefix}{item}", width_pt, font, size))
     else:
         lines = _wrap(str(block.get("text") or ""), width_pt, font, size)
     if not lines or not "".join(lines).strip():
@@ -130,8 +184,9 @@ def _draw_block(
         size=size,
         font=font,
         color=color,
-        align=align,
+        align=entry.align,
         bottom_limit=bottom_limit,
+        line_height=entry.line_height,
     )
 
 
@@ -169,61 +224,97 @@ def render_pdf(input_data: dict[str, Any], output_path: Path) -> dict[str, Any]:
     theme = input_data.get("theme") or {}
     layout_data = input_data.get("layouts") or {}
     chrome = pipeline.chrome_rects(layout_data)
-    background = _color(pipeline.color_for(theme, "background"), "#ffffff")
-    text_color = _color(pipeline.color_for(theme, "text"))
-    muted = _color(pipeline.color_for(theme, "muted"), "#566079")
+    total = len(pages)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     painter = pdf_canvas.Canvas(str(output_path), pagesize=(PAGE_WIDTH, PAGE_HEIGHT))
     painter.setTitle("Bound PPT export")
 
-    for page in pages:
+    for index, page in enumerate(pages):
+        body = page.get("body") or {}
+        page_type = pipeline.page_type_of(page, index, total)
+        page_theme = pipeline.page_theme(theme, page_type)
+        layout = pipeline.resolve_layout(layout_data, body.get("layoutId"))
+        background = _color(pipeline.color_for(page_theme, "background"), "#ffffff")
+        text_color = _color(pipeline.color_for(page_theme, "text"))
+        muted = _color(pipeline.color_for(page_theme, "muted"))
+
         painter.setFillColor(background)
         painter.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, fill=1, stroke=0)
-        body = page.get("body") or {}
-        layout = pipeline.resolve_layout(layout_data, body.get("layoutId"))
 
-        _draw_chrome(
-            painter,
-            chrome["title"],
-            str(page.get("title") or ""),
-            size=13,
-            bold=True,
-            color=text_color,
-            align="left",
-        )
-        _draw_chrome(
-            painter,
-            chrome["sectionLabel"],
-            str(page.get("sectionLabel") or ""),
-            size=8,
-            bold=False,
-            color=muted,
-            align="left",
-        )
-        _draw_chrome(
-            painter,
-            chrome["pageNumber"],
-            str(page.get("pageNumber") or page.get("position") or ""),
-            size=8,
-            bold=False,
-            color=muted,
-            align="right",
-        )
+        if page_type not in {"COVER", "END"}:
+            if not pipeline.has_headline(body):
+                _draw_chrome(
+                    painter, chrome["title"], str(page.get("title") or ""),
+                    size=9, bold=True, color=text_color, align="left",
+                )
+            _draw_chrome(
+                painter, chrome["sectionLabel"], str(page.get("sectionLabel") or "").upper(),
+                size=7, bold=False, color=muted, align="left",
+            )
+            _draw_chrome(
+                painter, chrome["pageNumber"], f"{page.get('position') or index + 1} / {total}",
+                size=7, bold=False, color=muted, align="right",
+            )
+        else:
+            _draw_shape(painter, (0, 0, 1280, 10), pipeline.color_for(page_theme, "accent"))
+            _draw_shape(painter, (64, 112, 6, 472), pipeline.color_for(page_theme, "accent"))
+        if page_type == "TOC":
+            _draw_shape(painter, (64, 112, 6, 472), pipeline.color_for(page_theme, "primary"))
 
         for slot, blocks in pipeline.blocks_by_slot(body, layout):
-            slot_x = float(slot.get("x", 80))
-            slot_y = float(slot.get("y", 112))
-            slot_w = float(slot.get("w", 1120))
-            slot_h = float(slot.get("h", 472))
-            cursor = slot_y + 4
-            for block in blocks:
-                height = min(
-                    pipeline.block_height(block, slot_w - 16, theme),
-                    max(24.0, slot_y + slot_h - cursor),
+            if page_type in {"COVER", "END"}:
+                blocks = [block for block in blocks if str(block.get("role") or "") != "footer"]
+            slot_key = str(slot.get("key") or "main")
+            card = pipeline.is_card_slot(slot_key, page_type)
+            entries = pipeline.fit_slot(
+                blocks,
+                slot,
+                page_theme,
+                card=card,
+                center_vertical=card or page_type in {"COVER", "END"},
+            )
+            if page_type == "TOC" and slot_key == "main":
+                anchor = next(
+                    (entry for entry in reversed(entries) if entry.role in {"headline", "subhead"}), None
                 )
-                _draw_block(painter, block, (slot_x + 8, cursor, slot_w, height), theme=theme)
-                cursor += height + 8
+                if anchor:
+                    _draw_shape(
+                        painter,
+                        (anchor.x, anchor.y + anchor.h + 2, 96, 3),
+                        pipeline.color_for(page_theme, "accent"),
+                    )
+            if card:
+                _draw_card(painter, slot, page_theme)
+                _draw_shape(
+                    painter,
+                    (
+                        float(slot.get("x", 80)),
+                        float(slot.get("y", 112)) + 18,
+                        float(pipeline.theme_tokens(page_theme).get("accentBar") or 6),
+                        max(12.0, float(slot.get("h", 472)) - 36),
+                    ),
+                    pipeline.color_for(page_theme, "accent"),
+                )
+            if slot_key == "header" and pipeline.theme_tokens(page_theme).get("headingRule"):
+                _draw_shape(
+                    painter,
+                    (
+                        float(slot.get("x", 80)),
+                        float(slot.get("y", 104)) + float(slot.get("h", 72)) - 4,
+                        96,
+                        3,
+                    ),
+                    pipeline.color_for(page_theme, "accent"),
+                )
+            for entry in entries:
+                if entry.role == "quote":
+                    _draw_shape(
+                        painter,
+                        (entry.x - 12, entry.y + 2, 4, max(8.0, entry.h - 4)),
+                        pipeline.color_for(page_theme, "primary"),
+                    )
+                _draw_block(painter, entry, theme=page_theme, toc=page_type == "TOC" and entry.role == "bullet_list")
         painter.showPage()
 
     painter.save()

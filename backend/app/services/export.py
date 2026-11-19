@@ -88,6 +88,7 @@ async def build_deck_snapshot(session: AsyncSession, project: Project, fmt: str)
                 "pageId": str(summary.page_id),
                 "position": page_row.position,
                 "title": page_row.title,
+                "pageType": page_row.page_type,
                 "sectionLabel": label,
                 "chromeVersion": _chrome,
             }

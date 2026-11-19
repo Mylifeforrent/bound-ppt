@@ -47,21 +47,23 @@ export function ScaledDeckCanvas({
   );
 }
 
-export function ChromeOverlay({ chrome }: { chrome: ArtifactChromeDTO | null }) {
+export function ChromeOverlay({ chrome, hideTitle = false }: { chrome: ArtifactChromeDTO | null; hideTitle?: boolean }) {
   if (!chrome) return null;
   const titleBox = CHROME.title;
   const sectionBox = CHROME.sectionLabel;
   const pageBox = CHROME.pageNumber;
   return (
     <div className="pointer-events-none absolute inset-0">
-      <div
-        style={{ left: titleBox.x, top: titleBox.y, width: titleBox.w, height: titleBox.h }}
-        className="absolute flex items-center overflow-hidden"
-      >
-        <span className="truncate text-[13px] font-semibold uppercase tracking-[0.16em] opacity-70">
-          {chrome.title}
-        </span>
-      </div>
+      {hideTitle ? null : (
+        <div
+          style={{ left: titleBox.x, top: titleBox.y, width: titleBox.w, height: titleBox.h }}
+          className="absolute flex items-center overflow-hidden"
+        >
+          <span className="truncate text-[13px] font-semibold uppercase tracking-[0.16em] opacity-70">
+            {chrome.title}
+          </span>
+        </div>
+      )}
       {chrome.sectionLabel ? (
         <div
           style={{ left: sectionBox.x, top: sectionBox.y, width: sectionBox.w, height: sectionBox.h }}
@@ -95,6 +97,7 @@ export function PlanDeckPage({
 }) {
   const layout = getLayout(body.layoutId);
   const bySlot = groupBySlot(body.blocks);
+  const hasHeadline = body.blocks.some((block) => block.role === "headline");
   return (
     <div className="relative h-full w-full bg-white text-[#1f2937]">
       <div className="absolute inset-0">
@@ -110,7 +113,7 @@ export function PlanDeckPage({
           </div>
         ))}
       </div>
-      <ChromeOverlay chrome={chrome ?? null} />
+      <ChromeOverlay chrome={chrome ?? null} hideTitle={hasHeadline} />
       {!body.blocks.length ? (
         <div className="absolute inset-0 grid place-items-center text-sm text-gray-400">No layout blocks</div>
       ) : null}
@@ -142,11 +145,48 @@ export function DesignDeckPage({
   const layout = getLayout(body.layoutId);
   const theme = getTheme(body.style.styleKey);
   const bySlot = groupBySlot(body.blocks);
+  const hasHeadline = body.blocks.some((block) => block.role === "headline");
+  const isCover = chrome?.pageNumber === 1;
+  const isEnd = !!chrome && chrome.deckOrder > 1 && chrome.pageNumber === chrome.deckOrder;
+  const fixedPage = isCover || isEnd;
+  const isToc = chrome?.pageNumber === 2;
+  const displayTheme: Theme = fixedPage
+    ? {
+        ...theme,
+        palette: {
+          ...theme.palette,
+          background: theme.palette.secondary,
+          text: "#ffffff",
+          primary: tintColor(theme.palette.primary, 0.7),
+          secondary: "#ffffff",
+          surface: theme.palette.secondary,
+          muted: tintColor(theme.palette.primary, 0.55),
+        },
+      }
+    : theme;
   return (
     <div
       className="deck-root relative h-full w-full"
-      style={{ background: theme.palette.background, color: theme.palette.text }}
+      style={{ background: displayTheme.palette.background, color: displayTheme.palette.text }}
     >
+      {fixedPage ? (
+        <>
+          <div
+            className="absolute inset-x-0 top-0 h-[10px]"
+            style={{ background: displayTheme.palette.accent }}
+          />
+          <div
+            className="absolute"
+            style={{ left: 64, top: 112, width: 6, height: 472, background: displayTheme.palette.accent }}
+          />
+        </>
+      ) : null}
+      {isToc ? (
+        <div
+          className="absolute"
+          style={{ left: 64, top: 112, width: 6, height: 472, background: displayTheme.palette.primary }}
+        />
+      ) : null}
       <div className="absolute inset-0">
         {layout.slots.map((slot) => (
           <div
@@ -155,14 +195,19 @@ export function DesignDeckPage({
             style={{ left: slot.x, top: slot.y, width: slot.w, height: slot.h }}
           >
             {(bySlot[slot.key] ?? []).map((block) => (
-              <DesignBlockView key={block.id} block={block} theme={theme} />
+              <DesignBlockView
+                key={block.id}
+                block={block}
+                theme={displayTheme}
+                numbered={isToc && block.role === "bullet_list"}
+              />
             ))}
           </div>
         ))}
       </div>
-      <ChromeOverlay chrome={chrome ?? null} />
+      {fixedPage ? null : <ChromeOverlay chrome={chrome ?? null} hideTitle={hasHeadline} />}
       {!body.blocks.length ? (
-        <div className="absolute inset-0 grid place-items-center text-sm" style={{ color: theme.palette.muted }}>
+        <div className="absolute inset-0 grid place-items-center text-sm" style={{ color: displayTheme.palette.muted }}>
           No design blocks
         </div>
       ) : null}
@@ -170,14 +215,22 @@ export function DesignDeckPage({
   );
 }
 
-function DesignBlockView({ block, theme }: { block: PlanBlockV1 & { style?: { textStyle: string; colorRole: string; align?: string } }; theme: Theme }) {
+function DesignBlockView({
+  block,
+  theme,
+  numbered = false,
+}: {
+  block: PlanBlockV1 & { style?: { textStyle: string; colorRole: string; align?: string } };
+  theme: Theme;
+  numbered?: boolean;
+}) {
   const styleKey = block.style?.textStyle ?? block.role;
   const textStyle = theme.textStyles[styleKey] ?? theme.textStyles.body;
   const color = theme.palette[block.style?.colorRole ?? textStyle.colorRole] ?? theme.palette.text;
   const isCard = ["body", "bullet_list", "callout", "metric", "quote", "image", "chart", "table"].includes(block.role);
   return (
     <div
-      className={cn("relative flex flex-col justify-start overflow-hidden", growClass(block.role))}
+      className={cn("relative flex flex-col justify-center overflow-hidden", growClass(block.role))}
       style={{
         background: isCard ? theme.palette.surface : "transparent",
         borderRadius: Number(theme.tokens.radius ?? 16),
@@ -191,6 +244,7 @@ function DesignBlockView({ block, theme }: { block: PlanBlockV1 & { style?: { te
         <BlockContent
           block={block}
           plan={false}
+          numbered={numbered}
           color={color}
           fontSize={textStyle.size}
           fontWeight={textStyle.weight}
@@ -228,6 +282,7 @@ function BlockContent({
   fontWeight,
   lineHeight,
   fontFamily,
+  numbered = false,
 }: {
   block: PlanBlockV1;
   plan: boolean;
@@ -236,6 +291,7 @@ function BlockContent({
   fontWeight?: number;
   lineHeight?: number;
   fontFamily?: string;
+  numbered?: boolean;
 }) {
   const style: React.CSSProperties = {
     color: color ?? (plan ? "#374151" : undefined),
@@ -253,12 +309,16 @@ function BlockContent({
     );
   }
   if (block.role === "bullet_list" && block.items?.length) {
+    const ListTag = numbered ? "ol" : "ul";
     return (
-      <ul className="m-0 list-disc space-y-1.5 pl-5" style={style}>
+      <ListTag
+        className={cn("m-0 space-y-1.5", numbered ? "list-decimal pl-6" : "list-disc pl-5")}
+        style={style}
+      >
         {block.items.map((item, index) => (
           <li key={`${block.id}-${index}`}>{item}</li>
         ))}
-      </ul>
+      </ListTag>
     );
   }
   if (block.role === "image" || block.role === "chart" || block.role === "table") {
@@ -340,4 +400,14 @@ export function withAlpha(hex: string, alpha: number): string {
   const g = parseInt(clean.slice(2, 4), 16);
   const b = parseInt(clean.slice(4, 6), 16);
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+export function tintColor(hex: string, ratio: number): string {
+  const clean = hex.replace("#", "");
+  if (clean.length !== 6) return hex;
+  const r = parseInt(clean.slice(0, 2), 16);
+  const g = parseInt(clean.slice(2, 4), 16);
+  const b = parseInt(clean.slice(4, 6), 16);
+  const mix = (value: number) => Math.round(value + (255 - value) * ratio);
+  return `rgb(${mix(r)}, ${mix(g)}, ${mix(b)})`;
 }

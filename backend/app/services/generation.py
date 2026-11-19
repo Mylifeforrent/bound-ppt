@@ -475,7 +475,7 @@ def page_chrome(page_row: OutlinePageVersion, bundle: state.OutlineBundle) -> tu
             page_id=str(page_row.page_id),
             title=page_row.title,
             position=page_row.position,
-            deck_order=page_row.position,
+            deck_order=len(bundle.pages),
             section_key=page_row.section_key,
             section_label=label,
         ),
