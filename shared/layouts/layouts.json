@@ -1,0 +1,73 @@
+{
+  "version": "v1",
+  "canvas": { "width": 1280, "height": 720 },
+  "chrome": {
+    "title": { "x": 64, "y": 32, "w": 900, "h": 48 },
+    "sectionLabel": { "x": 64, "y": 660, "w": 420, "h": 28 },
+    "pageNumber": { "x": 1120, "y": 656, "w": 96, "h": 32 }
+  },
+  "layouts": {
+    "single": {
+      "name": "Single focus",
+      "description": "One full-bleed idea with a supporting footer.",
+      "slots": [
+        { "key": "main", "x": 80, "y": 112, "w": 1120, "h": 472, "roles": ["headline", "subhead", "body", "bullet_list", "metric", "quote", "image", "chart", "table", "callout"] },
+        { "key": "footer", "x": 80, "y": 600, "w": 1120, "h": 48, "roles": ["footer"] }
+      ]
+    },
+    "two_col": {
+      "name": "Two columns",
+      "description": "Balanced two-column comparison.",
+      "slots": [
+        { "key": "header", "x": 80, "y": 104, "w": 1120, "h": 72, "roles": ["headline"] },
+        { "key": "left", "x": 80, "y": 192, "w": 540, "h": 392, "roles": ["subhead", "body", "bullet_list", "metric", "quote", "image", "chart", "table", "callout"] },
+        { "key": "right", "x": 660, "y": 192, "w": 540, "h": 392, "roles": ["subhead", "body", "bullet_list", "metric", "quote", "image", "chart", "table", "callout"] },
+        { "key": "footer", "x": 80, "y": 600, "w": 1120, "h": 48, "roles": ["footer"] }
+      ]
+    },
+    "three_col": {
+      "name": "Three cards",
+      "description": "Three parallel pillars or features.",
+      "slots": [
+        { "key": "header", "x": 80, "y": 104, "w": 1120, "h": 72, "roles": ["headline"] },
+        { "key": "col1", "x": 80, "y": 192, "w": 350, "h": 392, "roles": ["subhead", "body", "bullet_list", "metric", "quote", "image", "chart", "callout"] },
+        { "key": "col2", "x": 465, "y": 192, "w": 350, "h": 392, "roles": ["subhead", "body", "bullet_list", "metric", "quote", "image", "chart", "callout"] },
+        { "key": "col3", "x": 850, "y": 192, "w": 350, "h": 392, "roles": ["subhead", "body", "bullet_list", "metric", "quote", "image", "chart", "callout"] },
+        { "key": "footer", "x": 80, "y": 600, "w": 1120, "h": 48, "roles": ["footer"] }
+      ]
+    },
+    "hero": {
+      "name": "Hero + support",
+      "description": "A dominant hero statement with three supporting cards.",
+      "slots": [
+        { "key": "hero", "x": 80, "y": 104, "w": 1120, "h": 232, "roles": ["headline", "subhead", "body", "metric", "quote", "image"] },
+        { "key": "support1", "x": 80, "y": 352, "w": 350, "h": 232, "roles": ["body", "bullet_list", "metric", "callout"] },
+        { "key": "support2", "x": 465, "y": 352, "w": 350, "h": 232, "roles": ["body", "bullet_list", "metric", "callout"] },
+        { "key": "support3", "x": 850, "y": 352, "w": 350, "h": 232, "roles": ["body", "bullet_list", "metric", "callout"] },
+        { "key": "footer", "x": 80, "y": 600, "w": 1120, "h": 48, "roles": ["footer"] }
+      ]
+    },
+    "async": {
+      "name": "Asymmetric",
+      "description": "Primary narrative on the left, supporting evidence on the right.",
+      "slots": [
+        { "key": "header", "x": 80, "y": 104, "w": 1120, "h": 72, "roles": ["headline"] },
+        { "key": "primary", "x": 80, "y": 192, "w": 680, "h": 392, "roles": ["subhead", "body", "bullet_list", "quote", "image", "chart", "table"] },
+        { "key": "secondary", "x": 790, "y": 192, "w": 410, "h": 392, "roles": ["metric", "callout", "body", "bullet_list"] },
+        { "key": "footer", "x": 80, "y": 600, "w": 1120, "h": 48, "roles": ["footer"] }
+      ]
+    },
+    "mix": {
+      "name": "Mixed grid",
+      "description": "Headline with a metric pair, narrative, and a callout.",
+      "slots": [
+        { "key": "header", "x": 80, "y": 104, "w": 1120, "h": 72, "roles": ["headline"] },
+        { "key": "stat1", "x": 80, "y": 192, "w": 270, "h": 180, "roles": ["metric"] },
+        { "key": "stat2", "x": 380, "y": 192, "w": 270, "h": 180, "roles": ["metric"] },
+        { "key": "body", "x": 680, "y": 192, "w": 520, "h": 392, "roles": ["body", "bullet_list", "subhead", "quote"] },
+        { "key": "callout", "x": 80, "y": 392, "w": 570, "h": 192, "roles": ["callout", "quote", "image", "chart"] },
+        { "key": "footer", "x": 80, "y": 600, "w": 1120, "h": 48, "roles": ["footer"] }
+      ]
+    }
+  }
+}

@@ -1,3 +1,28 @@
-.DS_Store
-*.log
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+backend/.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+backend/bound_ppt.db
+backend/storage/
+backend/.env
+
+# Node
+node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/playwright-report/
+frontend/test-results/
+
+# Local secrets and artifacts
 .env
+.env.local
+*.log
+.DS_Store
+backend/tmp/
+
+# TypeScript build info
+*.tsbuildinfo

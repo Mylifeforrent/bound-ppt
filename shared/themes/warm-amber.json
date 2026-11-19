@@ -1,0 +1,36 @@
+{
+  "styleKey": "warm-amber",
+  "name": "Warm Amber",
+  "version": 1,
+  "scope": "BUILTIN",
+  "description": "Warm, human storytelling with amber highlights and soft cards for case-led narratives.",
+  "useCase": "Pre-sales proposals, customer stories, market briefings.",
+  "licenseStatus": "CLEARED",
+  "palette": {
+    "primary": "#b45309",
+    "secondary": "#7c2d12",
+    "accent": "#0f766e",
+    "background": "#fffdf8",
+    "surface": "#fef3c7",
+    "text": "#241a10",
+    "muted": "#6b5a4b"
+  },
+  "fonts": { "display": "Georgia", "body": "Inter" },
+  "textStyles": {
+    "headline": { "size": 46, "weight": 700, "colorRole": "text", "lineHeight": 1.14 },
+    "subhead": { "size": 27, "weight": 600, "colorRole": "primary", "lineHeight": 1.22 },
+    "body": { "size": 19, "weight": 400, "colorRole": "text", "lineHeight": 1.52 },
+    "bullet_list": { "size": 19, "weight": 400, "colorRole": "text", "lineHeight": 1.52 },
+    "metric": { "size": 52, "weight": 700, "colorRole": "primary", "lineHeight": 1 },
+    "quote": { "size": 24, "weight": 500, "colorRole": "secondary", "lineHeight": 1.4 },
+    "callout": { "size": 18, "weight": 500, "colorRole": "text", "lineHeight": 1.4 },
+    "footer": { "size": 13, "weight": 500, "colorRole": "muted", "lineHeight": 1.2 }
+  },
+  "tokens": {
+    "radius": 22,
+    "surfaceAlpha": 1,
+    "accentBar": 8,
+    "cardBorder": false,
+    "headingRule": false
+  }
+}

@@ -1,0 +1,34 @@
+# Local optional dependencies. The application runs without Docker using SQLite.
+# Use this to exercise the PostgreSQL path described in docs/ppt-agent-tech-stack.md.
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: bound
+      POSTGRES_PASSWORD: bound
+      POSTGRES_DB: bound_ppt
+    ports:
+      - "5432:5432"
+    volumes:
+      - bound_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bound -d bound_ppt"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: bound
+      MINIO_ROOT_PASSWORD: bound-local-secret
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - bound_minio:/data
+
+volumes:
+  bound_pg:
+  bound_minio:
