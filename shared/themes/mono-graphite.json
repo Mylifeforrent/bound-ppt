@@ -1,0 +1,36 @@
+{
+  "styleKey": "mono-graphite",
+  "name": "Mono Graphite",
+  "version": 1,
+  "scope": "BUILTIN",
+  "description": "Technical, high-contrast graphite pages with a single cool accent and precise rules.",
+  "useCase": "Engineering reviews, architecture deep dives, data-heavy reports.",
+  "licenseStatus": "CLEARED",
+  "palette": {
+    "primary": "#111827",
+    "secondary": "#374151",
+    "accent": "#2563eb",
+    "background": "#ffffff",
+    "surface": "#f3f4f6",
+    "text": "#0b0f19",
+    "muted": "#4b5563"
+  },
+  "fonts": { "display": "Inter", "body": "Inter" },
+  "textStyles": {
+    "headline": { "size": 44, "weight": 700, "colorRole": "text", "lineHeight": 1.12 },
+    "subhead": { "size": 26, "weight": 600, "colorRole": "primary", "lineHeight": 1.22 },
+    "body": { "size": 19, "weight": 400, "colorRole": "text", "lineHeight": 1.5 },
+    "bullet_list": { "size": 19, "weight": 400, "colorRole": "text", "lineHeight": 1.5 },
+    "metric": { "size": 54, "weight": 700, "colorRole": "accent", "lineHeight": 1 },
+    "quote": { "size": 23, "weight": 500, "colorRole": "secondary", "lineHeight": 1.4 },
+    "callout": { "size": 18, "weight": 500, "colorRole": "text", "lineHeight": 1.4 },
+    "footer": { "size": 13, "weight": 500, "colorRole": "muted", "lineHeight": 1.2 }
+  },
+  "tokens": {
+    "radius": 8,
+    "surfaceAlpha": 1,
+    "accentBar": 4,
+    "cardBorder": true,
+    "headingRule": true
+  }
+}
